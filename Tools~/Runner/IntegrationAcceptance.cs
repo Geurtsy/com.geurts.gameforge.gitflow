@@ -210,11 +210,12 @@ namespace Geurts.GameForge.GitFlow.Runner
                 GitFlowSubmission source = fixture.Change("global_hook"); string main = fixture.Main;
                 string xdg = Path.Combine(fixture.Root, "xdg"), hooks = Path.Combine(fixture.Root, "required-hooks"); Directory.CreateDirectory(Path.Combine(xdg, "git")); Directory.CreateDirectory(hooks);
                 File.WriteAllText(Path.Combine(hooks, "pre-push"), "#!/bin/sh\necho required_global_hook_rejection >&2\nexit 1\n", new UTF8Encoding(false));
-                string config = Path.Combine(xdg, "git/config"); File.WriteAllText(config, "[core]\n hooksPath = " + hooks.Replace('\\', '/') + "\n", new UTF8Encoding(false));
+                string config = Path.Combine(xdg, "git/config"); File.WriteAllText(config, "[core]\n hooksPath = " + hooks.Replace('\\', '/') + "\n askPass = must_never_launch_askpass.exe\n", new UTF8Encoding(false));
                 string before = File.ReadAllText(config), previous = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME"); bool blockedHook = false;
                 try
                 {
                     Environment.SetEnvironmentVariable("XDG_CONFIG_HOME", xdg);
+                    Require(new GitFlowGit(fixture.Worker, fixture.Remote).Run(default, "config", "--get", "core.askPass").Trim().Length == 0, "Interactive askpass was not suppressed independently from required hooks.");
                     try { await new GitFlowQueue().SubmitAsync(source); } catch (IOException error) { blockedHook = error.ToString().Contains("required_global_hook_rejection"); }
                 }
                 finally { Environment.SetEnvironmentVariable("XDG_CONFIG_HOME", previous); }

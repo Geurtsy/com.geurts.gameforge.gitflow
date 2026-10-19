@@ -293,10 +293,11 @@ namespace Geurts.GameForge.GitFlow.Editor
             var start = new ProcessStartInfo("git") { WorkingDirectory = directory, UseShellExecute = false, CreateNoWindow = true,
                 RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true, StandardOutputEncoding = Encoding.UTF8, StandardErrorEncoding = Encoding.UTF8 };
             // Unity's baseline lacks ProcessStartInfo.ArgumentList. Quote each fixed vector element for Windows CRT parsing.
-            string[] prefix = { "--no-optional-locks", "-c", "credential.helper=", "-c", "credential.interactive=never", "-c", "core.hooksPath=", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
+            string[] prefix = { "--no-optional-locks", "-c", "credential.helper=", "-c", "credential.interactive=never", "-c", "core.askPass=", "-c", "core.hooksPath=", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
             start.Arguments = string.Join(" ", prefix.Concat(arguments).Select(Quote));
             foreach (string name in start.EnvironmentVariables.Keys.Cast<string>().Where(value => value.StartsWith("GIT_", StringComparison.OrdinalIgnoreCase)).ToArray()) start.EnvironmentVariables.Remove(name);
             start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
+            start.EnvironmentVariables["GIT_ASKPASS"] = ""; start.EnvironmentVariables.Remove("SSH_ASKPASS");
             start.EnvironmentVariables["GIT_OPTIONAL_LOCKS"] = "0"; start.EnvironmentVariables["GIT_CONFIG_NOSYSTEM"] = "1";
             start.EnvironmentVariables["GIT_CONFIG_GLOBAL"] = "NUL"; start.EnvironmentVariables["GIT_LFS_SKIP_SMUDGE"] = "1";
             try { return GitFlowProcess.Run(start, cancellation); }

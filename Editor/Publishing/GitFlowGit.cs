@@ -33,10 +33,11 @@ namespace Geurts.GameForge.GitFlow.Editor
         private string RunIndex(string index, CancellationToken cancellation, params string[] arguments)
         {
             var start = new ProcessStartInfo("git") { WorkingDirectory = DirectoryPath, UseShellExecute = false, CreateNoWindow = true };
-            string[] prefix = { "-c", "credential.helper=", "-c", "credential.interactive=never", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
+            string[] prefix = { "-c", "credential.helper=", "-c", "credential.interactive=never", "-c", "core.askPass=", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
             start.Arguments = string.Join(" ", prefix.Concat(arguments).Select(Quote));
             foreach (string key in start.EnvironmentVariables.Keys.Cast<string>().Where(key => key.StartsWith("GIT_", StringComparison.OrdinalIgnoreCase)).ToArray()) start.EnvironmentVariables.Remove(key);
             start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
+            start.EnvironmentVariables["GIT_ASKPASS"] = ""; start.EnvironmentVariables.Remove("SSH_ASKPASS");
             // Publisher transport retains normal system/global configuration and hooks. Read-only inspection has its own isolated transport.
             string token = Environment.GetEnvironmentVariable("GEURTS_GITFLOW_TOKEN");
             if (!string.IsNullOrEmpty(token) && Remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
