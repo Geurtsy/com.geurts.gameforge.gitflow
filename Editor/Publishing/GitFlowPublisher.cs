@@ -41,12 +41,22 @@ namespace Geurts.GameForge.GitFlow.Editor
     /// <remarks>Help: Documentation~/Publisher.md. Run in the supplied native host, never from a waiting worker.</remarks>
     public sealed class GitFlowPublisher
     {
+        private readonly Func<double> _clock;
+        private readonly Action<CancellationToken> _observeWait;
+
+        /// <summary>Uses real monotonic ownership observation and cancellable bounded native backoff.</summary>
+        public GitFlowPublisher() : this(() => (double)Stopwatch.GetTimestamp() / Stopwatch.Frequency, token => token.WaitHandle.WaitOne(TimeSpan.FromSeconds(30))) { }
+
+        /// <summary>Supplies deterministic clock/backoff seams for actual-controller timing adversaries without changing any production lease policy.</summary>
+        internal GitFlowPublisher(Func<double> monotonicClock, Action<CancellationToken> observeWait)
+        { _clock = monotonicClock ?? throw new ArgumentNullException(nameof(monotonicClock)); _observeWait = observeWait ?? throw new ArgumentNullException(nameof(observeWait)); }
+
         /// <summary>Runs one bounded queue pass, or a configured host loop without chat/Editor ownership; cancellation ends owned checks.</summary>
         public Task<GitFlowPublisherResult> RunAsync(GitFlowPublisherOptions options, bool serve = false, CancellationToken cancellation = default)
-            => Task.Run(() => Run(options, serve, cancellation), cancellation);
+            => Task.Run(() => Run(options, serve, cancellation, _clock, _observeWait), cancellation);
 
         /// <summary>Owns one root for the entire native host lifetime and retains all candidate/failure evidence across shutdown.</summary>
-        private static GitFlowPublisherResult Run(GitFlowPublisherOptions options, bool serve, CancellationToken cancellation)
+        private static GitFlowPublisherResult Run(GitFlowPublisherOptions options, bool serve, CancellationToken cancellation, Func<double> clock, Action<CancellationToken> observeWait)
         {
             options.Validate(); string root = Path.GetFullPath(options.root), store = Path.Combine(root, "store.git"), checkout = Path.Combine(root, "candidate");
             Directory.CreateDirectory(root);
@@ -74,8 +84,9 @@ namespace Geurts.GameForge.GitFlow.Editor
                 if (!File.Exists(Path.Combine(store, "HEAD"))) git.Run(cancellation, "init", "--bare", "--quiet");
                 var result = new GitFlowPublisherResult { State = "stopped", Detail = "No queue pass has run." };
                 var stateGuard = new object(); Action<string> health = phase => { lock (stateGuard) WriteState(root, phase, result); };
-                using (var lease = new GitFlowLease(git, health))
+                using (var lease = new GitFlowLease(git, health, clock))
                 {
+                    double observationStarted = clock(); bool retryScoped = false;
                     try
                     {
                         do
@@ -98,7 +109,12 @@ namespace Geurts.GameForge.GitFlow.Editor
                                 if (string.IsNullOrEmpty(options.resumeRequestId) && retained.Run(cancellation, "rev-list", "--max-count=1", main + "..HEAD").Trim().Length != 0)
                                     throw new IOException("Processor retains a committed candidate ahead of remote main. Resume its original request explicitly; unrelated queued requests remain pending.");
                             }
-                            if (!lease.Active && !lease.Acquire(cancellation)) { result.State = "busy"; result.Detail = "Compatible owner observed; monotonic abandonment interval not yet proven."; }
+                            retryScoped = false;
+                            if (!lease.Active && !lease.Acquire(cancellation))
+                            {
+                                retryScoped = !string.IsNullOrEmpty(options.resumeRequestId) && clock() - observationStarted < 240;
+                                result.State = "busy"; result.Detail = "Compatible owner observed; the full unchanged monotonic abandonment interval is not yet proven. A scoped continuation observes within this same native invocation for at most 240 seconds; do not launch a duplicate or replace its root.";
+                            }
                             else
                             {
                                 result.State = "idle"; result.Detail = "Owned queue pass; no ready request observed. Missing, failed or pending declared dependencies remain queued; inspect their original IDs.";
@@ -119,8 +135,10 @@ namespace Geurts.GameForge.GitFlow.Editor
                                 }
                             }
                             health(result.State);
-                            if (serve && string.IsNullOrEmpty(options.resumeRequestId)) cancellation.WaitHandle.WaitOne(TimeSpan.FromSeconds(30)); else break;
-                        } while (serve);
+                            if (retryScoped) observeWait(cancellation);
+                            else if (serve && string.IsNullOrEmpty(options.resumeRequestId)) observeWait(cancellation);
+                            else break;
+                        } while (serve || retryScoped);
                         return result;
                     }
                     catch (Exception error)

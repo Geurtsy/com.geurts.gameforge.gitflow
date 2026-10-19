@@ -118,6 +118,21 @@ namespace Geurts.GameForge.GitFlow.Runner
                 string published = fixture.Main; var same = await new GitFlowPublisher().RunAsync(fixture.Options); Require(same.State == "delivered" && fixture.Main == published, same.Detail);
                 Require((string)fixture.Row(request.Id)["version"] == "1.0.1", "Receipt recovery assigned a version again.");
             }
+            using (var fixture = new Fixture())
+            {
+                var request = await new GitFlowQueue().SubmitAsync(fixture.Change("abandoned_original"));
+                Environment.SetEnvironmentVariable("GEURTS_GITFLOW_FIXTURE_FAILURE", "1");
+                try { Require((await new GitFlowPublisher().RunAsync(fixture.Options)).State == "failed", "Expected original retained failure."); }
+                finally { Environment.SetEnvironmentVariable("GEURTS_GITFLOW_FIXTURE_FAILURE", null); }
+                var dead = fixture.Store("abandoned-lease"); string released = fixture.Ref(GitFlowGit.LeaseRef); dead.Fetch(released, default); JObject record = dead.Record(released, default);
+                record["state"] = "owned"; record["owner"] = Guid.NewGuid().ToString("N"); record["updated_utc"] = "2099-01-01T00:00:00Z";
+                string abandoned = dead.Commit(record, new[] { released }, default); dead.Run(default, "push", fixture.Remote, abandoned + ":" + GitFlowGit.LeaseRef);
+                fixture.Options.resumeRequestId = request.Id; fixture.Options.resumeReason = "Original clean checkpoint after simulated crashed modern owner; no new root/ID/version.";
+                double monotonic = 100; int waits = 0;
+                var original = await new GitFlowPublisher(() => monotonic, token => { token.ThrowIfCancellationRequested(); monotonic += 31; waits++; }).RunAsync(fixture.Options);
+                Require(waits >= 6 && original.State == "delivered", "Same native invocation did not observe full abandonment and make queue progress. " + original.Detail);
+                JObject receipt = fixture.Row(request.Id); Require((string)receipt["version"] == "1.0.1" && ((JArray)receipt["attempts"]).Count == 2 && (string)receipt["main_commit"] == fixture.Main, "Abandoned-owner continuation replaced original evidence/version or failed publication.");
+            }
         }
 
         /// <summary>Proves the lease advances during a real 43-second required validation, independent of its checking task.</summary>
