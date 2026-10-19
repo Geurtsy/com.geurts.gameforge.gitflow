@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "packageVersion": "0.2.0",
-  "coreFingerprint": "e2fdc16e016cfe61bc8f84c533f5309afa085d0bdd4a8fadaf44154d35d32ba3",
+  "coreFingerprint": "7b545c64b94c98d8de56622c8ae04492770ac15ea02895829ea7b9e4cc9ab3a0",
   "report": "Documentation~/PublisherAcceptance-0.2.0.json",
-  "reportSha256": "0ed2caa131aadc721c9433f3a20b6eb408dc07e903308fd7afe67eb5cededc7e",
+  "reportSha256": "aa4f58fa9712d9dad86f376ebfabba8a6290a1afdfaf64760eaefad44df0b658",
   "passed": 10,
   "failed": 0,
   "sdk": "10.0.402",

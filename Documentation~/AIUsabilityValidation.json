@@ -1,7 +1,7 @@
 {
-  "testResultSha256": "35f0cc2d9ff5cf36be70ae054519ff24195252a0f91582bdd4f962224c769f0b",
-  "testedGitCommit": "8e93343e3eb7a9759e9e0cf3ead738905b31cbdf",
-  "sourceFingerprint": "d1f07ae84b84ea4fbee60a03c00ee39bc178cf24929299b76cf77e8d82f2eeda",
+  "testResultSha256": "a5568fac32d98c63796f9ceba769578b46d93039231ea890fcde87451efce351",
+  "testedGitCommit": "2e4f71d3ce99bf97b5aa812d0c0486c3555753b9",
+  "sourceFingerprint": "e9f87827e1d96ada131178488267869d373c5f11f152df97fdff1d9e77490916",
   "unverified": [
     "Native rendered Editor normal/narrow layout, docking, host light/dark skins, hover/physical keyboard focus and high DPI. Hidden controls/tree checks do not certify pixels or physical input.",
     "Actual OS owner lock probing, remote-host liveness, lease expiry and current-main ancestry are not certified by read-only inspection; unknown observations remain explicit.",
@@ -30,7 +30,7 @@
   "odinVersion": "4.0.2.4",
   "testResult": "Documentation~/Acceptance-0.2.0.xml",
   "godGitCommit": "5e1c38f0be577c68bb4e49b0e872440d5015ac81",
-  "editorLogSha256": "20159e592e2fb989faec99d7cf72ae47e3e2e192c8fe4cfe47f46f96448c93d3",
+  "editorLogSha256": "473088508974a0f8bfe17ba9522d57849f39fad7b18ca86d25fcadbd70b040b2",
   "quantumConsole": "User-owned existing fixture source; exact resolved QFSW.QC assembly compiled. Vendor files are not redistributed.",
   "publicationScope": "Implemented generic submit-once publisher, native/legacy read-only inspection, shared no-code/API configuration and exact clean-candidate/receipt continuation. Eleven Unity and ten detached native fixtures pass on the exact current source/recipes. Native rendered presentation and real private transport remain unverified.",
   "silence": "Unity launched with -nosound from startup through exit, -batchmode -nographics; no Play Mode or player build.",
