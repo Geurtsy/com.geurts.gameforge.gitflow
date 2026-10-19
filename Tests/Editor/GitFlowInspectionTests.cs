@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Geurts.GameForge.GitFlow.Editor;
+using Geurts.GameForge.God;
 using Geurts.GameForge.God.Editor;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -74,7 +75,7 @@ namespace Geurts.GameForge.GitFlow.Tests
                 }
                 finally { UnityEngine.Object.DestroyImmediate(window); }
                 var actions = new GitFlowAutomationProvider().Operations().ToArray();
-                Assert.That(actions.Select(value => value.Id), Is.EqualTo(new[] { "inspect_queue" }));
+                Assert.That(actions.Select(value => value.Id), Does.Contain("inspect_queue"));
                 Assert.That(actions[0].MutatesProject, Is.False); Assert.That(actions[0].ConfirmationRequired, Is.False);
             }
         }
@@ -174,8 +175,9 @@ namespace Geurts.GameForge.GitFlow.Tests
             string before = Fingerprint(_checkout);
             ForgeOperations.Refresh();
             var actions = ForgeOperations.Discover(GitFlowBrick.PackageId);
-            CollectionAssert.AreEqual(new[] { "inspect_queue" }, actions.Select(value => value.Id));
-            Assert.That(actions.All(value => !value.MutatesProject && !value.ConfirmationRequired));
+            CollectionAssert.AreEquivalent(new[] { "inspect_queue", "submit_request", "apply_policy", "configure_publisher", "start_publisher", "stop_publisher" }, actions.Select(value => value.Id));
+            Assert.That(actions.Where(value => value.Id == "inspect_queue").All(value => !value.MutatesProject && !value.ConfirmationRequired));
+            Assert.That(actions.Where(value => value.Id != "inspect_queue").All(value => value.MutatesProject && value.ConfirmationRequired));
             Assert.That(GitFlowBrick.Service, Is.Not.Null, "God did not start the installed Editor-only brick.");
             var request = new ForgeOperationRequest(GitFlowBrick.PackageId, "inspect_queue", payload: new GitFlowTarget(_checkout));
             Assert.That(ForgeOperations.Inspect(request).Status, Is.EqualTo(FORGE_OPERATION_STATUS.SUCCEEDED));
@@ -184,6 +186,94 @@ namespace Geurts.GameForge.GitFlow.Tests
             Assert.That(result.Status, Is.EqualTo(FORGE_OPERATION_STATUS.SUCCEEDED), result.Detail);
             Assert.That(GitFlowBrick.Service.LastSnapshot.Repository, Is.EqualTo(_checkout));
             Assert.That(Fingerprint(_checkout), Is.EqualTo(before));
+        }
+
+        /// <summary>Authors policy through hidden controls, compares the public API, and submits through real God dispatch without launching a host.</summary>
+        [Test]
+        public async Task NativePolicyControlsSubmissionAndViewerShareServices()
+        {
+            Write("VERSION", "1.0.0\r\n"); Write("Tools/Validation/required.txt", "protected gate input\r\n");
+            string executable = Environment.GetEnvironmentVariable("PATH").Split(';').Select(directory => Path.Combine(directory.Trim('"'), "git.exe")).First(File.Exists);
+            var window = ScriptableObject.CreateInstance<GitFlowWindow>();
+            try
+            {
+                window.CreateGUI();
+                Assert.That(window.rootVisualElement.Query<Tab>().ToList().Select(tab => tab.label), Is.EquivalentTo(new[] { "Inspect", "Submit", "Publisher" }));
+                var fields = window.rootVisualElement.Query<TextField>().ToList();
+                fields.Single(field => field.label == "Repository").value = _checkout;
+                fields.Single(field => field.label == "Native console executable").value = executable;
+                fields.Single(field => field.label == "Literal arguments (one per line)").value = "--version";
+                window.rootVisualElement.Query<Toggle>().ToList().Single(toggle => toggle.label?.StartsWith("Every required command", StringComparison.Ordinal) == true).value = true;
+                string before = Fingerprint(_checkout);
+                GitFlowPolicyReview controls = await window.ReviewPolicyControlsAsync();
+                GitFlowPolicyReview api = await GitFlowBrick.ConfigurationService.ReviewPolicyAsync(_checkout, "VERSION", new[] { "Tools/Validation" }, new[] { new GitFlowGate { Executable = executable, Arguments = new[] { "--version" }, TimeoutSeconds = 300 } });
+                Assert.That(controls.PolicyJson, Is.EqualTo(api.PolicyJson)); Assert.That(Fingerprint(_checkout), Is.EqualTo(before));
+                var denied = await ForgeOperations.ExecuteAsync(new ForgeOperationRequest(GitFlowBrick.PackageId, "apply_policy", payload: controls));
+                Assert.That(denied.Status, Is.EqualTo(FORGE_OPERATION_STATUS.BLOCKED)); Assert.That(Fingerprint(_checkout), Is.EqualTo(before));
+                var applied = await ForgeOperations.ExecuteAsync(new ForgeOperationRequest(GitFlowBrick.PackageId, "apply_policy", arguments: new System.Collections.Generic.Dictionary<string, string> { ["confirmed"] = "true" }, payload: controls));
+                Assert.That(applied.Status, Is.EqualTo(FORGE_OPERATION_STATUS.SUCCEEDED), applied.Detail);
+                Run(_checkout, "add", "."); Run(_checkout, "commit", "-m", "fixture committed generic policy"); Run(_checkout, "push", "origin", "main");
+                string integratedBase = Run(_checkout, "rev-parse", "HEAD").Trim(); Write("tracked.txt", "native source\r\n"); Run(_checkout, "add", "tracked.txt"); Run(_checkout, "commit", "-m", "fixture native source");
+                string source = Run(_checkout, "rev-parse", "HEAD").Trim(); before = Fingerprint(_checkout);
+                var payload = new GitFlowSubmission(_checkout, source, integratedBase, "patch", "native API handoff", "Scope: fixture. Dependencies: exact base. Evidence/environment: owning Unity acceptance. Native rendered UI unverified; human review next.");
+                var submitted = await ForgeOperations.ExecuteAsync(new ForgeOperationRequest(GitFlowBrick.PackageId, "submit_request", arguments: new System.Collections.Generic.Dictionary<string, string> { ["confirmed"] = "true" }, payload: payload));
+                Assert.That(submitted.Status, Is.EqualTo(FORGE_OPERATION_STATUS.SUCCEEDED), submitted.Detail); StringAssert.Contains("gf_" + source, submitted.Detail);
+                Assert.That(Fingerprint(_checkout), Is.EqualTo(before)); Assert.That(Directory.Exists(Path.Combine(_root, "publisher")), Is.False);
+                using (var inspection = new GitFlowInspection())
+                {
+                    GitFlowSnapshot observation = await inspection.RefreshAsync(new GitFlowTarget(_checkout)); window.Present(observation);
+                    Assert.That(observation.QueueState, Is.EqualTo("Observed"), string.Join("\n", observation.Issues)); Assert.That(window.DisplayedSnapshot, Is.SameAs(observation));
+                    Assert.That(observation.Requests.Single().Id, Is.EqualTo("gf_" + source)); Assert.That(observation.Requests.Single().State, Is.EqualTo("Queued"));
+                }
+            }
+            finally { UnityEngine.Object.DestroyImmediate(window); }
+        }
+
+        /// <summary>Preserves stale/malformed policy and God drafts; explicit settings saves retain the brick enablement.</summary>
+        [Test]
+        public async Task ConfigurationReviewsAndSavedDraftsPreserveUnknownData()
+        {
+            Write("VERSION", "1.0.0\r\n");
+            string executable = Environment.GetEnvironmentVariable("PATH").Split(';').Select(directory => Path.Combine(directory.Trim('"'), "git.exe")).First(File.Exists);
+            var configuration = new GitFlowConfiguration();
+            GitFlowPolicyReview review = await configuration.ReviewPolicyAsync(_checkout, "VERSION", new[] { "Tools/Validation" }, new[] { new GitFlowGate { Executable = executable, Arguments = new[] { "--version" } } });
+            Write(".geurts-gitflow.json", "{\"schema\":999}"); string before = Fingerprint(_checkout);
+            Assert.Throws<IOException>(() => configuration.ApplyPolicy(review)); Assert.That(Fingerprint(_checkout), Is.EqualTo(before));
+            var store = new BrickSettingsStore(Path.Combine(_root, "settings"));
+            store.Save(GitFlowBrick.PackageId, new GitFlowPreferences { publisherRoot = "C:\\fixture_only", gates = new[] { new GitFlowGatePreference { executable = executable } } });
+            var saved = store.Load<GitFlowPreferences>(GitFlowBrick.PackageId); Assert.That(saved.publisherRoot, Is.EqualTo("C:\\fixture_only")); Assert.That(saved.gates[0].executable, Is.EqualTo(executable)); Assert.That(store.Read(GitFlowBrick.PackageId).enabled, Is.True);
+            string file = Path.Combine(store.Root, GitFlowBrick.PackageId + ".json"); File.WriteAllText(file, "{\"id\":\"" + GitFlowBrick.PackageId + "\",\"enabled\":true,\"json\":\"{\\\"schema\\\":999}\"}");
+            byte[] malformed = File.ReadAllBytes(file); Assert.Throws<InvalidDataException>(() => store.Load<GitFlowPreferences>(GitFlowBrick.PackageId));
+            Assert.Throws<InvalidDataException>(() => store.Save(GitFlowBrick.PackageId, new GitFlowPreferences())); Assert.That(File.ReadAllBytes(file), Is.EqualTo(malformed));
+        }
+
+        /// <summary>Verifies native receipt/tree/stream identities and released leases without any remote or caller mutation.</summary>
+        [Test]
+        public async Task NativeReceiptHashesAndReleasedLeaseRemainReadOnly()
+        {
+            string source = Run(_checkout, "rev-parse", "HEAD").Trim(), id = "gf_" + source;
+            string store = Path.Combine(_root, "native-store"); Directory.CreateDirectory(store);
+            var git = new GitFlowGit(store, _remote); git.Run(default, "init", "--bare", "--quiet"); git.Fetch(source, default);
+            string output = "native required check evidence";
+            var receipt = new JObject { ["schema"] = 1, ["id"] = id, ["source"] = source, ["version"] = "1.0.1", ["candidate"] = source, ["tree"] = Run(_checkout, "rev-parse", "HEAD^{tree}").Trim(),
+                ["validation"] = new JObject { ["checks"] = new JArray(new JObject { ["exit_code"] = 0, ["stdout"] = output, ["stderr"] = "", ["stdout_sha256"] = GitFlowGit.Hash(Encoding.UTF8.GetBytes(output)), ["stderr_sha256"] = GitFlowGit.Hash(Array.Empty<byte>()) }) } };
+            var record = new JObject { ["schema"] = 1, ["kind"] = "request", ["adapter"] = "generic_git", ["id"] = id, ["source"] = source, ["base"] = source, ["dependencies"] = new JArray(), ["title"] = "native receipt fixture", ["status"] = "delivered", ["main_commit"] = source, ["version"] = "1.0.1", ["receipt"] = receipt };
+            string control = git.Commit(record, new[] { source }, default); git.Run(default, "push", _remote, control + ":" + GitFlowGit.RequestPrefix + id);
+            var lease = new JObject { ["schema"] = 1, ["kind"] = "lease", ["lease_protocol"] = 1, ["owner_seconds"] = 180, ["renewal_seconds"] = 20, ["transport_seconds"] = 15, ["write_reserve_seconds"] = 120, ["owner"] = new string('a', 32), ["state"] = "released" };
+            string leaseCommit = git.Commit(lease, Array.Empty<string>(), default); git.Run(default, "push", _remote, leaseCommit + ":" + GitFlowGit.LeaseRef);
+            string before = Fingerprint(_checkout), remote = Fingerprint(_remote);
+            using (var inspection = new GitFlowInspection())
+            {
+                GitFlowSnapshot observation = await inspection.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(observation.QueueState, Is.EqualTo("Observed"), string.Join("\n", observation.Issues)); Assert.That(observation.LeaseState, Is.EqualTo("Released"));
+                StringAssert.Contains("retained stream hashes match", observation.Requests.Single().ReceiptDetail);
+                Assert.That(observation.Requests.Single().EvidenceJson, Is.EqualTo(git.Run(default, "show", control + ":GitFlowRecord.json")));
+                Assert.That(Fingerprint(_checkout), Is.EqualTo(before)); Assert.That(Fingerprint(_remote), Is.EqualTo(remote));
+            }
+            record["receipt"]["validation"]["checks"][0]["stdout_sha256"] = new string('0', 64);
+            string tampered = git.Commit(record, new[] { control }, default); git.Run(default, "push", _remote, tampered + ":" + GitFlowGit.RequestPrefix + id);
+            using (var inspection = new GitFlowInspection())
+            { GitFlowSnapshot observation = await inspection.RefreshAsync(new GitFlowTarget(_checkout)); Assert.That(observation.QueueState, Is.EqualTo("Partial")); Assert.That(observation.Issues.Any(issue => issue.Contains("hash mismatch")), Is.True); }
         }
 
         /// <summary>Exercises a real stalled HTTPS helper from the detached batch parent and proves disposal closes its connection within five seconds.</summary>

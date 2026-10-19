@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -64,7 +64,10 @@ namespace Geurts.GameForge.GitFlow.Editor
     {
         public string Repository { get; }
         public string Remote { get; }
+        public string ProcessorRoot { get; }
         /// <summary>Selects a local Git checkout and an existing remote name for one observation.</summary>
-        public GitFlowTarget(string repository, string remote = "origin") { Repository = repository; Remote = remote; }
+        public GitFlowTarget(string repository, string remote = "origin") : this(repository, remote, "") { }
+        /// <summary>Adds an explicitly selected native processor observation while retaining the original two-argument API.</summary>
+        public GitFlowTarget(string repository, string remote, string processorRoot) { Repository = repository; Remote = remote; ProcessorRoot = processorRoot; }
     }
 }

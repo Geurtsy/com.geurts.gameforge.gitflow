@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,6 +15,12 @@ namespace Geurts.GameForge.GitFlow.Editor
     /// <summary>Windows-only bounded Git transport with suspended launch, inherited console suppression and job-owned descendant cleanup.</summary>
     internal static class GitFlowProcess
     {
+        /// <summary>Complete bounded child outcome, retained before the caller classifies success or failure.</summary>
+        internal sealed class Result
+        {
+            internal string Output, Error;
+            internal uint ExitCode;
+        }
         [StructLayout(LayoutKind.Sequential)] private struct Security { public int length; public IntPtr descriptor; [MarshalAs(UnmanagedType.Bool)] public bool inherit; }
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)] private struct Startup
         {
@@ -31,6 +37,14 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Creates no console, assigns the still-suspended process to a kill-on-close job and reads bounded pipes.</summary>
         internal static string Run(ProcessStartInfo start, CancellationToken cancellation)
         {
+            Result result = Capture(start, cancellation);
+            if (result.ExitCode != 0) throw new IOException("Process failed (exit " + result.ExitCode + "). " + result.Error.Substring(0, Math.Min(result.Error.Length, 2000)) + result.Output.Substring(0, Math.Min(result.Output.Length, 2000)));
+            return result.Output;
+        }
+
+        /// <summary>Captures one native console executable with inherited-window suppression and complete bounded output.</summary>
+        internal static Result Capture(ProcessStartInfo start, CancellationToken cancellation)
+        {
             if (Environment.OSVersion.Platform != PlatformID.Win32NT) throw new PlatformNotSupportedException("GitFlow inspection supports Windows only.");
             IntPtr job = IntPtr.Zero, outputRead = IntPtr.Zero, outputWrite = IntPtr.Zero, errorRead = IntPtr.Zero, errorWrite = IntPtr.Zero;
             IntPtr inputRead = IntPtr.Zero, inputWrite = IntPtr.Zero, environment = IntPtr.Zero; Child child = default;
@@ -43,7 +57,8 @@ namespace Geurts.GameForge.GitFlow.Editor
                 job = CreateJobObject(IntPtr.Zero, null); Require(job != IntPtr.Zero);
                 var limits = new ExtendedLimit { basic = new BasicLimit { flags = 0x2000 } }; // KILL_ON_JOB_CLOSE owns all Git/helper descendants.
                 Require(SetInformationJobObject(job, 9, ref limits, Marshal.SizeOf<ExtendedLimit>()));
-                string executable = ResolveGit();
+                string executable = start.FileName == "git" ? ResolveGit() : Path.GetFullPath(start.FileName);
+                RequireConsoleExecutable(executable);
                 var startup = new Startup { size = Marshal.SizeOf<Startup>(), flags = 0x100, input = inputRead, output = outputWrite, error = errorWrite };
                 string block = string.Join("\0", start.EnvironmentVariables.Keys.Cast<string>().OrderBy(value => value, StringComparer.OrdinalIgnoreCase).Select(key => key + "=" + start.EnvironmentVariables[key])) + "\0\0";
                 environment = Marshal.StringToHGlobalUni(block);
@@ -68,8 +83,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                         Require(GetExitCodeProcess(child.process, out uint code));
                         Close(ref job); // Kill surviving helpers before EOF; a pipe cannot outlive the refresh budget.
                         string text = stdout.GetAwaiter().GetResult(), failure = stderr.GetAwaiter().GetResult();
-                        if (code != 0) throw new IOException("Git failed (exit " + code + "). " + failure.Substring(0, Math.Min(failure.Length, 2000)));
-                        return text;
+                        return new Result { Output = text, Error = failure, ExitCode = code };
                     }
                     finally
                     {
@@ -86,6 +100,37 @@ namespace Geurts.GameForge.GitFlow.Editor
                 Close(ref outputRead); Close(ref outputWrite); Close(ref errorRead); Close(ref errorWrite); Close(ref inputRead); Close(ref inputWrite);
                 if (environment != IntPtr.Zero) Marshal.FreeHGlobal(environment);
             }
+        }
+
+        /// <summary>Refuses GUI/script dispatch; no-window flags do not suppress a GUI application's own windows.</summary>
+        internal static void RequireConsoleExecutable(string path)
+        {
+            GitFlowGit.CheckPath(path);
+            using (var stream = File.OpenRead(path))
+            using (var reader = new BinaryReader(stream))
+            {
+                if (reader.ReadUInt16() != 0x5a4d) throw new InvalidDataException("Use a native console executable: " + path);
+                stream.Position = 0x3c; int offset = reader.ReadInt32();
+                if (offset < 64 || offset + 94 > stream.Length) throw new InvalidDataException("Invalid PE executable.");
+                stream.Position = offset; if (reader.ReadUInt32() != 0x00004550) throw new InvalidDataException("Invalid PE signature.");
+                stream.Position = offset + 24 + 68; if (reader.ReadUInt16() != 3) throw new InvalidDataException("GUI executables cannot run as unattended validation: " + path);
+            }
+        }
+
+        /// <summary>Starts only an explicitly trusted console runner independently of Editor lifetime, without a console or inherited input handles.</summary>
+        internal static int StartDetached(ProcessStartInfo start)
+        {
+            string executable = Path.GetFullPath(start.FileName); RequireConsoleExecutable(executable);
+            var startup = new Startup { size = Marshal.SizeOf<Startup>() }; Child child = default;
+            string block = string.Join("\0", start.EnvironmentVariables.Keys.Cast<string>().OrderBy(value => value, StringComparer.OrdinalIgnoreCase).Select(key => key + "=" + start.EnvironmentVariables[key])) + "\0\0";
+            IntPtr environment = Marshal.StringToHGlobalUni(block);
+            try
+            {
+                Require(CreateProcess(executable, new StringBuilder(GitFlowGit.Quote(executable) + " " + start.Arguments), IntPtr.Zero, IntPtr.Zero,
+                    false, 0x08000000 | 0x00000400, environment, start.WorkingDirectory, ref startup, out child));
+                return child.pid;
+            }
+            finally { Close(ref child.thread); Close(ref child.process); Marshal.FreeHGlobal(environment); }
         }
 
         /// <summary>Resolves only a native Git executable, without shell/PATHEXT script dispatch.</summary>
@@ -105,7 +150,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         {
             var value = new StringBuilder(); var buffer = new char[4096]; long bytes = 0; int count;
             while ((count = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
-            { cancellation.ThrowIfCancellationRequested(); bytes += Encoding.UTF8.GetByteCount(buffer, 0, count); if (bytes > GitFlowInspection.MaximumJsonBytes) throw new InvalidDataException("Git output exceeds one MiB."); value.Append(buffer, 0, count); }
+            { cancellation.ThrowIfCancellationRequested(); bytes += Encoding.UTF8.GetByteCount(buffer, 0, count); if (bytes > 1024 * 1024) throw new InvalidDataException("Process output exceeds one MiB."); value.Append(buffer, 0, count); }
             return value.ToString();
         }
 

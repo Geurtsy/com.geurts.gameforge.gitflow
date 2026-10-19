@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "version": "0.2.0",
+  "protocol": 1,
+  "target": "win-x64",
+  "framework": "net10.0",
+  "sdk": "10.0.402",
+  "sourceFingerprint": "e9f87827e1d96ada131178488267869d373c5f11f152df97fdff1d9e77490916",
+  "files": {
+    "GeurtsGitFlow.deps.json": "2de4f5019b886615353229b6e05e7c3b273f5ca388d47a8822198c5d9da2bc20",
+    "GeurtsGitFlow.dll": "1ef7da592a5da64fa275a05e25eb353d0d53410277f4ca89dc2e9069f65edc96",
+    "GeurtsGitFlow.exe": "8802927e02d54b4bc1c0b0af67f2c7aa96f404b38081e8b7334fb0ae27e5e750",
+    "GeurtsGitFlow.pdb": "49d363d8e62a1df6b7e4a1e26f46bfde55ee80565c8439639f0c20571df2ad13",
+    "GeurtsGitFlow.runtimeconfig.json": "c230a317a54dd960bcbeb5f347f52e18dc665a26f7efda2159fced9a5ac7e097",
+    "Newtonsoft.Json.dll": "a28c251dfe36d881e9e2462e171441b8b0ec156fe3f452602c9149b1b9efe05b",
+    "THIRD-PARTY-NOTICES.txt": "8dfcaaab5a130aa5e864dc25dc2083f4281723c573158e8d0e700417176d3239"
+  }
+}

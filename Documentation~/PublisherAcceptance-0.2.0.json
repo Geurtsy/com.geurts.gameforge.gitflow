@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "runner_version": "0.2.0",
+  "finished_utc": "2026-10-19T15:42:56.1912667Z",
+  "detached_parent_no_console": true,
+  "passed": 10,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "submit_once_publish_versions_receipts_and_preservation",
+      "passed": true,
+      "seconds": 31.8195558
+    },
+    {
+      "name": "required_failure_same_id_recovery",
+      "passed": true,
+      "seconds": 98.3486632
+    },
+    {
+      "name": "healthy_gate_spans_independent_renewals",
+      "passed": true,
+      "seconds": 63.7405227
+    },
+    {
+      "name": "dirty_gate_and_unknown_processor_work_retained",
+      "passed": true,
+      "seconds": 17.7386941
+    },
+    {
+      "name": "atomic_rejection_preserves_remote_main",
+      "passed": true,
+      "seconds": 16.3643609
+    },
+    {
+      "name": "concurrent_claims_takeover_and_paused_owner_fencing",
+      "passed": true,
+      "seconds": 9.1272561
+    },
+    {
+      "name": "unknown_policy_and_missing_tool_fail_closed",
+      "passed": true,
+      "seconds": 17.9509219
+    },
+    {
+      "name": "cancelled_gate_leaves_original_request_evidence",
+      "passed": true,
+      "seconds": 17.9489588
+    },
+    {
+      "name": "serial_versions_and_failed_processor_does_not_fail_new_workers",
+      "passed": true,
+      "seconds": 76.4295237
+    },
+    {
+      "name": "released_independent_runner_configuration_launch_stop_and_hashes",
+      "passed": true,
+      "seconds": 57.0432371
+    }
+  ],
+  "unverified": "Rendered GUI and transient windows created by third-party GUI/helper paths are not certified. Fixtures use native console executables and contained jobs; no desktop input, audio or player build."
+}

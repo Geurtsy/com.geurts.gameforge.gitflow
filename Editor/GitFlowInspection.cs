@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,7 +37,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         public Task<GitFlowSnapshot> RefreshAsync(GitFlowTarget target)
         {
             if (target == null) throw new ArgumentNullException(nameof(target));
-            string key = target.Repository + "\n" + target.Remote;
+            string key = target.Repository + "\n" + target.Remote + "\n" + target.ProcessorRoot;
             lock (_gate)
             {
                 if (_disposed) throw new ObjectDisposedException(nameof(GitFlowInspection));
@@ -73,6 +73,11 @@ namespace Geurts.GameForge.GitFlow.Editor
                     string common = Git(repository, budget.Token, "rev-parse", "--path-format=absolute", "--git-common-dir").Trim();
                     try { ReadProcessor(common, out processor, out processorDetail); }
                     catch (Exception error) { processor = "Unavailable"; processorDetail = Detail(error); issues.Add("Processor: " + processorDetail); }
+                    if (!string.IsNullOrEmpty(target.ProcessorRoot))
+                    {
+                        try { ReadNativeProcessor(target.ProcessorRoot, out processor, out processorDetail); }
+                        catch (Exception error) { processor = "Unavailable"; processorDetail = Detail(error); issues.Add("Native processor: " + processorDetail); }
+                    }
                     string remote = Git(repository, budget.Token, "config", "--get", "remote." + target.Remote + ".url").Trim();
                     // Inspection deliberately supports no external remote helpers or interactive authentication.
                     if (!(remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase) || Path.IsPathRooted(remote)))
@@ -83,9 +88,9 @@ namespace Geurts.GameForge.GitFlow.Editor
                     CheckPath(temporary + "/objects/pack/pack-" + new string('a', 40) + ".pack");
                     Directory.CreateDirectory(temporary);
                     Git(temporary, budget.Token, "init", "--bare", "--quiet");
-                    string advertised = Git(temporary, budget.Token, "ls-remote", "--heads", remote, QueuePrefix + "*", LeaseRef);
+                    string advertised = Git(temporary, budget.Token, "ls-remote", "--heads", remote, QueuePrefix + "*", LeaseRef, GitFlowGit.RequestPrefix + "*", GitFlowGit.LeaseRef);
                     var refs = ParseRefs(advertised);
-                    if (refs.Keys.Count(value => value != LeaseRef) > MaximumRequests) throw new InvalidOperationException("Queue exceeds the 128-request inspection bound. Ask the queue owner to provide a paged adapter; no partial queue is labelled complete.");
+                    if (refs.Keys.Count(value => value != LeaseRef && value != GitFlowGit.LeaseRef) > MaximumRequests) throw new InvalidOperationException("Queue exceeds the 128-request inspection bound. Ask the queue owner to provide a paged adapter; no partial queue is labelled complete.");
                     if (refs.Count > 0)
                     {
                         var fetch = new List<string> { "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", "--depth=1", remote };
@@ -99,6 +104,19 @@ namespace Geurts.GameForge.GitFlow.Editor
                         try
                         {
                             if (Git(temporary, budget.Token, "cat-file", "-t", pair.Value).Trim() != "commit") throw new InvalidDataException("Control object is not a commit.");
+                            if (pair.Key.StartsWith(GitFlowGit.Prefix, StringComparison.Ordinal))
+                            {
+                                string nativeRaw = Git(temporary, budget.Token, "show", pair.Value + ":GitFlowRecord.json"); JObject native = ParseObject(nativeRaw);
+                                if (pair.Key == GitFlowGit.LeaseRef)
+                                {
+                                    GitFlowLease.Validate(native);
+                                    string nativeState = Text(native, "state") == "released" ? "Released" : "Owned / expiry unknown";
+                                    lease = refs.ContainsKey(LeaseRef) ? "Native: " + nativeState + "; legacy lease also present" : nativeState;
+                                    leaseDetail = (refs.ContainsKey(LeaseRef) ? leaseDetail + "\n" : "") + "Native lease " + pair.Value + ": " + native.ToString(Formatting.Indented) + "\nUTC is audit-only; no takeover permission is inferred.";
+                                }
+                                else rows.Add(ReadNativeRequest(native, nativeRaw, pair.Key, pair.Value, temporary, remote, budget.Token, issues));
+                                continue;
+                            }
                             string raw = Git(temporary, budget.Token, "show", pair.Value + ":IntegrationRequest.json");
                             JObject data = ParseObject(raw);
                             if (pair.Key == LeaseRef) { ReadLease(data, pair.Value, out lease, out leaseDetail); continue; }
@@ -138,7 +156,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                         {
                             string detail = pair.Key + ": " + Detail(error) + " Preserve control data and ask its owning operator to repair it.";
                             issues.Add(detail);
-                            if (pair.Key == LeaseRef) { lease = "Unavailable"; leaseDetail = detail; }
+                            if (pair.Key == LeaseRef || pair.Key == GitFlowGit.LeaseRef) { lease = "Unavailable"; leaseDetail = detail; }
                         }
                     }
                     if (issues.Count > 0) queue = "Partial";
@@ -163,6 +181,55 @@ namespace Geurts.GameForge.GitFlow.Editor
             var snapshot = new GitFlowSnapshot(target.Repository, target.Remote, started, queue, processor, processorDetail, lease, leaseDetail, rows.OrderBy(value => value.Id, StringComparer.Ordinal), issues);
             lock (_gate) { LastSnapshot = snapshot; _nextRefresh = DateTime.UtcNow.AddSeconds(2); }
             return snapshot;
+        }
+
+        /// <summary>Reads the native controller's recorded process identity without acquiring its owner lock or starting a runner.</summary>
+        private static void ReadNativeProcessor(string root, out string state, out string detail)
+        {
+            CheckPath(root); string file = Path.Combine(root, "processor-state.json"); CheckPath(file);
+            if (!File.Exists(file)) { state = Directory.Exists(root) ? "Unknown" : "Unconfigured"; detail = "No native processor state at the selected root. No process was started or lock probed."; return; }
+            JObject data = ParseObject(ReadFile(file));
+            if (data["schema"]?.Type != JTokenType.Integer || (int?)data["schema"] != 1) throw new InvalidDataException("Unknown native processor state schema.");
+            state = "Unknown"; string presence = "Process ownership not proven.";
+            try
+            {
+                using (var process = Process.GetProcessById((int)data["pid"]))
+                {
+                    bool identity = DateTime.TryParse(Text(data, "process_start_utc"), null, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime start) && process.StartTime.ToUniversalTime() == start.ToUniversalTime();
+                    presence = identity ? "Recorded process identity exists; OS lock and current lease ownership were not probed." : "Recorded PID identity does not match; stale PID reuse is possible.";
+                }
+            }
+            catch (ArgumentException) { state = "Stopped"; presence = "Recorded native process is absent."; }
+            if (state == "Unknown" && File.GetLastWriteTimeUtc(file) < DateTime.UtcNow.AddMinutes(-2)) state = "Stale / health unknown";
+            if (Text(data, "phase").StartsWith("fenced", StringComparison.Ordinal) || Text(data, "state") == "failed") state = "Failed (reported)";
+            detail = presence + "\n" + data.ToString(Formatting.Indented);
+        }
+
+        /// <summary>Checks native request/receipt identity and retained stream hashes; required gate semantics remain the project owner's evidence.</summary>
+        private static GitFlowRequest ReadNativeRequest(JObject data, string originalJson, string reference, string commit, string temporary, string remote, CancellationToken cancellation, List<string> issues)
+        {
+            string source = Text(data, "source"), id = Text(data, "id"), state = State(Text(data, "status")), published = Text(data, "main_commit");
+            if (data["schema"]?.Type != JTokenType.Integer || (int?)data["schema"] != 1 || Text(data, "kind") != "request" || Text(data, "adapter") != "generic_git" || !GitFlowGit.IsSha(source) || id != "gf_" + source || reference != GitFlowGit.RequestPrefix + id)
+                throw new InvalidDataException("Native request schema/ref/source identity mismatch.");
+            string receipt = "", verification = "No native publication receipt observed.";
+            if (data["receipt"] is JObject proof)
+            {
+                receipt = proof.ToString(Formatting.Indented);
+                if (proof["schema"]?.Type != JTokenType.Integer || (int?)proof["schema"] != 1 || Text(proof, "id") != id || Text(proof, "source") != source || Text(proof, "version") != Text(data, "version") || Text(proof, "candidate") != published || !GitFlowGit.IsSha(published)) throw new InvalidDataException("Native receipt identity/source/version/candidate mismatch.");
+                Git(temporary, cancellation, "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", "--depth=1", remote, published);
+                if (Git(temporary, cancellation, "rev-parse", published + "^{tree}").Trim() != Text(proof, "tree")) throw new InvalidDataException("Native receipt candidate tree mismatch.");
+                if (!(proof["validation"]?["checks"] is JArray checks) || checks.Count == 0) throw new InvalidDataException("Native receipt lacks required gate evidence.");
+                foreach (JToken check in checks)
+                    if (check["exit_code"]?.Type != JTokenType.Integer || (int?)check["exit_code"] != 0 || GitFlowGit.Hash(Encoding.UTF8.GetBytes((string)check["stdout"] ?? "")) != (string)check["stdout_sha256"] || GitFlowGit.Hash(Encoding.UTF8.GetBytes((string)check["stderr"] ?? "")) != (string)check["stderr_sha256"])
+                        throw new InvalidDataException("Native required gate outcome/stream hash mismatch.");
+                verification = "Native receipt identity/source/version/tree and retained stream hashes match. Required gate meaning, current-main ancestry and external/native behavior are not rerun.";
+            }
+            else if (state == "Delivered") throw new InvalidDataException("Delivered native request lacks a receipt.");
+            if (state == "Unknown") issues.Add(id + ": unsupported native status; preserve original control evidence.");
+            string failure = Text(data, "blocker");
+            if (state == "Failed" && string.IsNullOrWhiteSpace(failure)) { failure = "Native failure lacks actionable details. Preserve original ID/candidate/version and ask its operator for the failure evidence."; issues.Add(id + ": " + failure); }
+            if (Text(data, "status") == "published_pending_pull") verification += " Publication is recorded; required pull/handoff remains pending. " + Text(data, "pull_detail");
+            return new GitFlowRequest(id, state, Text(data, "title"), source, Text(data, "size"), Text(data, "version"), published, failure, commit, originalJson, receipt, verification);
         }
 
         /// <summary>Reads local status without creating the state directory or probing its ownership lock.</summary>
@@ -212,7 +279,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             {
                 string[] parts = row.Split('\t');
                 if (parts.Length != 2 || !Regex.IsMatch(parts[0], "^[0-9a-f]{40}$") ||
-                    !(parts[1] == LeaseRef || parts[1].StartsWith(QueuePrefix, StringComparison.Ordinal)) || result.ContainsKey(parts[1]))
+                    !(parts[1] == LeaseRef || parts[1].StartsWith(QueuePrefix, StringComparison.Ordinal) || parts[1] == GitFlowGit.LeaseRef || parts[1].StartsWith(GitFlowGit.RequestPrefix, StringComparison.Ordinal)) || result.ContainsKey(parts[1]))
                     throw new InvalidDataException("Malformed or duplicated advertised queue reference.");
                 result.Add(parts[1], parts[0]);
             }
@@ -226,10 +293,11 @@ namespace Geurts.GameForge.GitFlow.Editor
             var start = new ProcessStartInfo("git") { WorkingDirectory = directory, UseShellExecute = false, CreateNoWindow = true,
                 RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true, StandardOutputEncoding = Encoding.UTF8, StandardErrorEncoding = Encoding.UTF8 };
             // Unity's baseline lacks ProcessStartInfo.ArgumentList. Quote each fixed vector element for Windows CRT parsing.
-            string[] prefix = { "--no-optional-locks", "-c", "credential.helper=", "-c", "credential.interactive=never", "-c", "core.hooksPath=", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
+            string[] prefix = { "--no-optional-locks", "-c", "credential.helper=", "-c", "credential.interactive=never", "-c", "core.askPass=", "-c", "core.hooksPath=", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
             start.Arguments = string.Join(" ", prefix.Concat(arguments).Select(Quote));
             foreach (string name in start.EnvironmentVariables.Keys.Cast<string>().Where(value => value.StartsWith("GIT_", StringComparison.OrdinalIgnoreCase)).ToArray()) start.EnvironmentVariables.Remove(name);
             start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
+            start.EnvironmentVariables["GIT_ASKPASS"] = ""; start.EnvironmentVariables.Remove("SSH_ASKPASS");
             start.EnvironmentVariables["GIT_OPTIONAL_LOCKS"] = "0"; start.EnvironmentVariables["GIT_CONFIG_NOSYSTEM"] = "1";
             start.EnvironmentVariables["GIT_CONFIG_GLOBAL"] = "NUL"; start.EnvironmentVariables["GIT_LFS_SKIP_SMUDGE"] = "1";
             try { return GitFlowProcess.Run(start, cancellation); }
@@ -276,7 +344,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private static string State(string value)
         {
             switch (value) { case "queued": return "Queued"; case "processing": return "Processing"; case "validating": return "Validating";
-                case "integrated": case "delivered": return "Delivered"; case "blocked": case "failed": return "Failed"; default: return "Unknown"; }
+                case "published_pending_pull": return "Validating"; case "integrated": case "delivered": return "Delivered"; case "blocked": case "failed": return "Failed"; default: return "Unknown"; }
         }
 
         /// <summary>Checks the resolved path and every existing ancestor before inspection or temporary creation.</summary>
