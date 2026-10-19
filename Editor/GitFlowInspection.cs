@@ -189,7 +189,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             CheckPath(root); string file = Path.Combine(root, "processor-state.json"); CheckPath(file);
             if (!File.Exists(file)) { state = Directory.Exists(root) ? "Unknown" : "Unconfigured"; detail = "No native processor state at the selected root. No process was started or lock probed."; return; }
             JObject data = ParseObject(ReadFile(file));
-            if ((int?)data["schema"] != 1) throw new InvalidDataException("Unknown native processor state schema.");
+            if (data["schema"]?.Type != JTokenType.Integer || (int?)data["schema"] != 1) throw new InvalidDataException("Unknown native processor state schema.");
             state = "Unknown"; string presence = "Process ownership not proven.";
             try
             {
@@ -209,18 +209,18 @@ namespace Geurts.GameForge.GitFlow.Editor
         private static GitFlowRequest ReadNativeRequest(JObject data, string originalJson, string reference, string commit, string temporary, string remote, CancellationToken cancellation, List<string> issues)
         {
             string source = Text(data, "source"), id = Text(data, "id"), state = State(Text(data, "status")), published = Text(data, "main_commit");
-            if ((int?)data["schema"] != 1 || Text(data, "kind") != "request" || Text(data, "adapter") != "generic_git" || !GitFlowGit.IsSha(source) || id != "gf_" + source || reference != GitFlowGit.RequestPrefix + id)
+            if (data["schema"]?.Type != JTokenType.Integer || (int?)data["schema"] != 1 || Text(data, "kind") != "request" || Text(data, "adapter") != "generic_git" || !GitFlowGit.IsSha(source) || id != "gf_" + source || reference != GitFlowGit.RequestPrefix + id)
                 throw new InvalidDataException("Native request schema/ref/source identity mismatch.");
             string receipt = "", verification = "No native publication receipt observed.";
             if (data["receipt"] is JObject proof)
             {
                 receipt = proof.ToString(Formatting.Indented);
-                if ((int?)proof["schema"] != 1 || Text(proof, "id") != id || Text(proof, "source") != source || Text(proof, "version") != Text(data, "version") || Text(proof, "candidate") != published || !GitFlowGit.IsSha(published)) throw new InvalidDataException("Native receipt identity/source/version/candidate mismatch.");
+                if (proof["schema"]?.Type != JTokenType.Integer || (int?)proof["schema"] != 1 || Text(proof, "id") != id || Text(proof, "source") != source || Text(proof, "version") != Text(data, "version") || Text(proof, "candidate") != published || !GitFlowGit.IsSha(published)) throw new InvalidDataException("Native receipt identity/source/version/candidate mismatch.");
                 Git(temporary, cancellation, "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", "--depth=1", remote, published);
                 if (Git(temporary, cancellation, "rev-parse", published + "^{tree}").Trim() != Text(proof, "tree")) throw new InvalidDataException("Native receipt candidate tree mismatch.");
                 if (!(proof["validation"]?["checks"] is JArray checks) || checks.Count == 0) throw new InvalidDataException("Native receipt lacks required gate evidence.");
                 foreach (JToken check in checks)
-                    if ((int?)check["exit_code"] != 0 || GitFlowGit.Hash(Encoding.UTF8.GetBytes((string)check["stdout"] ?? "")) != (string)check["stdout_sha256"] || GitFlowGit.Hash(Encoding.UTF8.GetBytes((string)check["stderr"] ?? "")) != (string)check["stderr_sha256"])
+                    if (check["exit_code"]?.Type != JTokenType.Integer || (int?)check["exit_code"] != 0 || GitFlowGit.Hash(Encoding.UTF8.GetBytes((string)check["stdout"] ?? "")) != (string)check["stdout_sha256"] || GitFlowGit.Hash(Encoding.UTF8.GetBytes((string)check["stderr"] ?? "")) != (string)check["stderr_sha256"])
                         throw new InvalidDataException("Native required gate outcome/stream hash mismatch.");
                 verification = "Native receipt identity/source/version/tree and retained stream hashes match. Required gate meaning, current-main ancestry and external/native behavior are not rerun.";
             }

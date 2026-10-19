@@ -30,7 +30,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                 if (gate is JObject command && command.Properties().Any(property => !new[] { "id", "executable", "executable_sha256", "tool_files", "arguments", "timeout_seconds" }.Contains(property.Name))) throw new InvalidDataException("Unknown validation command policy fields.");
                 if (!(gate is JObject) || !Regex.IsMatch((string)gate["id"] ?? "", "^[a-z0-9]+(?:_[a-z0-9]+)*$") ||
                     !Path.IsPathRooted((string)gate["executable"] ?? "") || !Regex.IsMatch((string)gate["executable_sha256"] ?? "", "^[0-9a-f]{64}$") ||
-                    !(gate["arguments"] is JArray arguments) || arguments.Any(arg => arg.Type != JTokenType.String) ||
+                    !(gate["arguments"] is JArray arguments) || arguments.Any(arg => arg.Type != JTokenType.String || ((string)arg).IndexOf('\0') >= 0) ||
                     (int?)gate["timeout_seconds"] < 1 || (int?)gate["timeout_seconds"] > 3600 || gate["timeout_seconds"]?.Type != JTokenType.Integer)
                     throw new InvalidDataException("Each required gate needs a unique ID, absolute native console executable/SHA256, literal argument array and a 1–3600 second budget.");
                 GitFlowGit.CheckPath((string)gate["executable"]);
