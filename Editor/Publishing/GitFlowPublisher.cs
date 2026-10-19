@@ -83,7 +83,8 @@ namespace Geurts.GameForge.GitFlow.Editor
                             cancellation.ThrowIfCancellationRequested();
                             if (File.Exists(Path.Combine(root, "stop.request"))) { result.State = "stopped"; result.Detail = "Graceful stop requested; settings and candidate retained."; break; }
                             // Preflight known dirty work and the actual tools before claiming any request.
-                            var refs = git.Refs(cancellation, "refs/heads/main", GitFlowGit.RequestPrefix + "*");
+                            var refs = git.Refs(cancellation, "refs/heads/main", GitFlowGit.RequestPrefix + "*", "refs/heads/codex/integration-lock");
+                            if (refs.ContainsKey("refs/heads/codex/integration-lock")) throw new InvalidDataException("Legacy coordination ref exists. Preserve it and use a confirmed-stopped owning migration; this native publisher will not compete with the legacy runner.");
                             if (!refs.TryGetValue("refs/heads/main", out string main)) throw new InvalidDataException("Remote main is absent.");
                             git.Fetch(main, cancellation); var policy = new GitFlowPolicy(git.Run(cancellation, "show", main + ":" + GitFlowGit.PolicyFile));
                             PreflightTools(policy);
@@ -98,11 +99,12 @@ namespace Geurts.GameForge.GitFlow.Editor
                             if (!lease.Active && !lease.Acquire(cancellation)) { result.State = "busy"; result.Detail = "Compatible owner observed; monotonic abandonment interval not yet proven."; }
                             else
                             {
-                                result.State = "idle"; result.Detail = "Owned queue pass; no eligible request observed.";
+                                result.State = "idle"; result.Detail = "Owned queue pass; no ready request observed. Missing, failed or pending declared dependencies remain queued; inspect their original IDs.";
                                 var rows = new List<(string reference, string commit, JObject data)>();
                                 foreach (var pair in refs.Where(pair => pair.Key.StartsWith(GitFlowGit.RequestPrefix, StringComparison.Ordinal)))
                                 { git.Fetch(pair.Value, cancellation); JObject data = git.Record(pair.Value, cancellation); ValidateRequest(pair.Key, data); rows.Add((pair.Key, pair.Value, data)); }
-                                var eligible = rows.Where(row => string.IsNullOrEmpty(options.resumeRequestId) ? (string)row.data["status"] == "queued" : (string)row.data["id"] == options.resumeRequestId)
+                                var eligible = rows.Where(row => string.IsNullOrEmpty(options.resumeRequestId) ? (string)row.data["status"] == "queued" &&
+                                    ((JArray)row.data["dependencies"]).Values<string>().All(id => rows.Any(prior => (string)prior.data["id"] == id && (string)prior.data["status"] == "delivered")) : (string)row.data["id"] == options.resumeRequestId)
                                     .OrderBy(row => (string)row.data["submitted_utc"], StringComparer.Ordinal).ThenBy(row => row.reference, StringComparer.Ordinal).ToArray();
                                 if (!string.IsNullOrEmpty(options.resumeRequestId) && eligible.Length != 1) throw new InvalidDataException("Recovery request is absent; preserve the original ID.");
                                 foreach (var row in eligible)
@@ -143,6 +145,14 @@ namespace Geurts.GameForge.GitFlow.Editor
                 string main = refs["refs/heads/main"]; git.Fetch(main, cancellation); git.Fetch(source, cancellation);
                 var policy = new GitFlowPolicy(git.Run(cancellation, "show", main + ":" + GitFlowGit.PolicyFile));
                 if (policy.Fingerprint != (string)data["policy_sha256"]) throw new InvalidDataException("Project policy changed since handoff; an operator must reconcile the original request without changing its source/version identity.");
+                foreach (string dependency in ((JArray)data["dependencies"]).Values<string>())
+                {
+                    var dependencyRefs = git.Refs(cancellation, GitFlowGit.RequestPrefix + dependency);
+                    if (!dependencyRefs.TryGetValue(GitFlowGit.RequestPrefix + dependency, out string dependencyCommit)) throw new InvalidDataException("Required original dependency is unavailable: " + dependency);
+                    git.Fetch(dependencyCommit, cancellation); JObject prior = git.Record(dependencyCommit, cancellation); ValidateRequest(GitFlowGit.RequestPrefix + dependency, prior);
+                    if ((string)prior["status"] != "delivered") throw new InvalidDataException("Required dependency is not delivered: " + dependency);
+                    git.Fetch((string)prior["main_commit"], cancellation); git.Run(cancellation, "merge-base", "--is-ancestor", (string)prior["main_commit"], main);
+                }
                 GitFlowQueue.CheckScope(git, policy, (string)data["base"], source, cancellation);
                 git.Run(cancellation, "merge-base", "--is-ancestor", (string)data["base"], main);
                 if (!Directory.Exists(checkout)) git.Run(cancellation, "clone", "--quiet", "--no-hardlinks", "--branch", "main", options.remote, checkout);
@@ -320,6 +330,8 @@ namespace Geurts.GameForge.GitFlow.Editor
             if ((int?)data["schema"] != 1 || (string)data["kind"] != "request" || (string)data["adapter"] != "generic_git" || id != "gf_" + source || reference != GitFlowGit.RequestPrefix + id ||
                 !new[] { "queued", "processing", "validating", "delivered", "published_pending_pull", "failed" }.Contains((string)data["status"])) throw new InvalidDataException("Malformed/unknown native queue record: " + reference);
             if (!System.Text.RegularExpressions.Regex.IsMatch((string)data["policy_sha256"] ?? "", "^[0-9a-f]{64}$") || !DateTime.TryParse((string)data["submitted_utc"], out _)) throw new InvalidDataException("Native policy/time evidence missing: " + reference);
+            if (!(data["dependencies"] is JArray dependencies) || dependencies.Count > 32 || dependencies.Any(value => value.Type != JTokenType.String || !System.Text.RegularExpressions.Regex.IsMatch((string)value, "^gf_[0-9a-f]{40}$") || (string)value == id) ||
+                dependencies.Values<string>().Distinct(StringComparer.Ordinal).Count() != dependencies.Count) throw new InvalidDataException("Invalid native dependency declarations: " + reference);
             if ((string)data["status"] == "delivered" || (string)data["status"] == "published_pending_pull")
             {
                 GitFlowGit.RequireSha((string)data["main_commit"]);

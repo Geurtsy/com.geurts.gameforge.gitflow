@@ -43,10 +43,11 @@ namespace Geurts.GameForge.GitFlow.Editor
             handoff.Add(new HelpBox("Uses the repository and existing remote selected in Inspect. Submit an exact committed source and its integrated base once. The worker returns its queue ID and stops; submission never starts or waits for a publisher.", HelpBoxMessageType.Info));
             var source = Field(handoff, "Source commit (40 characters)", "");
             var integratedBase = Field(handoff, "Integrated base commit (40 characters)", "");
+            var dependencies = Field(handoff, "Required prior request IDs (one per line, optional)", "", true);
             var increment = new DropdownField("Version increment", new List<string> { "patch", "minor", "major" }, 0); handoff.Add(increment);
             var title = Field(handoff, "Request title", "");
             var detail = Field(handoff, "Scope/reason, dependencies, evidence/environment and unverified checks with next steps", "", true);
-            handoff.Add(new Button(() => RunWorkflow(() => Execute("submit_request", new GitFlowSubmission(_repository.value, source.value, integratedBase.value, increment.value, title.value, detail.value)), "Submit")) { text = "Submit exact source once" });
+            handoff.Add(new Button(() => RunWorkflow(() => Execute("submit_request", new GitFlowSubmission(_repository.value, source.value, integratedBase.value, increment.value, title.value, detail.value, _remote.value, Lines(dependencies.value))), "Submit")) { text = "Submit exact source once" });
             var submitHelp = Section(submitScroll, "Help", false);
             submitHelp.Add(new HelpBox("Prepare/commit the task through its owning Git workflow. Leave final version assignment to the publisher. The committed main policy must already declare the plain version file and required checks. Source edits to policy, controllers, version metadata and queue internals are rejected. Repeated exact snapshots reuse the original ID, receipt and failure. A changed base/increment cannot silently replace an existing request. Do not keep refreshing or waiting after the confirmed handoff. API: GitFlowBrick.QueueService.SubmitAsync(GitFlowSubmission).", HelpBoxMessageType.Info));
             StyleRows(handoff); StyleRows(submitHelp);

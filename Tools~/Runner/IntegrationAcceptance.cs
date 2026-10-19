@@ -78,10 +78,12 @@ namespace Geurts.GameForge.GitFlow.Runner
             using (var fixture = new Fixture())
             {
                 GitFlowSubmission first = fixture.Change("first");
+                File.WriteAllText(Path.Combine(fixture.Remote, "hooks/post-receive"), "#!/bin/sh\nwhile read old new ref; do\n case \"$ref\" in refs/heads/geurts/gitflow/requests/*)\n child=$(git commit-tree \"$new^{tree}\" -p \"$new\" -m fixture_fast_control_advance) || exit 1\n git update-ref \"$ref\" \"$child\" \"$new\" || exit 1;;\n esac\ndone\n", new UTF8Encoding(false));
                 File.WriteAllText(Path.Combine(fixture.Worker, "tracked.txt"), "staged worker change\r\n"); fixture.Work("add", "tracked.txt");
                 File.AppendAllText(Path.Combine(fixture.Worker, "tracked.txt"), "unstaged worker change\r\n"); File.WriteAllText(Path.Combine(fixture.Worker, "untracked.txt"), "preserved");
                 var before = Snapshot(fixture.Worker);
                 var submitted = await Task.WhenAll(Enumerable.Range(0, 4).Select(index => new GitFlowQueue().SubmitAsync(first)));
+                File.Delete(Path.Combine(fixture.Remote, "hooks/post-receive"));
                 Require(submitted.All(value => value.Id == submitted[0].Id), "Concurrent submissions created competing IDs.");
                 Require(before == Snapshot(fixture.Worker), "Submission changed worker files, index, config, refs or attributes.");
                 GitFlowPublisherResult published = await new GitFlowPublisher().RunAsync(fixture.Options);
@@ -189,6 +191,15 @@ namespace Geurts.GameForge.GitFlow.Runner
                 var request = await new GitFlowQueue().SubmitAsync(fixture.Change("unavailable")); string main = fixture.Main;
                 var result = await new GitFlowPublisher().RunAsync(fixture.Options); Require(result.State == "failed" && fixture.Main == main && (string)fixture.Row(request.Id)["status"] == "queued", "Missing tool was relabelled as a worker failure or bypassed. " + result.Detail);
             }
+            using (var fixture = new Fixture())
+            {
+                var prior = await new GitFlowQueue().SubmitAsync(fixture.Change("before_legacy")); string main = fixture.Main;
+                fixture.Work("push", fixture.Remote, main + ":refs/heads/codex/integration-lock");
+                Require((await new GitFlowPublisher().RunAsync(fixture.Options)).State == "failed" && fixture.Main == main && (string)fixture.Row(prior.Id)["status"] == "queued", "Native publisher competed with legacy coordination.");
+                fixture.Work("switch", "main"); GitFlowSubmission blockedSource = fixture.Change("legacy_rejected"); bool refused = false;
+                try { await new GitFlowQueue().SubmitAsync(blockedSource); } catch (InvalidOperationException) { refused = true; }
+                Require(refused && fixture.Work("ls-remote", fixture.Remote, GitFlowGit.RequestPrefix + "gf_" + blockedSource.Source).Length == 0 && fixture.Ref("refs/heads/codex/integration-lock") == main, "Native handoff changed legacy state or bypassed migration.");
+            }
         }
 
         /// <summary>Cancels a real stalled check, contains its process and retains original request/candidate/version evidence.</summary>
@@ -230,8 +241,9 @@ namespace Geurts.GameForge.GitFlow.Runner
             {
                 var first = await new GitFlowQueue().SubmitAsync(fixture.Change("version_one"));
                 fixture.Work("switch", "main"); GitFlowGit.Write(Path.Combine(fixture.Worker, "independent.txt"), "independent\r\n"); fixture.Work("add", "independent.txt"); fixture.Work("commit", "-m", "second independent source");
-                var second = await new GitFlowQueue().SubmitAsync(new GitFlowSubmission(fixture.Worker, fixture.Work("rev-parse", "HEAD").Trim(), fixture.Base, "patch", "version two", "Independent source; base dependency; owning fixture evidence/environment; GUI unverified, human review next."));
-                var run = await new GitFlowPublisher().RunAsync(fixture.Options); Require(run.Delivered == 2, run.Detail);
+                var second = await new GitFlowQueue().SubmitAsync(new GitFlowSubmission(fixture.Worker, fixture.Work("rev-parse", "HEAD").Trim(), fixture.Base, "patch", "version two", "Independent source; base dependency; owning fixture evidence/environment; GUI unverified, human review next.", dependencies: new[] { first.Id }));
+                var run = await new GitFlowPublisher().RunAsync(fixture.Options); Require(run.Delivered == 1 && (string)fixture.Row(second.Id)["status"] == "queued", "Declared dependency was not respected. " + run.Detail);
+                run = await new GitFlowPublisher().RunAsync(fixture.Options); Require(run.Delivered == 1, run.Detail);
                 Require((string)fixture.Row(first.Id)["version"] == "1.0.1" && (string)fixture.Row(second.Id)["version"] == "1.0.2", "Serial tasks reused or skipped their versions.");
             }
         }
@@ -246,6 +258,10 @@ namespace Geurts.GameForge.GitFlow.Runner
                 var configuration = new GitFlowConfiguration(); configuration.ConfigurePublisher(fixture.Options);
                 string manifest = File.ReadAllText(Path.Combine(runner, "RunnerRelease.json"));
                 int pid = configuration.StartPublisher(fixture.Options.root, Path.Combine(runner, "GeurtsGitFlow.exe"), manifest);
+                using (var ownedHost = Process.GetProcessById(pid))
+                {
+                try
+                {
                 string invocation = Directory.GetFiles(fixture.Options.root, "invocation-*.json").Single(); string outcome = invocation + ".outcome.json";
                 var timeout = Stopwatch.StartNew();
                 while (timeout.Elapsed < TimeSpan.FromSeconds(60) && !File.Exists(outcome))
@@ -264,6 +280,14 @@ namespace Geurts.GameForge.GitFlow.Runner
                 File.AppendAllText(Path.Combine(copy, "GeurtsGitFlow.dll"), "tampered"); bool blocked = false;
                 try { configuration.StartPublisher(fixture.Options.root, Path.Combine(copy, "GeurtsGitFlow.exe"), manifest); } catch (IOException) { blocked = true; }
                 Require(blocked, "Runner replacement bypassed trusted committed release hashes.");
+                }
+                finally
+                {
+                    // This fixture created and retained the exact OS process handle; cleanup never targets an unrelated PID/owner.
+                    configuration.RequestStop(fixture.Options.root);
+                    if (!ownedHost.WaitForExit(45000)) { ownedHost.Kill(entireProcessTree: true); ownedHost.WaitForExit(5000); }
+                }
+                }
             }
         }
 

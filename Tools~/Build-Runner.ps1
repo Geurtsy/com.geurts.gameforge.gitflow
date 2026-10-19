@@ -7,6 +7,9 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $RepositoryRoot = [IO.Path]::GetFullPath($RepositoryRoot)
+if (Test-Path -LiteralPath $OutputDirectory) {
+    if (@(Get-ChildItem -LiteralPath $OutputDirectory -Force).Count -ne 0) { throw 'Runner output must be a new empty artifact directory. Never overwrite a configured or running runner; build a fresh release artifact and adopt it only through stopped-owner maintenance.' }
+}
 foreach ($path in @($OutputDirectory,$IntermediateDirectory)) {
     $full = [IO.Path]::GetFullPath($path)
     if ($full.Length + 130 -ge 260) { throw "Runner output/intermediate reserve exceeds 259 characters: $full plus 130 characters." }

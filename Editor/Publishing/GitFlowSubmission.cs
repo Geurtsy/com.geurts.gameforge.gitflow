@@ -18,10 +18,11 @@ namespace Geurts.GameForge.GitFlow.Editor
         public string Increment { get; }
         public string Title { get; }
         public string Handoff { get; }
+        public System.Collections.ObjectModel.ReadOnlyCollection<string> Dependencies { get; }
 
         /// <summary>Describes one handoff including scope/reason, evidence/environment, dependencies and unverified checks with next steps.</summary>
-        public GitFlowSubmission(string repository, string source, string integratedBase, string increment, string title, string handoff, string remote = "origin")
-        { Repository = repository; Source = source; Base = integratedBase; Increment = increment; Title = title; Handoff = handoff; Remote = remote; }
+        public GitFlowSubmission(string repository, string source, string integratedBase, string increment, string title, string handoff, string remote = "origin", string[] dependencies = null)
+        { Repository = repository; Source = source; Base = integratedBase; Increment = increment; Title = title; Handoff = handoff; Remote = remote; Dependencies = Array.AsReadOnly((dependencies ?? Array.Empty<string>()).ToArray()); }
     }
 
     /// <summary>Confirmed submit-once result. A stable ID is pending integration, never a delivery claim.</summary>
@@ -46,6 +47,8 @@ namespace Geurts.GameForge.GitFlow.Editor
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
             GitFlowGit.RequireSha(request.Source); GitFlowGit.RequireSha(request.Base); GitFlowPolicy.NextVersion("0.0.0", request.Increment);
+            if (request.Dependencies.Count > 32 || request.Dependencies.Distinct(StringComparer.Ordinal).Count() != request.Dependencies.Count ||
+                request.Dependencies.Any(id => !System.Text.RegularExpressions.Regex.IsMatch(id, "^gf_[0-9a-f]{40}$") || id == "gf_" + request.Source)) throw new ArgumentException("Declare at most 32 unique prior original request IDs; self-dependencies are invalid.");
             if (string.IsNullOrWhiteSpace(request.Title) || request.Title.Length > 160 || string.IsNullOrWhiteSpace(request.Handoff) || request.Handoff.Length > 32768)
                 throw new ArgumentException("Supply a title and complete handoff (scope/reason, dependencies, evidence/environment and unverified checks/next steps), at most 32 KiB.");
             if (!System.Text.RegularExpressions.Regex.IsMatch(request.Remote ?? "", "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,63}$")) throw new ArgumentException("Select an existing remote name.");
@@ -60,9 +63,10 @@ namespace Geurts.GameForge.GitFlow.Editor
                     string remote = source.Run(budget.Token, "config", "--get", "remote." + request.Remote + ".url").Trim(); GitFlowGit.CheckRemote(remote);
                     Directory.CreateDirectory(root); var git = new GitFlowGit(root, remote); git.Run(budget.Token, "init", "--bare", "--quiet");
                     string id = "gf_" + request.Source, reference = GitFlowGit.RequestPrefix + id;
-                    var refs = git.Refs(budget.Token, reference, "refs/heads/main");
+                    var refs = git.Refs(budget.Token, reference, "refs/heads/main", "refs/heads/codex/integration-lock");
                     // An existing exact snapshot always keeps its ID, original handoff, failure, version and receipt.
                     if (refs.TryGetValue(reference, out string existing)) return Existing(git, request, id, existing, budget.Token);
+                    if (refs.ContainsKey("refs/heads/codex/integration-lock")) throw new InvalidOperationException("Legacy coordination ref exists. A confirmed-stopped owning migration is required; no native request was created.");
                     if (!refs.TryGetValue("refs/heads/main", out string main)) throw new InvalidDataException("Remote main is absent. No request was created.");
                     git.Fetch(main, budget.Token);
                     git.Run(budget.Token, "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", Path.GetFullPath(request.Repository), request.Source);
@@ -73,6 +77,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                     CheckScope(git, policy, request.Base, request.Source, budget.Token);
                     var record = new JObject { ["schema"] = 1, ["kind"] = "request", ["adapter"] = "generic_git", ["id"] = id, ["source"] = request.Source,
                         ["base"] = request.Base, ["status"] = "queued", ["increment"] = request.Increment, ["title"] = request.Title, ["handoff"] = request.Handoff,
+                        ["dependencies"] = new JArray(request.Dependencies),
                         ["size"] = git.Run(budget.Token, "diff", "--shortstat", request.Base, request.Source).Trim(), ["policy_sha256"] = policy.Fingerprint, ["submitted_utc"] = DateTime.UtcNow.ToString("O") };
                     string commit = git.Commit(record, new[] { request.Source }, budget.Token);
                     try { git.Run(budget.Token, "push", "--porcelain", remote, commit + ":" + reference); }
@@ -83,8 +88,14 @@ namespace Geurts.GameForge.GitFlow.Editor
                         if (!raced.TryGetValue(reference, out string winner)) throw;
                         return Existing(git, request, id, winner, budget.Token);
                     }
-                    git.Verify(reference, commit, budget.Token); return new GitFlowSubmissionResult(id, commit, "queued", false);
+                    var confirmed = git.Refs(budget.Token, reference);
+                    if (!confirmed.TryGetValue(reference, out string observed)) throw new IOException("Submitted ref is absent during verification.");
+                    git.Fetch(observed, budget.Token); git.Run(budget.Token, "merge-base", "--is-ancestor", commit, observed);
+                    // A fast processor may already have advanced the same original request; a verified descendant confirms submission too.
+                    return observed == commit ? new GitFlowSubmissionResult(id, commit, "queued", false) : Existing(git, request, id, observed, budget.Token);
                 }
+                catch (OperationCanceledException error) { throw new InvalidOperationException("Submission outcome unverified for gf_" + request.Source + ". Preserve this original ID/source; inspect its exact control record once before an explicit same-snapshot continuation. No publisher was started.", error); }
+                catch (IOException error) { throw new IOException("Submission gf_" + request.Source + ": " + error.Message + " Preserve this original ID/source; do not create a replacement request.", error); }
                 finally { if (Directory.Exists(root)) GitFlowGit.RemoveTemporary(root); }
             }
         }
@@ -94,7 +105,8 @@ namespace Geurts.GameForge.GitFlow.Editor
         {
             git.Fetch(commit, cancellation); JObject data = git.Record(commit, cancellation);
             if ((int?)data["schema"] != 1 || (string)data["kind"] != "request" || (string)data["id"] != id || (string)data["source"] != request.Source ||
-                (string)data["base"] != request.Base || (string)data["increment"] != request.Increment) throw new InvalidDataException("Existing request has incompatible metadata. Preserve its original ID and ask the owning operator to review it.");
+                (string)data["base"] != request.Base || (string)data["increment"] != request.Increment || !(data["dependencies"] is JArray dependencies) ||
+                !dependencies.Values<string>().SequenceEqual(request.Dependencies)) throw new InvalidDataException("Existing request has incompatible metadata. Preserve its original ID and ask the owning operator to review it.");
             return new GitFlowSubmissionResult(id, commit, (string)data["status"], true);
         }
 
