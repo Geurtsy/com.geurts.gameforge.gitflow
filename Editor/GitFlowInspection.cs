@@ -125,8 +125,14 @@ namespace Geurts.GameForge.GitFlow.Editor
                                 catch (Exception error) { receiptDetail = "Unavailable: " + Detail(error); issues.Add(id + " receipt: " + receiptDetail); }
                             }
                             if (state == "Unknown") issues.Add(id + ": unsupported status '" + Text(data, "status") + "'. Ask the owning queue adapter to declare its meaning.");
+                            string failure = Text(data, "blocker");
+                            if (state == "Failed" && string.IsNullOrWhiteSpace(failure))
+                            {
+                                failure = "The queue reported failure without blocker details. Ask its owning operator for the original exception, failure phase and validation evidence; preserve this request ID and do not resubmit it.";
+                                issues.Add(id + ": " + failure);
+                            }
                             rows.Add(new GitFlowRequest(id, state, Text(data, "title"), source, Text(data, "size"), Text(data, "version"), published,
-                                Text(data, "blocker"), pair.Value, raw, receipt, receiptDetail));
+                                failure, pair.Value, raw, receipt, receiptDetail));
                         }
                         catch (Exception error)
                         {

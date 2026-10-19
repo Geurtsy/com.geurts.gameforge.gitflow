@@ -110,14 +110,16 @@ namespace Geurts.GameForge.GitFlow.Tests
         public async Task MalformedAndFutureRecordsStayActionable()
         {
             string source = Run(_checkout, "rev-parse", "HEAD").Trim(); PublishRequest(0, "queued", source);
+            PublishRequest(2, "failed", source);
             Write("IntegrationRequest.json", "{\"schema\":1,\"schema\":2}"); PublishControl("refs/heads/codex/queue/q_20261019_000001_000000000001");
             PublishLease("owned", 2);
             using (var service = new GitFlowInspection())
             {
                 var result = await service.RefreshAsync(new GitFlowTarget(_checkout));
-                Assert.That(result.QueueState, Is.EqualTo("Partial")); Assert.That(result.Requests.Count, Is.EqualTo(1));
-                Assert.That(result.LeaseState, Is.EqualTo("Unavailable")); Assert.That(result.Issues.Count, Is.EqualTo(2));
-                Assert.That(result.Issues.All(value => value.Contains("Preserve control data")));
+                Assert.That(result.QueueState, Is.EqualTo("Partial")); Assert.That(result.Requests.Count, Is.EqualTo(2));
+                Assert.That(result.LeaseState, Is.EqualTo("Unavailable")); Assert.That(result.Issues.Count, Is.EqualTo(3));
+                StringAssert.Contains("original exception", result.Requests.Single(value => value.State == "Failed").Failure);
+                Assert.That(result.Issues.Count(value => value.Contains("Preserve control data")), Is.EqualTo(2));
             }
         }
 

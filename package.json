@@ -1,6 +1,6 @@
 {
   "name": "com.geurts.gameforge.gitflow",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "displayName": "Geurts Game Forge GitFlow",
   "description": "Editor-only, read-only queue, processor, lease and receipt inspection. Explicit bounded refresh; shared no-code UI and API. Submission, publishing and repair are planned. Requires separately acquired Odin Inspector and Quantum Console.",
   "unity": "6000.6",
