@@ -1,7 +1,7 @@
 {
-  "testResultSha256": "765335ca638375fd2b445046fd64caeec1761bc7f93914464a098c2349071cc5",
-  "testedGitCommit": "f81a46c39fd5e7f5812ab0af804f60d0400ea735",
-  "sourceFingerprint": "2183cde269165443c6c9c6f57a1a8f53e2f1dc97d260a4ec139fa2049f26f063",
+  "testResultSha256": "7af07338886fdc87adb11fb7c52110e8fa34b6fb642c5287dbe8554c7ba2397f",
+  "testedGitCommit": "ed261036e5f190ce670ad27628eae7e64d9b359d",
+  "sourceFingerprint": "c51104fda3afb301a713cc0592c7c2493e2b414c71d031ccdecc62b46595e98b",
   "unverified": [
     "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
     "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
@@ -21,13 +21,13 @@
     "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.ViewerAndApiUseOneObservationForAllPhases"
   ],
   "failed": 0,
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "unityVersion": "6000.6.3f1",
   "publicationReady": true,
   "odinVersion": "4.0.2.4",
-  "testResult": "Documentation~/Acceptance-0.1.0.xml",
+  "testResult": "Documentation~/Acceptance-0.1.1.xml",
   "godGitCommit": "5e1c38f0be577c68bb4e49b0e872440d5015ac81",
-  "editorLogSha256": "e83c14e5efe1eabc42c850f94a59f99757202e5ea05cc08c0b79ba00c15b8e85",
+  "editorLogSha256": "56f1575d49e7bfb33ccba61eb83deb031019b5ce6d5aea1253f006c33353f74a",
   "quantumConsole": "User-owned existing fixture source; exact resolved QFSW.QC assembly compiled. Vendor files are not redistributed.",
   "publicationScope": "Implemented read-only inspection, source-bound passing fixtures and explicitly unverified native presentation, as permitted by the active user request.",
   "silence": "Unity launched with -nosound from startup through exit, -batchmode -nographics; no Play Mode or player build.",
