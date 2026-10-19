@@ -1,6 +1,6 @@
 {
   "name": "Geurts.GameForge.GitFlow.Editor.Tests",
-  "references": ["Geurts.GameForge.GitFlow.Editor", "Geurts.GameForge.God", "Geurts.GameForge.God.Editor", "Unity.Newtonsoft.Json"],
+  "references": ["Geurts.GameForge.GitFlow.Editor", "Geurts.GameForge.God", "Geurts.GameForge.God.Editor"],
   "includePlatforms": ["Editor"],
   "optionalUnityReferences": ["TestAssemblies"],
   "autoReferenced": false

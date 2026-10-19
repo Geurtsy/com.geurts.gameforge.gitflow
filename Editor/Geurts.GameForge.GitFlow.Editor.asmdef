@@ -1,9 +1,9 @@
 {
   "name": "Geurts.GameForge.GitFlow.Editor",
   "rootNamespace": "Geurts.GameForge.GitFlow.Editor",
-  "references": ["Geurts.GameForge.God", "Geurts.GameForge.God.Editor", "Unity.Newtonsoft.Json", "QFSW.QC"],
+  "references": ["Geurts.GameForge.God", "Geurts.GameForge.God.Editor", "QFSW.QC"],
   "includePlatforms": ["Editor"],
   "autoReferenced": true,
   "overrideReferences": true,
-  "precompiledReferences": ["Sirenix.OdinInspector.Attributes.dll"]
+  "precompiledReferences": ["Sirenix.OdinInspector.Attributes.dll", "Newtonsoft.Json.dll"]
 }

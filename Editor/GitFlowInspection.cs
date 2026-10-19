@@ -219,33 +219,8 @@ namespace Geurts.GameForge.GitFlow.Editor
             start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
             start.EnvironmentVariables["GIT_OPTIONAL_LOCKS"] = "0"; start.EnvironmentVariables["GIT_CONFIG_NOSYSTEM"] = "1";
             start.EnvironmentVariables["GIT_CONFIG_GLOBAL"] = "NUL"; start.EnvironmentVariables["GIT_LFS_SKIP_SMUDGE"] = "1";
-            using (var process = new Process { StartInfo = start })
-            {
-                process.Start(); process.StandardInput.Close();
-                Task<string> stdout = ReadBounded(process.StandardOutput, cancellation);
-                Task<string> stderr = ReadBounded(process.StandardError, cancellation);
-                try
-                {
-                    while (!process.WaitForExit(50))
-                    {
-                        cancellation.ThrowIfCancellationRequested();
-                        if (stdout.IsFaulted || stderr.IsFaulted) throw new InvalidDataException("Git output exceeds the inspection bound.");
-                    }
-                    string output = stdout.GetAwaiter().GetResult(), error = stderr.GetAwaiter().GetResult();
-                    if (process.ExitCode != 0) throw new IOException("Git " + arguments[0] + " failed (exit " + process.ExitCode + "). " + error.Substring(0, Math.Min(error.Length, 2000)));
-                    return output;
-                }
-                finally { if (!process.HasExited) { process.Kill(); process.WaitForExit(2000); } }
-            }
-        }
-
-        /// <summary>Drains one pipe while enforcing the per-command byte-equivalent text bound.</summary>
-        private static async Task<string> ReadBounded(StreamReader reader, CancellationToken cancellation)
-        {
-            var content = new StringBuilder(); var buffer = new char[4096]; int count; long bytes = 0;
-            while ((count = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
-            { cancellation.ThrowIfCancellationRequested(); bytes += Encoding.UTF8.GetByteCount(buffer, 0, count); if (bytes > MaximumJsonBytes) throw new InvalidDataException("Inspection output exceeds one MiB."); content.Append(buffer, 0, count); }
-            return content.ToString();
+            try { return GitFlowProcess.Run(start, cancellation); }
+            catch (IOException error) { throw new IOException("Git " + arguments[0] + ": " + error.Message, error); }
         }
 
         /// <summary>Quotes a single Windows process argument without shell evaluation.</summary>
