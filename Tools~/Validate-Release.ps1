@@ -144,6 +144,12 @@ if ($RequireUnityEvidence) {
     Require ($evidence.packageVersion -eq $package.version -and $evidence.sourceFingerprint -eq $fingerprint -and
         (Test-UnityMinimum $evidence.unityVersion ($package.unity + '.' + $package.unityRelease))) 'Unity evidence does not match the current source/version or minimum Editor requirement.'
     Require ($evidence.failed -eq 0 -and $evidence.passed -gt 0 -and $evidence.examplesCompiled) 'Unity validation/examples did not pass.'
+    $reportPath = Resolve-Owned $evidence.testResult
+    Require (Test-Path -LiteralPath $reportPath -PathType Leaf) 'The source-bound acceptance report is unavailable.'
+    Require ((Get-FileHash -LiteralPath $reportPath -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $evidence.testResultSha256) 'The acceptance report checksum does not match its evidence.'
+    [xml]$report = [IO.File]::ReadAllText($reportPath)
+    $run = $report.'test-run'
+    Require ($null -ne $run -and $run.result -eq 'Passed' -and [int]$run.failed -eq 0 -and [int]$run.skipped -eq 0 -and [int]$run.passed -eq $evidence.passed) 'Actual acceptance results disagree with the evidence or contain skipped/failed checks.'
     foreach ($recipe in @($documents.integrationRecipes)) {
         if ($null -eq $recipe) { continue }
         $record = @($evidence.integrationRecipes | Where-Object { $_.source -eq $recipe.source })
