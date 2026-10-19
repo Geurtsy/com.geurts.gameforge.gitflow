@@ -92,6 +92,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                         do
                         {
                             cancellation.ThrowIfCancellationRequested();
+                            if (retryScoped && clock() - observationStarted >= 240) break;
                             if (File.Exists(Path.Combine(root, "stop.request"))) { result.State = "stopped"; result.Detail = "Graceful stop requested; settings and candidate retained."; break; }
                             // Preflight known dirty work and the actual tools before claiming any request.
                             var refs = git.Refs(cancellation, "refs/heads/main", GitFlowGit.RequestPrefix + "*", "refs/heads/codex/integration-lock");
@@ -109,11 +110,12 @@ namespace Geurts.GameForge.GitFlow.Editor
                                 if (string.IsNullOrEmpty(options.resumeRequestId) && retained.Run(cancellation, "rev-list", "--max-count=1", main + "..HEAD").Trim().Length != 0)
                                     throw new IOException("Processor retains a committed candidate ahead of remote main. Resume its original request explicitly; unrelated queued requests remain pending.");
                             }
+                            if (retryScoped && clock() - observationStarted >= 240) break;
                             retryScoped = false;
                             if (!lease.Active && !lease.Acquire(cancellation))
                             {
                                 retryScoped = !string.IsNullOrEmpty(options.resumeRequestId) && clock() - observationStarted < 240;
-                                result.State = "busy"; result.Detail = "Compatible owner observed; the full unchanged monotonic abandonment interval is not yet proven. A scoped continuation observes within this same native invocation for at most 240 seconds; do not launch a duplicate or replace its root.";
+                                result.State = "busy"; result.Detail = "Compatible owner observed; the full unchanged monotonic abandonment interval is not yet proven. This same scoped invocation has a 240-second observation window with bounded backoff/transport overhead; do not launch a duplicate or replace its root.";
                             }
                             else
                             {
