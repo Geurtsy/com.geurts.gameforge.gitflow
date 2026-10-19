@@ -58,7 +58,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             policy.Add(new HelpBox("This generic adapter supports direct atomic main publication only. Projects requiring PR review, immutable release assets, derived native identities or additional version metadata need their owning adapter. Declare all validation/controller paths as protected. Commit/review the saved policy through that repository's normal workflow before using the queue.", HelpBoxMessageType.Warning));
             _versionFile = Field(policy, "Plain SemVer file (repository relative)", "VERSION");
             _protectedPaths = Field(policy, "Protected controller/gate paths (one per line)", "Tools/Validation", true);
-            _headless = new Toggle("Every required command and helper is silent and supports unattended operation"); policy.Add(_headless);
+            _headless = new Toggle("Every required command, Git hook and helper is silent and supports unattended operation"); policy.Add(_headless);
             _gateList = new VisualElement(); policy.Add(_gateList);
             policy.Add(new Button(() => AddGate(new GitFlowGatePreference())) { text = "Add required validation command" });
             policy.Add(new Button(() => RunWorkflow(async () =>

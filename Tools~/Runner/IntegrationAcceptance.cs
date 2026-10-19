@@ -93,6 +93,11 @@ namespace Geurts.GameForge.GitFlow.Runner
                 var reused = await new GitFlowQueue().SubmitAsync(first); Require(reused.Reused && reused.Id == submitted[0].Id && reused.State == "delivered", "Delivered snapshot was requeued.");
                 Require(main == fixture.Main && before == Snapshot(fixture.Worker), "Duplicate submission changed main/worker.");
                 Require((await new GitFlowPublisher().RunAsync(fixture.Options)).Delivered == 0, "Receipt was consumed twice.");
+                var processor = new GitFlowGit(Path.Combine(fixture.Options.root, "candidate"), fixture.Remote);
+                processor.Run(default, "config", "--local", "commit.gpgSign", "true");
+                string signingConfig = File.ReadAllText(Path.Combine(fixture.Options.root, "candidate/.git/config"));
+                var signing = await new GitFlowPublisher().RunAsync(fixture.Options);
+                Require(signing.State == "failed" && signing.Detail.Contains("requires commit signing") && fixture.Main == main && File.ReadAllText(Path.Combine(fixture.Options.root, "candidate/.git/config")) == signingConfig, "Required signing was bypassed or prompted instead of blocked.");
             }
         }
 
@@ -199,6 +204,21 @@ namespace Geurts.GameForge.GitFlow.Runner
                 fixture.Work("switch", "main"); GitFlowSubmission blockedSource = fixture.Change("legacy_rejected"); bool refused = false;
                 try { await new GitFlowQueue().SubmitAsync(blockedSource); } catch (InvalidOperationException) { refused = true; }
                 Require(refused && fixture.Work("ls-remote", fixture.Remote, GitFlowGit.RequestPrefix + "gf_" + blockedSource.Source).Length == 0 && fixture.Ref("refs/heads/codex/integration-lock") == main, "Native handoff changed legacy state or bypassed migration.");
+            }
+            using (var fixture = new Fixture())
+            {
+                GitFlowSubmission source = fixture.Change("global_hook"); string main = fixture.Main;
+                string xdg = Path.Combine(fixture.Root, "xdg"), hooks = Path.Combine(fixture.Root, "required-hooks"); Directory.CreateDirectory(Path.Combine(xdg, "git")); Directory.CreateDirectory(hooks);
+                File.WriteAllText(Path.Combine(hooks, "pre-push"), "#!/bin/sh\necho required_global_hook_rejection >&2\nexit 1\n", new UTF8Encoding(false));
+                string config = Path.Combine(xdg, "git/config"); File.WriteAllText(config, "[core]\n hooksPath = " + hooks.Replace('\\', '/') + "\n", new UTF8Encoding(false));
+                string before = File.ReadAllText(config), previous = Environment.GetEnvironmentVariable("XDG_CONFIG_HOME"); bool blockedHook = false;
+                try
+                {
+                    Environment.SetEnvironmentVariable("XDG_CONFIG_HOME", xdg);
+                    try { await new GitFlowQueue().SubmitAsync(source); } catch (IOException error) { blockedHook = error.ToString().Contains("required_global_hook_rejection"); }
+                }
+                finally { Environment.SetEnvironmentVariable("XDG_CONFIG_HOME", previous); }
+                Require(blockedHook && File.ReadAllText(config) == before && fixture.Main == main && fixture.Work("ls-remote", fixture.Remote, GitFlowGit.RequestPrefix + "gf_" + source.Source).Length == 0, "Normal global Git hooks were hidden, changed or bypassed.");
             }
         }
 

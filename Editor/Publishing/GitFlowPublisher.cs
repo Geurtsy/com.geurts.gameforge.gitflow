@@ -87,11 +87,13 @@ namespace Geurts.GameForge.GitFlow.Editor
                             if (refs.ContainsKey("refs/heads/codex/integration-lock")) throw new InvalidDataException("Legacy coordination ref exists. Preserve it and use a confirmed-stopped owning migration; this native publisher will not compete with the legacy runner.");
                             if (!refs.TryGetValue("refs/heads/main", out string main)) throw new InvalidDataException("Remote main is absent.");
                             git.Fetch(main, cancellation); var policy = new GitFlowPolicy(git.Run(cancellation, "show", main + ":" + GitFlowGit.PolicyFile));
+                            CheckSigning(git, cancellation);
                             PreflightTools(policy);
                             if (File.Exists(checkout)) throw new IOException("Dedicated candidate directory is occupied by an unknown file. Preserve it; no task was claimed.");
                             if (Directory.Exists(checkout))
                             {
                                 var retained = new GitFlowGit(checkout, options.remote); EnsureClean(retained, cancellation);
+                                CheckSigning(retained, cancellation);
                                 retained.Run(cancellation, "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", options.remote, main);
                                 if (string.IsNullOrEmpty(options.resumeRequestId) && retained.Run(cancellation, "rev-list", "--max-count=1", main + "..HEAD").Trim().Length != 0)
                                     throw new IOException("Processor retains a committed candidate ahead of remote main. Resume its original request explicitly; unrelated queued requests remain pending.");
@@ -157,6 +159,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                 git.Run(cancellation, "merge-base", "--is-ancestor", (string)data["base"], main);
                 if (!Directory.Exists(checkout)) git.Run(cancellation, "clone", "--quiet", "--no-hardlinks", "--branch", "main", options.remote, checkout);
                 EnsureClean(code, cancellation); CheckFiles(checkout);
+                CheckSigning(code, cancellation);
                 CheckTree(code, cancellation);
                 // An acknowledged atomic receipt is recovered under its original commit/version, even if a prior pull failed.
                 string delivered = (string)data["main_commit"];
@@ -253,6 +256,13 @@ namespace Geurts.GameForge.GitFlow.Editor
                 foreach (JObject dependency in (JArray)gate["tool_files"])
                     if (GitFlowGit.Hash(File.ReadAllBytes((string)dependency["path"])) != (string)dependency["sha256"]) throw new IOException("Required gate dependency changed/unavailable: " + (string)dependency["path"] + ". Review its owning policy.");
             }
+        }
+
+        /// <summary>Preserves required signing policy while refusing an unattended path that could open a pinentry/credential window.</summary>
+        private static void CheckSigning(GitFlowGit git, CancellationToken cancellation)
+        {
+            if (git.Run(cancellation, "config", "--type=bool", "--default=false", "--get", "commit.gpgSign").Trim() != "false")
+                throw new InvalidDataException("Git requires commit signing. This generic adapter has no verified unattended signing provider; preserve that requirement and use its owning signing adapter. No signing prompt or policy override was attempted.");
         }
 
         /// <summary>Captures strict required checks against the actual candidate with bounded output, duration and descendant lifetime.</summary>

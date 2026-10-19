@@ -37,7 +37,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             start.Arguments = string.Join(" ", prefix.Concat(arguments).Select(Quote));
             foreach (string key in start.EnvironmentVariables.Keys.Cast<string>().Where(key => key.StartsWith("GIT_", StringComparison.OrdinalIgnoreCase)).ToArray()) start.EnvironmentVariables.Remove(key);
             start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
-            start.EnvironmentVariables["GIT_CONFIG_NOSYSTEM"] = "1"; start.EnvironmentVariables["GIT_CONFIG_GLOBAL"] = "NUL";
+            // Publisher transport retains normal system/global configuration and hooks. Read-only inspection has its own isolated transport.
             string token = Environment.GetEnvironmentVariable("GEURTS_GITFLOW_TOKEN");
             if (!string.IsNullOrEmpty(token) && Remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
