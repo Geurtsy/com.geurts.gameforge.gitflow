@@ -140,9 +140,11 @@ namespace Geurts.GameForge.GitFlow.Runner
         {
             using (var fixture = new Fixture("slow"))
             {
-                await new GitFlowQueue().SubmitAsync(fixture.Change("slow")); var run = new GitFlowPublisher().RunAsync(fixture.Options);
+                var request = await new GitFlowQueue().SubmitAsync(fixture.Change("slow")); var run = new GitFlowPublisher().RunAsync(fixture.Options);
                 await Task.Delay(12000); string first = fixture.Ref(GitFlowGit.LeaseRef); await Task.Delay(23000); string renewed = fixture.Ref(GitFlowGit.LeaseRef);
                 Require(first != renewed, "Independent heartbeat did not advance during required validation.");
+                JObject live = GitFlowGit.Json(File.ReadAllText(Path.Combine(fixture.Options.root, "processor-state.json")));
+                Require((string)live["state"] == "validating" && (string)live["phase"] == "validating" && ((string)live["detail"]).Contains(request.Id), "Fresh processor telemetry falsely reported idle or lost its actual request/stage.");
                 var outcome = await run; Require(outcome.State == "delivered", outcome.Detail);
             }
         }

@@ -94,6 +94,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                             cancellation.ThrowIfCancellationRequested();
                             if (retryScoped && clock() - observationStarted >= 240) break;
                             if (File.Exists(Path.Combine(root, "stop.request"))) { result.State = "stopped"; result.Detail = "Graceful stop requested; settings and candidate retained."; break; }
+                            result.State = "preflight"; result.Detail = "Checking the configured root, current main and required tools before claiming work."; health("preflight");
                             // Preflight known dirty work and the actual tools before claiming any request.
                             var refs = git.Refs(cancellation, "refs/heads/main", GitFlowGit.RequestPrefix + "*", "refs/heads/codex/integration-lock");
                             if (refs.ContainsKey("refs/heads/codex/integration-lock")) throw new InvalidDataException("Legacy coordination ref exists. Preserve it and use a confirmed-stopped owning migration; this native publisher will not compete with the legacy runner.");
@@ -112,6 +113,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                             }
                             if (retryScoped && clock() - observationStarted >= 240) break;
                             retryScoped = false;
+                            result.State = "acquiring"; result.Detail = "Preflight complete; acquiring or observing the compatible remote lease.";
                             if (!lease.Active && !lease.Acquire(cancellation))
                             {
                                 retryScoped = !string.IsNullOrEmpty(options.resumeRequestId) && clock() - observationStarted < 240;
@@ -155,6 +157,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             JObject data, IEnumerable<JObject> reservations, GitFlowPublisherResult result, CancellationToken cancellation)
         {
             string id = (string)data["id"], source = (string)data["source"], candidate = null;
+            result.State = "processing"; result.Detail = "Processing original request " + id + " from " + source + ".";
             var attempts = data["attempts"] as JArray;
             if (attempts == null) { attempts = new JArray(); data["attempts"] = attempts; }
             var attempt = new JObject { ["started_utc"] = DateTime.UtcNow.ToString("O"), ["operator_reason"] = options.resumeReason, ["phase"] = "preflight", ["checks"] = new JArray() }; attempts.Add(attempt);
@@ -228,10 +231,12 @@ namespace Geurts.GameForge.GitFlow.Editor
                     lease.Publish(new Dictionary<string, string> { [reference] = control, [GitFlowGit.Prefix + "wip/" + id] = candidate }, false, cancellation);
                 }
                 EnsureClean(code, cancellation); CheckTree(code, cancellation); attempt["phase"] = "validating"; data["status"] = "validating";
+                result.State = "validating"; result.Detail = "Validating original request " + id + " at candidate " + candidate + ".";
                 control = git.Commit(data, new[] { control, candidate }, cancellation); lease.Publish(new Dictionary<string, string> { [reference] = control }, false, cancellation);
                 string tree = code.Run(cancellation, "rev-parse", "HEAD^{tree}").Trim(); attempt["candidate"] = candidate; attempt["tree"] = tree; attempt["policy_sha256"] = policy.Fingerprint;
                 foreach (JObject gate in (JArray)policy.Data["gates"])
                 {
+                    result.Detail = "Validating original request " + id + "; required command " + (string)gate["id"] + "; candidate " + candidate + ".";
                     if (!lease.Active) throw new IOException("Lease heartbeat lost; final gates cannot authorize publication.");
                     RunGate(options.root, checkout, gate, (JArray)attempt["checks"], cancellation);
                     EnsureClean(code, cancellation); CheckFiles(checkout);
@@ -374,7 +379,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         {
             using (var process = System.Diagnostics.Process.GetCurrentProcess())
             {
-                var state = new JObject { ["schema"] = 1, ["pid"] = process.Id, ["process_start_utc"] = process.StartTime.ToUniversalTime().ToString("O"), ["updated_utc"] = DateTime.UtcNow.ToString("O"), ["phase"] = phase, ["state"] = result.State, ["detail"] = result.Detail };
+                var state = new JObject { ["schema"] = 1, ["pid"] = process.Id, ["process_start_utc"] = process.StartTime.ToUniversalTime().ToString("O"), ["updated_utc"] = DateTime.UtcNow.ToString("O"), ["phase"] = phase == "owned" ? result.State : phase, ["state"] = result.State, ["detail"] = result.Detail };
                 string temporary = Path.Combine(root, "processor-state.tmp"), final = Path.Combine(root, "processor-state.json"); GitFlowGit.Write(temporary, state.ToString(Formatting.Indented));
                 if (File.Exists(final)) File.Replace(temporary, final, null); else File.Move(temporary, final);
             }
