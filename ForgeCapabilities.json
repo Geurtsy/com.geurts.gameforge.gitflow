@@ -7,7 +7,7 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "disposable_real_git_and_editor_acceptance_pending"
+        "Unity 6000.6.3f1: 8 passed, 0 failed, 0 skipped; real Git preservation, fault fixtures, installed God dispatch and hidden UI/API identity."
       ],
       "maturity": "pre_release",
       "provider": "editor",
@@ -89,13 +89,13 @@
   "validation": {
     "unityVersion": "6000.6.3f1",
     "unverified": [
-      "native_rendering",
-      "private_https",
-      "ssh",
-      "processor_lock_ownership",
-      "current_main_ancestry",
-      "validation_artifact_content"
+      "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
+      "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
+      "Current remote-main ancestry, validation artifact contents and execution. Receipt identity/source/version is checked; underlying claims are not rerun.",
+      "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.0.",
+      "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
+      "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
     ],
-    "scope": "Candidate: real Git preservation and fault fixtures; native presentation pending."
+    "scope": "Editor-only read-only observation. Eight owning acceptance fixtures passed on exact Git candidate; supported example compiled. Native rendered UI remains unverified."
   }
 }

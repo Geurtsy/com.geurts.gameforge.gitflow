@@ -1,0 +1,39 @@
+{
+  "testResultSha256": "765335ca638375fd2b445046fd64caeec1761bc7f93914464a098c2349071cc5",
+  "testedGitCommit": "f81a46c39fd5e7f5812ab0af804f60d0400ea735",
+  "sourceFingerprint": "2183cde269165443c6c9c6f57a1a8f53e2f1dc97d260a4ec139fa2049f26f063",
+  "unverified": [
+    "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
+    "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
+    "Current remote-main ancestry, validation artifact contents and execution. Receipt identity/source/version is checked; underlying claims are not rerun.",
+    "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.0.",
+    "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
+    "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
+  ],
+  "fixtures": [
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.CancellationContainsStalledHttpsHelperAndCleansObjects",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.FailedUnavailableAndMalformedProcessorEvidenceRemainVisible",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.GodDiscoveryAndDispatchMatchImplementedDeclaration",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.MalformedAndFutureRecordsStayActionable",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.MissingAndDisposedInspectionCleanUp",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.RepeatedRefreshPreservesFilesIndexesRefsAndPublisherSentinel",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.StoppedAndStaleHealthNeverInventLeaseExpiry",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.ViewerAndApiUseOneObservationForAllPhases"
+  ],
+  "failed": 0,
+  "packageVersion": "0.1.0",
+  "unityVersion": "6000.6.3f1",
+  "publicationReady": true,
+  "odinVersion": "4.0.2.4",
+  "testResult": "Documentation~/Acceptance-0.1.0.xml",
+  "godGitCommit": "5e1c38f0be577c68bb4e49b0e872440d5015ac81",
+  "editorLogSha256": "e83c14e5efe1eabc42c850f94a59f99757202e5ea05cc08c0b79ba00c15b8e85",
+  "quantumConsole": "User-owned existing fixture source; exact resolved QFSW.QC assembly compiled. Vendor files are not redistributed.",
+  "publicationScope": "Implemented read-only inspection, source-bound passing fixtures and explicitly unverified native presentation, as permitted by the active user request.",
+  "silence": "Unity launched with -nosound from startup through exit, -batchmode -nographics; no Play Mode or player build.",
+  "integrationRecipes": [],
+  "examplesCompiled": true,
+  "gitVersion": "git version 2.56.0.windows.2",
+  "skipped": 0,
+  "passed": 8
+}
