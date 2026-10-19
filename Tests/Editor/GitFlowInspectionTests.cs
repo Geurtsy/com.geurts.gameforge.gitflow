@@ -3,6 +3,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -160,6 +162,56 @@ namespace Geurts.GameForge.GitFlow.Tests
             var result = await service.RefreshAsync(new GitFlowTarget(missing));
             Assert.That(result.QueueState, Is.EqualTo("Unavailable")); Assert.That(Directory.Exists(missing), Is.False);
             service.Dispose(); service.Dispose(); Assert.Throws<ObjectDisposedException>(() => service.RefreshAsync(new GitFlowTarget(_checkout)));
+        }
+
+        /// <summary>Verifies installed God discovery stays offline and dispatch uses the active shared lifecycle service.</summary>
+        [Test]
+        public async Task GodDiscoveryAndDispatchMatchImplementedDeclaration()
+        {
+            string before = Fingerprint(_checkout);
+            ForgeOperations.Refresh();
+            var actions = ForgeOperations.Discover(GitFlowBrick.PackageId);
+            CollectionAssert.AreEqual(new[] { "inspect_queue" }, actions.Select(value => value.Id));
+            Assert.That(actions.All(value => !value.MutatesProject && !value.ConfirmationRequired));
+            Assert.That(GitFlowBrick.Service, Is.Not.Null, "God did not start the installed Editor-only brick.");
+            var request = new ForgeOperationRequest(GitFlowBrick.PackageId, "inspect_queue", payload: new GitFlowTarget(_checkout));
+            Assert.That(ForgeOperations.Inspect(request).Status, Is.EqualTo(FORGE_OPERATION_STATUS.SUCCEEDED));
+            Assert.That(Fingerprint(_checkout), Is.EqualTo(before), "Discovery/admission changed the inspected repository");
+            var result = await ForgeOperations.ExecuteAsync(request);
+            Assert.That(result.Status, Is.EqualTo(FORGE_OPERATION_STATUS.SUCCEEDED), result.Detail);
+            Assert.That(GitFlowBrick.Service.LastSnapshot.Repository, Is.EqualTo(_checkout));
+            Assert.That(Fingerprint(_checkout), Is.EqualTo(before));
+        }
+
+        /// <summary>Exercises a real stalled HTTPS helper from the detached batch parent and proves disposal closes its connection within five seconds.</summary>
+        [Test]
+        public async Task CancellationContainsStalledHttpsHelperAndCleansObjects()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0); listener.Start();
+            string[] before = Directory.GetDirectories(Path.GetTempPath(), "ggf_inspect_*");
+            var service = new GitFlowInspection();
+            try
+            {
+                int port = ((IPEndPoint)listener.LocalEndpoint).Port;
+                Run(_checkout, "config", "remote.origin.url", "https://127.0.0.1:" + port + "/fixture.git");
+                Task<TcpClient> accepted = listener.AcceptTcpClientAsync();
+                Task<GitFlowSnapshot> operation = service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(await Task.WhenAny(accepted, Task.Delay(10000)), Is.SameAs(accepted), "Git did not create its HTTPS helper connection");
+                using (TcpClient connection = await accepted)
+                {
+                    service.Dispose();
+                    Assert.That(await Task.WhenAny(operation, Task.Delay(5000)), Is.SameAs(operation), "Cancelled helper exceeded cleanup bound");
+                    GitFlowSnapshot result = await operation;
+                    Assert.That(result.QueueState, Is.EqualTo("Unavailable")); Assert.That(result.Issues.Any(value => value.Contains("cancelled")));
+                    connection.ReceiveTimeout = 2000; var bytes = new byte[8192];
+                    bool closed = false;
+                    try { for (int i = 0; i < 8; i++) if (connection.GetStream().Read(bytes, 0, bytes.Length) == 0) { closed = true; break; } }
+                    catch (IOException error) { closed = error.InnerException is SocketException socket && socket.SocketErrorCode == SocketError.ConnectionReset; }
+                    Assert.That(closed, Is.True, "A Git/helper descendant kept the HTTPS connection alive after cancellation");
+                }
+            }
+            finally { service.Dispose(); listener.Stop(); }
+            CollectionAssert.AreEquivalent(before, Directory.GetDirectories(Path.GetTempPath(), "ggf_inspect_*"));
         }
 
         /// <summary>Creates exact protocol request metadata and a source/version-matched receipt for the delivered case.</summary>
