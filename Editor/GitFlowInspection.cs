@@ -77,7 +77,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                     // Inspection deliberately supports no external remote helpers or interactive authentication.
                     if (!(remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase) || Path.IsPathRooted(remote)))
                         throw new InvalidOperationException("Inspection supports HTTPS and absolute local remotes. SSH/custom helpers are unavailable in this read-only release.");
-                    if (remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase) && (!Uri.TryCreate(remote, UriKind.Absolute, out var address) || address.UserInfo.Length != 0))
+                    if (remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase) && (!Uri.TryCreate(remote, UriKind.Absolute, out var address) || address.UserInfo.Length != 0 || address.Query.Length != 0 || address.Fragment.Length != 0))
                         throw new InvalidOperationException("Embedded remote credentials are unsupported. Remove secrets through the repository owner's workflow.");
                     temporary = Path.Combine(Path.GetTempPath(), "ggf_inspect_" + Guid.NewGuid().ToString("N"));
                     CheckPath(temporary + "/objects/pack/pack-" + new string('a', 40) + ".pack");
@@ -142,7 +142,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                 {
                     if (temporary != null)
                     {
-                        try { Directory.Delete(temporary, true); }
+                        try { CheckPath(temporary); Directory.Delete(temporary, true); }
                         catch (Exception error) { issues.Add("Temporary inspection cleanup failed at " + temporary + ": " + Detail(error)); queue = "Partial"; }
                     }
                 }
@@ -242,9 +242,9 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Drains one pipe while enforcing the per-command byte-equivalent text bound.</summary>
         private static async Task<string> ReadBounded(StreamReader reader, CancellationToken cancellation)
         {
-            var content = new StringBuilder(); var buffer = new char[4096]; int count;
+            var content = new StringBuilder(); var buffer = new char[4096]; int count; long bytes = 0;
             while ((count = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
-            { cancellation.ThrowIfCancellationRequested(); content.Append(buffer, 0, count); if (content.Length > MaximumJsonBytes) throw new InvalidDataException("Inspection output exceeds one MiB."); }
+            { cancellation.ThrowIfCancellationRequested(); bytes += Encoding.UTF8.GetByteCount(buffer, 0, count); if (bytes > MaximumJsonBytes) throw new InvalidDataException("Inspection output exceeds one MiB."); content.Append(buffer, 0, count); }
             return content.ToString();
         }
 
@@ -305,6 +305,14 @@ namespace Geurts.GameForge.GitFlow.Editor
         private static string Detail(Exception error) => error is OperationCanceledException ? "Inspection cancelled or exceeded its 45-second budget." : error.GetType().Name + ": " + error.Message;
 
         /// <summary>Cancels owned inspection without touching the observed repository, processor or caller settings.</summary>
-        public void Dispose() { lock (_gate) { if (_disposed) return; _disposed = true; _lifetime.Cancel(); } }
+        public void Dispose()
+        {
+            lock (_gate)
+            {
+                if (_disposed) return; _disposed = true; _lifetime.Cancel();
+                if (_pending == null || _pending.IsCompleted) _lifetime.Dispose();
+                else _pending.ContinueWith(_ => _lifetime.Dispose(), TaskScheduler.Default);
+            }
+        }
     }
 }
