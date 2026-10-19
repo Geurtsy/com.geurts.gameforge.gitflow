@@ -142,7 +142,14 @@ namespace Geurts.GameForge.GitFlow.Editor
                 {
                     if (temporary != null)
                     {
-                        try { CheckPath(temporary); Directory.Delete(temporary, true); }
+                        try
+                        {
+                            CheckPath(temporary);
+                            // Fetch writes new read-only object files. Clear only that attribute inside this owned object store.
+                            foreach (string file in Directory.GetFiles(temporary, "*", SearchOption.AllDirectories))
+                            { CheckPath(file); File.SetAttributes(file, File.GetAttributes(file) & ~FileAttributes.ReadOnly); }
+                            Directory.Delete(temporary, true);
+                        }
                         catch (Exception error) { issues.Add("Temporary inspection cleanup failed at " + temporary + ": " + Detail(error)); queue = "Partial"; }
                     }
                 }

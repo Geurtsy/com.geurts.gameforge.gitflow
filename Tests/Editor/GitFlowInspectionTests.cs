@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Geurts.GameForge.GitFlow.Editor;
 using Geurts.GameForge.God.Editor;
@@ -253,7 +254,7 @@ namespace Geurts.GameForge.GitFlow.Tests
         private static string Fingerprint(string directory)
         {
             using (var hash = SHA256.Create()) return string.Join("\n", Directory.GetFiles(directory, "*", SearchOption.AllDirectories).OrderBy(value => value, StringComparer.Ordinal)
-                .Select(path => path.Substring(directory.Length) + ":" + Convert.ToBase64String(hash.ComputeHash(File.ReadAllBytes(path)))));
+                .Select(path => path.Substring(directory.Length) + ":" + File.GetAttributes(path) + ":" + Convert.ToBase64String(hash.ComputeHash(File.ReadAllBytes(path)))));
         }
 
         /// <summary>Runs bounded real Git only inside fixtures with console and credential prompts suppressed.</summary>
@@ -262,12 +263,7 @@ namespace Geurts.GameForge.GitFlow.Tests
             var start = new ProcessStartInfo("git") { WorkingDirectory = directory, UseShellExecute = false, CreateNoWindow = true,
                 RedirectStandardOutput = true, RedirectStandardError = true, Arguments = string.Join(" ", arguments.Select(value => "\"" + value.Replace("\\", "/").Replace("\"", "\\\"") + "\"")) };
             start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
-            using (var process = Process.Start(start))
-            {
-                var output = process.StandardOutput.ReadToEndAsync(); var error = process.StandardError.ReadToEndAsync();
-                if (!process.WaitForExit(15000)) { process.Kill(); throw new TimeoutException("Fixture Git timed out."); }
-                Assert.That(process.ExitCode, Is.EqualTo(0), error.GetAwaiter().GetResult()); return output.GetAwaiter().GetResult();
-            }
+            using (var budget = new CancellationTokenSource(TimeSpan.FromSeconds(15))) return GitFlowProcess.Run(start, budget.Token);
         }
     }
 }
