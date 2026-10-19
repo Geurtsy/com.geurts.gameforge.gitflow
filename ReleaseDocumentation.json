@@ -1,0 +1,19 @@
+{
+  "packageId": "com.geurts.gameforge.gitflow",
+  "packageVersion": "0.1.0",
+  "currentDocuments": [
+    "README.md",
+    "Documentation~/AIUsability.md",
+    "Documentation~/Validation.md"
+  ],
+  "integrationRecipes": [],
+  "schemaVersion": "1.0.0",
+  "historicalDocuments": [],
+  "examples": [
+    {
+      "source": "Tools~/Examples/InspectionExample.cs",
+      "symbol": "InspectionExample"
+    }
+  ],
+  "previousVersion": "0.0.0"
+}

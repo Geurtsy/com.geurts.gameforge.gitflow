@@ -1,0 +1,12 @@
+name: validate
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate source and release declarations
+        shell: pwsh
+        run: ./Tools~/Validate-Release.ps1

@@ -1,0 +1,221 @@
+// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using Geurts.GameForge.GitFlow.Editor;
+using Geurts.GameForge.God.Editor;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace Geurts.GameForge.GitFlow.Tests
+{
+    /// <summary>Disposable real-Git acceptance fixtures for the viewer's material preservation and truthful-state boundaries.</summary>
+    public sealed class GitFlowInspectionTests
+    {
+        private string _root, _checkout, _remote;
+
+        /// <summary>Creates an isolated remote and checkout; no production repository or processor is used.</summary>
+        [SetUp]
+        public void SetUp()
+        {
+            _root = Path.Combine(Path.GetTempPath(), "ggf_test_" + Guid.NewGuid().ToString("N"));
+            _checkout = Path.Combine(_root, "checkout"); _remote = Path.Combine(_root, "remote repo.git");
+            Directory.CreateDirectory(_root); Directory.CreateDirectory(_checkout);
+            Run(_root, "init", "--bare", _remote); Run(_checkout, "init", "-b", "main");
+            Run(_checkout, "config", "user.email", "fixture@example.invalid"); Run(_checkout, "config", "user.name", "GitFlow fixture");
+            Write("tracked.txt", "base\r\n"); Run(_checkout, "add", "."); Run(_checkout, "commit", "-m", "fixture base");
+            Run(_checkout, "remote", "add", "origin", _remote); Run(_checkout, "push", "origin", "main");
+        }
+
+        /// <summary>Removes only this fixture's validated temporary root after processes have exited.</summary>
+        [TearDown]
+        public void TearDown()
+        {
+            Assert.That(Path.GetFullPath(_root).StartsWith(Path.GetFullPath(Path.GetTempPath()) + "ggf_test_", StringComparison.OrdinalIgnoreCase));
+            foreach (string path in Directory.GetFiles(_root, "*", SearchOption.AllDirectories)) File.SetAttributes(path, FileAttributes.Normal);
+            Directory.Delete(_root, true);
+        }
+
+        /// <summary>Exercises all five queue phases, a released lease, matching receipts, shared API/UI identity and operation declarations.</summary>
+        [Test]
+        public async Task ViewerAndApiUseOneObservationForAllPhases()
+        {
+            string source = Run(_checkout, "rev-parse", "HEAD").Trim();
+            string[] phases = { "queued", "processing", "validating", "integrated", "blocked" };
+            for (int i = 0; i < phases.Length; i++) PublishRequest(i, phases[i], source);
+            PublishLease("released", 1);
+            WriteState(new JObject { ["status"] = "running", ["pid"] = Process.GetCurrentProcess().Id });
+            using (var service = new GitFlowInspection())
+            {
+                GitFlowSnapshot result = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(result.Issues, Is.Empty, string.Join("\n", result.Issues));
+                Assert.That(result.QueueState, Is.EqualTo("Observed")); Assert.That(result.LeaseState, Is.EqualTo("Released"));
+                CollectionAssert.AreEquivalent(new[] { "Queued", "Processing", "Validating", "Delivered", "Failed" }, result.Requests.Select(value => value.State));
+                Assert.That(result.ProcessorState, Is.EqualTo("Unknown")); StringAssert.Contains("Recorded PID exists", result.ProcessorDetail);
+                Assert.That(result.Requests.Single(value => value.State == "Delivered").ReceiptJson, Is.Not.Empty);
+                Assert.That(result.Requests.Single(value => value.State == "Failed").Failure, Does.Contain("required check failed"));
+                var window = ScriptableObject.CreateInstance<GitFlowWindow>();
+                try
+                {
+                    window.CreateGUI(); window.Present(result);
+                    Assert.That(window.DisplayedSnapshot, Is.SameAs(result));
+                    Assert.That(window.rootVisualElement.Query<Foldout>().ToList().Any(value => value.text == "Help"));
+                    Assert.That(window.rootVisualElement.Query<Foldout>().ToList().Any(value => value.text.Contains("Error — Failed")));
+                    Assert.That(window.rootVisualElement.ClassListContains("geurts-forge"));
+                }
+                finally { UnityEngine.Object.DestroyImmediate(window); }
+                var actions = new GitFlowAutomationProvider().Operations().ToArray();
+                Assert.That(actions.Select(value => value.Id), Is.EqualTo(new[] { "inspect_queue" }));
+                Assert.That(actions[0].MutatesProject, Is.False); Assert.That(actions[0].ConfirmationRequired, Is.False);
+            }
+        }
+
+        /// <summary>Proves repeated refresh preserves exact caller files/index/FETCH_HEAD, remote objects/refs and never invokes a publisher.</summary>
+        [Test]
+        public async Task RepeatedRefreshPreservesFilesIndexesRefsAndPublisherSentinel()
+        {
+            PublishRequest(0, "queued", Run(_checkout, "rev-parse", "HEAD").Trim());
+            Write("Tools/IntegrationQueue/integration_queue.py", "raise RuntimeError('Publisher must never be invoked')\r\n");
+            Write("tracked.txt", "staged\r\n"); Run(_checkout, "add", "tracked.txt"); Write("tracked.txt", "unstaged\r\n"); Write("untracked.txt", "preserve me\r\n");
+            Write(".git/FETCH_HEAD", "preserve unrelated fetch state\r\n");
+            string files = Fingerprint(_checkout), remote = Fingerprint(_remote);
+            string[] before = Directory.GetDirectories(Path.GetTempPath(), "ggf_inspect_*");
+            using (var service = new GitFlowInspection())
+            {
+                var first = service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(service.RefreshAsync(new GitFlowTarget(_checkout)), Is.SameAs(first));
+                Assert.Throws<InvalidOperationException>(() => service.RefreshAsync(new GitFlowTarget(_checkout, "other")));
+                Assert.That((await first).Complete, Is.True);
+                Assert.Throws<InvalidOperationException>(() => service.RefreshAsync(new GitFlowTarget(_checkout)));
+                await Task.Delay(2100);
+                Assert.That((await service.RefreshAsync(new GitFlowTarget(_checkout))).Complete, Is.True);
+                Assert.That(service.LastSnapshot.Requests.Count, Is.EqualTo(1));
+            }
+            Assert.That(Fingerprint(_checkout), Is.EqualTo(files), "Caller checkout/index/config/ref bytes changed");
+            Assert.That(Fingerprint(_remote), Is.EqualTo(remote), "Remote files/refs changed");
+            CollectionAssert.AreEquivalent(before, Directory.GetDirectories(Path.GetTempPath(), "ggf_inspect_*"));
+        }
+
+        /// <summary>Keeps valid requests visible when malformed control records and unknown leases are present.</summary>
+        [Test]
+        public async Task MalformedAndFutureRecordsStayActionable()
+        {
+            string source = Run(_checkout, "rev-parse", "HEAD").Trim(); PublishRequest(0, "queued", source);
+            Write("IntegrationRequest.json", "{\"schema\":1,\"schema\":2}"); PublishControl("refs/heads/codex/queue/q_20261019_000001_000000000001");
+            PublishLease("owned", 2);
+            using (var service = new GitFlowInspection())
+            {
+                var result = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(result.QueueState, Is.EqualTo("Partial")); Assert.That(result.Requests.Count, Is.EqualTo(1));
+                Assert.That(result.LeaseState, Is.EqualTo("Unavailable")); Assert.That(result.Issues.Count, Is.EqualTo(2));
+                Assert.That(result.Issues.All(value => value.Contains("Preserve control data")));
+            }
+        }
+
+        /// <summary>Distinguishes stopped OS process evidence from stale reports and never expires an owned lease by date.</summary>
+        [Test]
+        public async Task StoppedAndStaleHealthNeverInventLeaseExpiry()
+        {
+            PublishLease("owned", 1); WriteState(new JObject { ["status"] = "running", ["pid"] = int.MaxValue });
+            using (var service = new GitFlowInspection())
+            {
+                var stopped = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(stopped.ProcessorState, Is.EqualTo("Stopped")); Assert.That(stopped.LeaseState, Is.EqualTo("Owned / health unknown"));
+                await Task.Delay(2100); WriteState(new JObject { ["status"] = "running", ["pid"] = Process.GetCurrentProcess().Id });
+                File.SetLastWriteTimeUtc(Path.Combine(_checkout, ".git/integration_processor/processor-state.json"), DateTime.UtcNow.AddDays(-1));
+                var stale = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(stale.ProcessorState, Is.EqualTo("Stale / health unknown")); Assert.That(stale.LeaseState, Is.EqualTo("Owned / health unknown"));
+            }
+        }
+
+        /// <summary>Separates malformed local state, genuine retained failure and unavailable remote transport without configuration changes.</summary>
+        [Test]
+        public async Task FailedUnavailableAndMalformedProcessorEvidenceRemainVisible()
+        {
+            WriteState(new JObject { ["status"] = "blocked", ["blocker"] = "validation gate failed" });
+            using (var service = new GitFlowInspection())
+            {
+                var failed = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(failed.ProcessorState, Is.EqualTo("Failed (reported)")); StringAssert.Contains("validation gate failed", failed.ProcessorDetail);
+                await Task.Delay(2100); Write(".git/integration_processor/processor-state.json", "{broken");
+                var malformed = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(malformed.ProcessorState, Is.EqualTo("Unavailable")); Assert.That(malformed.QueueState, Is.EqualTo("Partial"));
+                await Task.Delay(2100); Run(_checkout, "config", "remote.origin.url", Path.Combine(_root, "missing.git"));
+                var unavailable = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(unavailable.QueueState, Is.EqualTo("Unavailable")); Assert.That(unavailable.Issues, Is.Not.Empty);
+            }
+        }
+
+        /// <summary>Disposed lifetime refuses new work and missing repositories remain unavailable without creating directories.</summary>
+        [Test]
+        public async Task MissingAndDisposedInspectionCleanUp()
+        {
+            string missing = Path.Combine(_root, "never-create"); var service = new GitFlowInspection();
+            var result = await service.RefreshAsync(new GitFlowTarget(missing));
+            Assert.That(result.QueueState, Is.EqualTo("Unavailable")); Assert.That(Directory.Exists(missing), Is.False);
+            service.Dispose(); service.Dispose(); Assert.Throws<ObjectDisposedException>(() => service.RefreshAsync(new GitFlowTarget(_checkout)));
+        }
+
+        /// <summary>Creates exact protocol request metadata and a source/version-matched receipt for the delivered case.</summary>
+        private void PublishRequest(int index, string status, string source)
+        {
+            string id = "q_20261019_00000" + index + "_" + index.ToString("x12");
+            var request = new JObject { ["schema"] = 1, ["id"] = id, ["status"] = status, ["title"] = "Fixture " + status,
+                ["source"] = source, ["size"] = "small", ["version"] = "0.1.0", ["validation"] = new JArray("actual fixture claim"),
+                ["blocker"] = status == "blocked" ? "required check failed; inspect fixture.log" : "" };
+            if (status == "integrated")
+            {
+                Write("Tools/IntegrationQueue/Receipts/" + id + ".json", new JObject { ["schema"] = 1, ["id"] = id, ["source"] = source, ["version"] = "0.1.0", ["validation"] = "fixture" }.ToString());
+                Run(_checkout, "add", "."); Run(_checkout, "commit", "-m", "fixture receipt");
+                request["main_commit"] = Run(_checkout, "rev-parse", "HEAD").Trim(); Run(_checkout, "push", "origin", "main");
+            }
+            Write("IntegrationRequest.json", request.ToString()); PublishControl("refs/heads/codex/queue/" + id);
+        }
+
+        /// <summary>Publishes a lease record whose deliberately old date never serves as an expiry signal.</summary>
+        private void PublishLease(string state, int protocol)
+        {
+            Write("IntegrationRequest.json", new JObject { ["lease_protocol"] = protocol, ["lease_seconds"] = 1800,
+                ["state"] = state, ["owner"] = new string('a', 32), ["host"] = "fixture", ["updated_utc"] = "2000-01-01T00:00:00Z" }.ToString());
+            PublishControl("refs/heads/codex/integration-lock");
+        }
+
+        /// <summary>Commits control data only inside the disposable fixture and publishes a normal non-force ref.</summary>
+        private void PublishControl(string reference)
+        { Run(_checkout, "add", "IntegrationRequest.json"); Run(_checkout, "commit", "-m", "fixture control"); Run(_checkout, "push", "origin", "HEAD:" + reference); }
+
+        /// <summary>Writes local processor evidence without starting a processor.</summary>
+        private void WriteState(JObject value) => Write(".git/integration_processor/processor-state.json", value.ToString());
+
+        /// <summary>Writes one known disposable fixture path, creating only its missing parent.</summary>
+        private void Write(string relative, string value)
+        { string path = Path.Combine(_checkout, relative); Directory.CreateDirectory(Path.GetDirectoryName(path)); File.WriteAllText(path, value, new UTF8Encoding(false)); }
+
+        /// <summary>Hashes every file path and raw byte so preservation covers index, refs, settings and untracked content.</summary>
+        private static string Fingerprint(string directory)
+        {
+            using (var hash = SHA256.Create()) return string.Join("\n", Directory.GetFiles(directory, "*", SearchOption.AllDirectories).OrderBy(value => value, StringComparer.Ordinal)
+                .Select(path => path.Substring(directory.Length) + ":" + Convert.ToBase64String(hash.ComputeHash(File.ReadAllBytes(path)))));
+        }
+
+        /// <summary>Runs bounded real Git only inside fixtures with console and credential prompts suppressed.</summary>
+        private static string Run(string directory, params string[] arguments)
+        {
+            var start = new ProcessStartInfo("git") { WorkingDirectory = directory, UseShellExecute = false, CreateNoWindow = true,
+                RedirectStandardOutput = true, RedirectStandardError = true, Arguments = string.Join(" ", arguments.Select(value => "\"" + value.Replace("\\", "/").Replace("\"", "\\\"") + "\"")) };
+            start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
+            using (var process = Process.Start(start))
+            {
+                var output = process.StandardOutput.ReadToEndAsync(); var error = process.StandardError.ReadToEndAsync();
+                if (!process.WaitForExit(15000)) { process.Kill(); throw new TimeoutException("Fixture Git timed out."); }
+                Assert.That(process.ExitCode, Is.EqualTo(0), error.GetAwaiter().GetResult()); return output.GetAwaiter().GetResult();
+            }
+        }
+    }
+}

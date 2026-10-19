@@ -1,0 +1,101 @@
+{
+  "features": [
+    {
+      "implemented": true,
+      "operations": [
+        "inspect_queue"
+      ],
+      "id": "queue_inspection",
+      "validation": [
+        "disposable_real_git_and_editor_acceptance_pending"
+      ],
+      "maturity": "pre_release",
+      "provider": "editor",
+      "description": "Bounded read-only queue, local process observation, leases and receipts shared by UI/API."
+    },
+    {
+      "implemented": false,
+      "operations": [],
+      "id": "submission_and_publisher",
+      "validation": [
+        "not_implemented"
+      ],
+      "maturity": "planned",
+      "provider": "none",
+      "description": "Idempotent submission and an independent deterministic publisher."
+    },
+    {
+      "implemented": false,
+      "operations": [],
+      "id": "recovery_and_repair",
+      "validation": [
+        "not_implemented"
+      ],
+      "maturity": "planned",
+      "provider": "none",
+      "description": "Fenced recovery, native identities and optional authorized AI repair."
+    }
+  ],
+  "packageId": "com.geurts.gameforge.gitflow",
+  "packageVersion": "0.1.0",
+  "prerequisites": [
+    {
+      "required": true,
+      "kind": "package",
+      "minimumVersion": "0.39.3",
+      "id": "com.geurts.gameforge.god",
+      "detail": "Exact minimum declared in package.json."
+    },
+    {
+      "required": true,
+      "kind": "package",
+      "minimumVersion": "3.2.2",
+      "id": "com.unity.nuget.newtonsoft-json",
+      "detail": "Exact minimum declared in package.json."
+    },
+    {
+      "required": true,
+      "kind": "licensed_integration",
+      "minimumVersion": "",
+      "id": "odin_inspector",
+      "detail": "Separately licensed Odin Inspector; no vendor redistribution."
+    },
+    {
+      "required": true,
+      "kind": "licensed_integration",
+      "minimumVersion": "",
+      "id": "quantum_console",
+      "detail": "Separately acquired Quantum Console; no vendor redistribution."
+    },
+    {
+      "required": true,
+      "kind": "external_tool",
+      "minimumVersion": "",
+      "id": "git_for_windows",
+      "detail": "Non-interactive Git reads; authentication helpers disabled."
+    }
+  ],
+  "maturity": "pre_release",
+  "operations": [
+    {
+      "confirmationRequired": false,
+      "id": "inspect_queue",
+      "source": "Editor/GitFlowBrick.cs",
+      "description": "Explicit bounded read-only refresh with typed GitFlowTarget payload.",
+      "symbol": "GitFlowAutomationProvider"
+    }
+  ],
+  "schemaVersion": "1.0.0",
+  "validation": {
+    "unityVersion": "6000.6.3f1",
+    "unverified": [
+      "native_rendering",
+      "private_https",
+      "ssh",
+      "processor_lock_ownership",
+      "current_main_ancestry",
+      "validation_artifact_content"
+    ],
+    "scope": "Candidate: real Git preservation and fault fixtures; native presentation pending."
+  }
+}
