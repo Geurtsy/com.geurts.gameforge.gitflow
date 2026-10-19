@@ -1,6 +1,6 @@
-# GitFlow 0.1.0 validation
+# GitFlow 0.1.1 validation
 
-Unity 6000.6.3f1 compiled the Git-resolved candidate and supported API example. Eight owning acceptance fixtures passed, zero failed/skipped. Exact candidate pins, source fingerprint and artifact hashes are in AIUsabilityValidation.json; the durable NUnit report is Acceptance-0.1.0.xml. Editor.log and the resolved fixture manifest/lockfile are release evidence assets. No test ran in a live consumer and no player build was created.
+Unity 6000.6.3f1 compiled the Git-resolved candidate and supported API example. Eight owning acceptance fixtures passed, zero failed/skipped. Exact candidate pins, source fingerprint and artifact hashes are in AIUsabilityValidation.json; the durable NUnit report is Acceptance-0.1.1.xml. Editor.log and the resolved fixture manifest/lockfile are release evidence assets. No test ran in a live consumer and no player build was created.
 
 The new disposable project is C:\gf\gitflow-test. God was resolved from the authoritative catalogue commit 5e1c38f0be577c68bb4e49b0e872440d5015ac81. Required Odin 4.0.2.4 and QFSW.QC were reused privately from the user's existing validation assets; no vendor content is distributed. Git for Windows 2.56.0.windows.2 was used. Unity ran hidden with -batchmode -nographics -nosound from startup through shutdown. No mouse/keyboard injection, window activation, global audio change or Dreadvault processor operation was performed.
 
@@ -32,7 +32,7 @@ Validation claims/artifact content, current-main ancestry and native project beh
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.0"
+  "packageVersion": "0.1.1"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

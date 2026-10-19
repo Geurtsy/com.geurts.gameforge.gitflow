@@ -1,6 +1,6 @@
 # Geurts Game Forge GitFlow
 
-Version: 0.1.0. Editor-only read-only queue inspection; submission, publishing, recovery and AI repair are planned, not available.
+Version: 0.1.1. Editor-only read-only queue inspection with explicit remedies for missing failure details; submission, publishing, recovery and AI repair are planned, not available.
 
 Use [Help and supported APIs](Documentation~/AIUsability.md). Start with **Tools > Geurts Game Forge > GitFlow**, choose an existing Git checkout and remote, and select **Refresh queue once**. God can embed the same tool. Opening/restoring a view performs no remote work. No consumer is installed or updated by source publication.
 
@@ -20,7 +20,7 @@ See [validation scope](Documentation~/Validation.md) for source/environment evid
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.0"
+  "packageVersion": "0.1.1"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

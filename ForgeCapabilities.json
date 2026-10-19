@@ -37,7 +37,7 @@
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.0",
+  "packageVersion": "0.1.1",
   "prerequisites": [
     {
       "required": true,
@@ -92,7 +92,7 @@
       "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
       "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
       "Current remote-main ancestry, validation artifact contents and execution. Receipt identity/source/version is checked; underlying claims are not rerun.",
-      "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.0.",
+      "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.1.",
       "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
       "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
     ],
