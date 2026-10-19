@@ -157,5 +157,17 @@ if ($RequireUnityEvidence) {
         foreach ($testName in $recipe.tests) { Require ($testName -in @($record[0].passedTests)) "Integration recipe test was not executed: $testName" }
     }
     if ($evidence.PSObject.Properties.Name -contains 'publicationReady') { Require ([bool]$evidence.publicationReady) 'Required acceptance is still pending. See the candidate validation record before publishing.' }
+    $publisher=Read-Json 'Documentation~/PublisherValidation.json'
+    Require ($publisher.packageVersion -eq $package.version -and $publisher.coreFingerprint -ceq (& (Join-Path $PSScriptRoot 'Get-PublisherFingerprint.ps1') -RepositoryRoot $RepositoryRoot)) 'Publisher source/recipe evidence is stale.'
+    $publisherReport=Resolve-Owned $publisher.report
+    Require ((Get-FileHash -LiteralPath $publisherReport -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $publisher.reportSha256) 'Publisher acceptance report checksum mismatch.'
+    $actual=Read-Json $publisher.report
+    Require ($actual.passed -eq 10 -and $actual.failed -eq 0 -and $actual.detached_parent_no_console -and $publisher.passed -eq 10 -and $publisher.failed -eq 0) 'Detached publisher acceptance did not pass all ten required fixtures.'
+}
+$runner = Read-Json 'Tools~/RunnerRelease.json'
+Require ($runner.schema -eq 1 -and $runner.version -eq $package.version -and $runner.sourceFingerprint -eq $fingerprint -and $runner.target -eq 'win-x64' -and $runner.protocol -eq 1) 'Runner release manifest does not match current source/version/protocol.'
+Require ($runner.files.PSObject.Properties.Name -notcontains 'RunnerRelease.json') 'Runner manifest must not contain a recursive self-hash.'
+foreach ($name in @('GeurtsGitFlow.exe','GeurtsGitFlow.dll','GeurtsGitFlow.deps.json','GeurtsGitFlow.runtimeconfig.json','Newtonsoft.Json.dll','THIRD-PARTY-NOTICES.txt')) {
+    Require ($runner.files.PSObject.Properties.Name -contains $name -and [string]$runner.files.$name -cmatch '^[0-9a-f]{64}$') "Missing/invalid released runner hash: $name"
 }
 [pscustomobject]@{ Package=$package.name; Version=$package.version; SourceFingerprint=$fingerprint; CurrentGuides=$current.Count; Operations=@($capability.operations).Count; UnityEvidenceRequired=[bool]$RequireUnityEvidence } | ConvertTo-Json -Compress

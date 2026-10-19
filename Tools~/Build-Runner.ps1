@@ -13,7 +13,7 @@ foreach ($path in @($OutputDirectory,$IntermediateDirectory)) {
     if ($full.StartsWith($RepositoryRoot + '\',[StringComparison]::OrdinalIgnoreCase)) { throw 'Build outside the owning source tree to preserve its inventory/fingerprint.' }
 }
 $env:DOTNET_CLI_TELEMETRY_OPTOUT='1'; $env:DOTNET_NOLOGO='1'
-& dotnet publish (Join-Path $PSScriptRoot 'Runner/GitFlow.Runner.csproj') --configuration Release --no-self-contained --output $OutputDirectory "-p:BaseIntermediateOutputPath=$IntermediateDirectory\" "-p:BaseOutputPath=$IntermediateDirectory\bin\" "-p:PathMap=$RepositoryRoot=/_/" --nologo
+& dotnet publish (Join-Path $PSScriptRoot 'Runner/GitFlow.Runner.csproj') --configuration Release --no-self-contained --output $OutputDirectory "-p:BaseIntermediateOutputPath=$IntermediateDirectory\" "-p:BaseOutputPath=$IntermediateDirectory\bin\" "-p:PathMap=$RepositoryRoot=/_/" -p:RestoreLockedMode=true --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Independent Windows runner publication failed.' }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Runner/THIRD-PARTY-NOTICES.txt') -Destination $OutputDirectory
 $files = [ordered]@{}

@@ -106,7 +106,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                             if (Git(temporary, budget.Token, "cat-file", "-t", pair.Value).Trim() != "commit") throw new InvalidDataException("Control object is not a commit.");
                             if (pair.Key.StartsWith(GitFlowGit.Prefix, StringComparison.Ordinal))
                             {
-                                JObject native = ParseObject(Git(temporary, budget.Token, "show", pair.Value + ":GitFlowRecord.json"));
+                                string nativeRaw = Git(temporary, budget.Token, "show", pair.Value + ":GitFlowRecord.json"); JObject native = ParseObject(nativeRaw);
                                 if (pair.Key == GitFlowGit.LeaseRef)
                                 {
                                     GitFlowLease.Validate(native);
@@ -114,7 +114,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                                     lease = refs.ContainsKey(LeaseRef) ? "Native: " + nativeState + "; legacy lease also present" : nativeState;
                                     leaseDetail = (refs.ContainsKey(LeaseRef) ? leaseDetail + "\n" : "") + "Native lease " + pair.Value + ": " + native.ToString(Formatting.Indented) + "\nUTC is audit-only; no takeover permission is inferred.";
                                 }
-                                else rows.Add(ReadNativeRequest(native, pair.Key, pair.Value, temporary, remote, budget.Token, issues));
+                                else rows.Add(ReadNativeRequest(native, nativeRaw, pair.Key, pair.Value, temporary, remote, budget.Token, issues));
                                 continue;
                             }
                             string raw = Git(temporary, budget.Token, "show", pair.Value + ":IntegrationRequest.json");
@@ -206,7 +206,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         }
 
         /// <summary>Checks native request/receipt identity and retained stream hashes; required gate semantics remain the project owner's evidence.</summary>
-        private static GitFlowRequest ReadNativeRequest(JObject data, string reference, string commit, string temporary, string remote, CancellationToken cancellation, List<string> issues)
+        private static GitFlowRequest ReadNativeRequest(JObject data, string originalJson, string reference, string commit, string temporary, string remote, CancellationToken cancellation, List<string> issues)
         {
             string source = Text(data, "source"), id = Text(data, "id"), state = State(Text(data, "status")), published = Text(data, "main_commit");
             if ((int?)data["schema"] != 1 || Text(data, "kind") != "request" || Text(data, "adapter") != "generic_git" || !GitFlowGit.IsSha(source) || id != "gf_" + source || reference != GitFlowGit.RequestPrefix + id)
@@ -229,7 +229,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             string failure = Text(data, "blocker");
             if (state == "Failed" && string.IsNullOrWhiteSpace(failure)) { failure = "Native failure lacks actionable details. Preserve original ID/candidate/version and ask its operator for the failure evidence."; issues.Add(id + ": " + failure); }
             if (Text(data, "status") == "published_pending_pull") verification += " Publication is recorded; required pull/handoff remains pending. " + Text(data, "pull_detail");
-            return new GitFlowRequest(id, state, Text(data, "title"), source, Text(data, "size"), Text(data, "version"), published, failure, commit, data.ToString(Formatting.Indented), receipt, verification);
+            return new GitFlowRequest(id, state, Text(data, "title"), source, Text(data, "size"), Text(data, "version"), published, failure, commit, originalJson, receipt, verification);
         }
 
         /// <summary>Reads local status without creating the state directory or probing its ownership lock.</summary>

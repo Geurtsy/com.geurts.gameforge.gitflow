@@ -203,7 +203,7 @@ namespace Geurts.GameForge.GitFlow.Tests
                 fields.Single(field => field.label == "Repository").value = _checkout;
                 fields.Single(field => field.label == "Native console executable").value = executable;
                 fields.Single(field => field.label == "Literal arguments (one per line)").value = "--version";
-                window.rootVisualElement.Query<Toggle>().ToList().Single(toggle => toggle.text.StartsWith("Every required command", StringComparison.Ordinal)).value = true;
+                window.rootVisualElement.Query<Toggle>().ToList().Single(toggle => toggle.label?.StartsWith("Every required command", StringComparison.Ordinal) == true).value = true;
                 string before = Fingerprint(_checkout);
                 GitFlowPolicyReview controls = await window.ReviewPolicyControlsAsync();
                 GitFlowPolicyReview api = await GitFlowBrick.ConfigurationService.ReviewPolicyAsync(_checkout, "VERSION", new[] { "Tools/Validation" }, new[] { new GitFlowGate { Executable = executable, Arguments = new[] { "--version" }, TimeoutSeconds = 300 } });
@@ -267,6 +267,7 @@ namespace Geurts.GameForge.GitFlow.Tests
                 GitFlowSnapshot observation = await inspection.RefreshAsync(new GitFlowTarget(_checkout));
                 Assert.That(observation.QueueState, Is.EqualTo("Observed"), string.Join("\n", observation.Issues)); Assert.That(observation.LeaseState, Is.EqualTo("Released"));
                 StringAssert.Contains("retained stream hashes match", observation.Requests.Single().ReceiptDetail);
+                Assert.That(observation.Requests.Single().EvidenceJson, Is.EqualTo(git.Run(default, "show", control + ":GitFlowRecord.json")));
                 Assert.That(Fingerprint(_checkout), Is.EqualTo(before)); Assert.That(Fingerprint(_remote), Is.EqualTo(remote));
             }
             record["receipt"]["validation"]["checks"][0]["stdout_sha256"] = new string('0', 64);
