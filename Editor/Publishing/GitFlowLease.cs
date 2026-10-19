@@ -133,7 +133,8 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Refuses legacy/future protocols, unknown timings and malformed records rather than assuming abandonment.</summary>
         internal static void Validate(JObject record)
         {
-            if ((int?)record["schema"] != 1 || (string)record["kind"] != "lease" || (int?)record["lease_protocol"] != 1 || (int?)record["owner_seconds"] != OwnerSeconds ||
+            if (new[] { "schema", "lease_protocol", "owner_seconds", "renewal_seconds", "transport_seconds", "write_reserve_seconds" }.Any(name => record[name]?.Type != JTokenType.Integer) ||
+                (int?)record["schema"] != 1 || (string)record["kind"] != "lease" || (int?)record["lease_protocol"] != 1 || (int?)record["owner_seconds"] != OwnerSeconds ||
                 (int?)record["renewal_seconds"] != RenewalSeconds || (int?)record["transport_seconds"] != 15 || (int?)record["write_reserve_seconds"] != WriteReserveSeconds ||
                 !System.Text.RegularExpressions.Regex.IsMatch((string)record["owner"] ?? "", "^[0-9a-f]{32}$") || !new[] { "owned", "released" }.Contains((string)record["state"]))
                 throw new InvalidDataException("Incompatible native lease; preserve it and confirm the old owner stopped before an explicit protocol migration. No timestamp expiry is allowed.");

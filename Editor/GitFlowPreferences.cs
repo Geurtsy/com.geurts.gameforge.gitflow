@@ -14,7 +14,8 @@ namespace Geurts.GameForge.GitFlow.Editor
         public GitFlowGatePreference[] gates = Array.Empty<GitFlowGatePreference>();
         /// <summary>Preserves future/malformed settings instead of silently replacing them with defaults.</summary>
         public string ValidateSettings() => schema != 1 ? "Unknown GitFlow settings schema; preserve the file and upgrade its owner." :
-            !Regex.IsMatch(remoteName ?? "", "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,63}$") ? "Select a valid existing remote name." : null;
+            !Regex.IsMatch(remoteName ?? "", "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,63}$") ? "Select a valid existing remote name." :
+            gates == null || gates.Length > 8 || Array.Exists(gates, gate => gate == null) ? "Malformed command draft array; preserve the saved data and use its owning repair process." : null;
     }
 
     /// <summary>Unity-serializable command draft, separate from immutable committed project policy.</summary>

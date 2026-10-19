@@ -327,7 +327,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         {
             string source = (string)data["source"], id = (string)data["id"]; GitFlowGit.RequireSha(source); GitFlowGit.RequireSha((string)data["base"]);
             if (!string.IsNullOrEmpty((string)data["version"])) GitFlowPolicy.NextVersion((string)data["version"], "patch");
-            if ((int?)data["schema"] != 1 || (string)data["kind"] != "request" || (string)data["adapter"] != "generic_git" || id != "gf_" + source || reference != GitFlowGit.RequestPrefix + id ||
+            if (data["schema"]?.Type != JTokenType.Integer || (int?)data["schema"] != 1 || (string)data["kind"] != "request" || (string)data["adapter"] != "generic_git" || id != "gf_" + source || reference != GitFlowGit.RequestPrefix + id ||
                 !new[] { "queued", "processing", "validating", "delivered", "published_pending_pull", "failed" }.Contains((string)data["status"])) throw new InvalidDataException("Malformed/unknown native queue record: " + reference);
             if (!System.Text.RegularExpressions.Regex.IsMatch((string)data["policy_sha256"] ?? "", "^[0-9a-f]{64}$") || !DateTime.TryParse((string)data["submitted_utc"], out _)) throw new InvalidDataException("Native policy/time evidence missing: " + reference);
             if (!(data["dependencies"] is JArray dependencies) || dependencies.Count > 32 || dependencies.Any(value => value.Type != JTokenType.String || !System.Text.RegularExpressions.Regex.IsMatch((string)value, "^gf_[0-9a-f]{40}$") || (string)value == id) ||

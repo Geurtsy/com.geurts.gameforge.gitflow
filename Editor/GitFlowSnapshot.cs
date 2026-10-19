@@ -66,6 +66,8 @@ namespace Geurts.GameForge.GitFlow.Editor
         public string Remote { get; }
         public string ProcessorRoot { get; }
         /// <summary>Selects a local Git checkout and an existing remote name for one observation.</summary>
-        public GitFlowTarget(string repository, string remote = "origin", string processorRoot = "") { Repository = repository; Remote = remote; ProcessorRoot = processorRoot; }
+        public GitFlowTarget(string repository, string remote = "origin") : this(repository, remote, "") { }
+        /// <summary>Adds an explicitly selected native processor observation while retaining the original two-argument API.</summary>
+        public GitFlowTarget(string repository, string remote, string processorRoot) { Repository = repository; Remote = remote; ProcessorRoot = processorRoot; }
     }
 }

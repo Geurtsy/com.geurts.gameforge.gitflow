@@ -20,7 +20,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             Data = GitFlowGit.Json(json);
             if (Data.Properties().Any(property => !new[] { "schema", "adapter", "publication", "headless_silent_commands", "version_file", "gates", "protected_paths" }.Contains(property.Name)))
                 throw new InvalidDataException("Unknown project policy fields require an owning adapter upgrade; no requirement is silently ignored.");
-            if ((int?)Data["schema"] != 1 || (string)Data["adapter"] != "generic_git" || (string)Data["publication"] != "atomic_main" || (bool?)Data["headless_silent_commands"] != true)
+            if (Data["schema"]?.Type != JTokenType.Integer || (int?)Data["schema"] != 1 || (string)Data["adapter"] != "generic_git" || (string)Data["publication"] != "atomic_main" || Data["headless_silent_commands"]?.Type != JTokenType.Boolean || (bool?)Data["headless_silent_commands"] != true)
                 throw new InvalidDataException("Require schema 1, generic_git, atomic_main and an explicit headless_silent_commands declaration. PR/release-required projects need their own adapter.");
             VersionFile = Relative((string)Data["version_file"]);
             if (!(Data["gates"] is JArray gates) || gates.Count == 0 || gates.Count > 8 || !(Data["protected_paths"] is JArray paths) || paths.Count == 0)

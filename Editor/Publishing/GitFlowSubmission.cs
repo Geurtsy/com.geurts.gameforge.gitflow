@@ -104,7 +104,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private static GitFlowSubmissionResult Existing(GitFlowGit git, GitFlowSubmission request, string id, string commit, CancellationToken cancellation)
         {
             git.Fetch(commit, cancellation); JObject data = git.Record(commit, cancellation);
-            if ((int?)data["schema"] != 1 || (string)data["kind"] != "request" || (string)data["id"] != id || (string)data["source"] != request.Source ||
+            if (data["schema"]?.Type != JTokenType.Integer || (int?)data["schema"] != 1 || (string)data["kind"] != "request" || (string)data["id"] != id || (string)data["source"] != request.Source ||
                 (string)data["base"] != request.Base || (string)data["increment"] != request.Increment || !(data["dependencies"] is JArray dependencies) ||
                 !dependencies.Values<string>().SequenceEqual(request.Dependencies)) throw new InvalidDataException("Existing request has incompatible metadata. Preserve its original ID and ask the owning operator to review it.");
             return new GitFlowSubmissionResult(id, commit, (string)data["status"], true);

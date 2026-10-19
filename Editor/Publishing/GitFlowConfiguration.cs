@@ -112,6 +112,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         public static GitFlowPublisherOptions ReadOptions(string json)
         {
             JObject data = GitFlowGit.Json(json);
+            if (data["schema"]?.Type != JTokenType.Integer || (int?)data["schema"] != 1) throw new InvalidDataException("Host options require an explicit integer schema 1.");
             foreach (var property in data.Properties()) if (!new[] { "schema", "root", "remote", "originalCheckout", "resumeRequestId", "resumeReason" }.Contains(property.Name)) throw new InvalidDataException("Unknown host setting: " + property.Name);
             GitFlowPublisherOptions options = data.ToObject<GitFlowPublisherOptions>(); options.Validate(); return options;
         }
