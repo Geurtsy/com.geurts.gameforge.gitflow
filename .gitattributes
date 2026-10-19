@@ -1,2 +1,3 @@
 * text=auto eol=crlf
-Documentation~/Acceptance-0.1.0.xml -text
+# Preserve generated NUnit evidence as exact bytes; source whitespace checks do not reformat it.
+Documentation~/Acceptance-0.1.0.xml binary
