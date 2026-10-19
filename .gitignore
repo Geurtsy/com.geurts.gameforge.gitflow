@@ -2,7 +2,10 @@
 [Tt]emp/
 [Ll]ogs/
 [Oo]bj/
+[Bb]in/
 *.csproj
+!Tools~/Runner/GitFlow.Runner.csproj
+!Tools~/Runner/GitFlow.Acceptance.csproj
 *.sln
 *.user
 .vs/

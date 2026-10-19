@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.IO;
 using System.Linq;
@@ -10,8 +10,8 @@ using UnityEngine.UIElements;
 
 namespace Geurts.GameForge.GitFlow.Editor
 {
-    /// <summary>No-code queue viewer over the lifecycle-owned inspection API, with no automatic refresh or stored configuration.</summary>
-    public sealed class GitFlowWindow : EditorWindow
+    /// <summary>No-code inspection, submit-once and explicit publisher workflows, with no automatic refresh or process startup.</summary>
+    public sealed partial class GitFlowWindow : EditorWindow
     {
         private TextField _repository, _remote;
         private Button _refresh;
@@ -32,8 +32,10 @@ namespace Geurts.GameForge.GitFlow.Editor
             VisualElement root = rootVisualElement; root.Clear(); ForgeEditorTheme.ApplyToolkit(root);
             root.style.paddingLeft = root.style.paddingRight = root.style.paddingTop = root.style.paddingBottom = 12;
             var title = new Label("Geurts Game Forge GitFlow"); title.style.fontSize = 20; root.Add(title);
-            root.Add(new Label("Read-only queue and processor observations. Refresh deliberately; snapshots are never live telemetry."));
-            var scroll = new ScrollView(); scroll.style.flexGrow = 1; root.Add(scroll);
+            root.Add(new Label("Inspect deliberately, submit once, and configure an independent publisher. Snapshots are never live telemetry."));
+            var tabs = new TabView(); tabs.style.flexGrow = 1; root.Add(tabs);
+            var inspectTab = new Tab("Inspect"); tabs.Add(inspectTab);
+            var scroll = new ScrollView(); scroll.style.flexGrow = 1; inspectTab.Add(scroll);
             var scope = Section(scroll, "Repository and refresh", true);
             _repository = new TextField("Repository") { value = Path.GetFullPath(Path.Combine(Application.dataPath, "..")) };
             _remote = new TextField("Existing remote") { value = "origin" };
@@ -46,8 +48,9 @@ namespace Geurts.GameForge.GitFlow.Editor
             _status.style.whiteSpace = WhiteSpace.Normal; root.Add(_status);
             _results = new VisualElement(); scroll.Add(_results);
             var help = Section(scroll, "Help", false);
-            help.Add(new HelpBox("Select a local Git checkout and its existing remote, then Refresh queue once. Opening this window and expanding sections stay offline. Refresh is limited to 45 seconds and 128 requests, with a two-second cooldown. Values remain a dated snapshot until you refresh again.\n\nThis release reads protocol-1 codex/queue control refs, protocol-1 leases, recorded receipts and local integration_processor state. HTTPS without credentials and absolute local remotes are supported. No submission, processor startup, lock acquisition, retry, configuration save or consumer installation is available.\n\nA recorded PID does not prove ownership. Lease timestamps never prove expiry. Validation JSON contains the owner's claims; the viewer does not rerun those checks. For unavailable/malformed evidence, preserve it and consult the named queue operator.\n\nCode extensions use GitFlowBrick.Service.RefreshAsync(new GitFlowTarget(repository, remote)); the same snapshot feeds this view. See the package's local Documentation~/AIUsability.md for lifetime and adapter limits.", HelpBoxMessageType.Info));
+            help.Add(new HelpBox("Select a local Git checkout and its existing remote, then Refresh queue once. Opening this window and expanding sections stay offline. Refresh is limited to 45 seconds and 128 requests, with a two-second cooldown. Values remain a dated snapshot until you refresh again.\n\nInspection reads legacy codex/queue and native geurts/gitflow protocol-1 records. Public HTTPS and absolute local remotes are supported. It never submits, starts processors, takes locks or changes configuration. Submit and Publisher tabs contain separate explicit actions; consumer installation remains manual.\n\nA recorded PID does not prove ownership. Lease timestamps never prove expiry. Native receipt identities, tree and retained stream hashes are checked; required gate semantics and current-main ancestry are not rerun. For unavailable/malformed evidence, preserve it and consult the named queue operator.\n\nCode extensions use GitFlowBrick.Service.RefreshAsync(new GitFlowTarget(repository, remote, publisherRoot)); the exact same snapshot feeds this view. See local Documentation~/AIUsability.md for lifecycle and adapter limits.", HelpBoxMessageType.Info));
             StyleRows(scope); StyleRows(help);
+            BuildPublishingTabs(tabs);
         }
 
         /// <summary>Starts one explicit request while retaining the previous dated snapshot during failure.</summary>
@@ -59,7 +62,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             _refreshing = true; _refresh.SetEnabled(false); _status.text = "Inspecting once (45-second maximum). Previous results remain a dated snapshot.";
             try
             {
-                GitFlowSnapshot snapshot = await service.RefreshAsync(new GitFlowTarget(_repository.value, _remote.value));
+                GitFlowSnapshot snapshot = await service.RefreshAsync(new GitFlowTarget(_repository.value, _remote.value, _publisherRoot?.value ?? ""));
                 if (!_closed) Present(snapshot);
             }
             catch (Exception error) { if (!_closed) _status.text = "Refresh failed: " + error.GetType().Name + ": " + error.Message + " Previous results are unchanged."; }

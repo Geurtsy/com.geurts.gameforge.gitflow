@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net10.0</TargetFramework><LangVersion>9.0</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings><Nullable>disable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AssemblyName>GeurtsGitFlow.Acceptance</AssemblyName><TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetLockFilePath>$(MSBuildProjectDirectory)/GitFlow.Acceptance.packages.lock.json</NuGetLockFilePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <Compile Include="../../Editor/Publishing/*.cs" Link="Core/%(Filename)%(Extension)" />
+    <Compile Include="../../Editor/GitFlowProcess.cs" Link="Core/GitFlowProcess.cs" />
+    <Compile Include="IntegrationAcceptance.cs" />
+  </ItemGroup>
+</Project>

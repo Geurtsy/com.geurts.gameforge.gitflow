@@ -7,22 +7,28 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Unity 6000.6.3f1: 8 passed, 0 failed, 0 skipped; real Git preservation, fault fixtures, installed God dispatch and hidden UI/API identity."
+        "Owning Unity/native disposable acceptance; exact current evidence is recorded in Validation.md."
       ],
       "maturity": "pre_release",
       "provider": "editor",
-      "description": "Bounded read-only queue, local process observation, leases and receipts shared by UI/API."
+      "description": "Bounded read-only legacy/native queue, local process, lease and receipt inspection shared by UI/API."
     },
     {
-      "implemented": false,
-      "operations": [],
+      "implemented": true,
+      "operations": [
+        "submit_request",
+        "apply_policy",
+        "configure_publisher",
+        "start_publisher",
+        "stop_publisher"
+      ],
       "id": "submission_and_publisher",
       "validation": [
-        "not_implemented"
+        "Real disposable Git acceptance covers duplicate submissions, serial versions, required failures/recovery, healthy renewals, takeover/fencing, atomic rejection, cancellation, dirty preservation and trusted independent host launch/stop."
       ],
-      "maturity": "planned",
-      "provider": "none",
-      "description": "Idempotent submission and an independent deterministic publisher."
+      "maturity": "pre_release",
+      "provider": "editor",
+      "description": "Generic declared-version/required-command adapter, submit-once handoff, independent publisher, queue-owned versions, fenced renewable lease, atomic publication/receipts and bounded original clean-candidate/receipt continuation."
     },
     {
       "implemented": false,
@@ -33,11 +39,11 @@
       ],
       "maturity": "planned",
       "provider": "none",
-      "description": "Fenced recovery, native identities and optional authorized AI repair."
+      "description": "General conflict recovery, safe whitespace correction, native derived identities, committed-runner migration and optional explicitly authorized AI repair remain planned."
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.1",
+  "packageVersion": "0.2.0",
   "prerequisites": [
     {
       "required": true,
@@ -72,7 +78,14 @@
       "kind": "external_tool",
       "minimumVersion": "",
       "id": "git_for_windows",
-      "detail": "Non-interactive Git reads; authentication helpers disabled."
+      "detail": "Git for Windows; native no-console transport, no interactive credential helpers. Native publication supports local remotes or an externally supplied HTTPS token."
+    },
+    {
+      "required": false,
+      "kind": "external_tool",
+      "minimumVersion": "10.0.0",
+      "detail": "Required for the separately extracted independent Windows publisher only; inspection and submission do not launch it.",
+      "id": "dotnet_runtime"
     }
   ],
   "maturity": "pre_release",
@@ -83,6 +96,41 @@
       "source": "Editor/GitFlowBrick.cs",
       "description": "Explicit bounded read-only refresh with typed GitFlowTarget payload.",
       "symbol": "GitFlowAutomationProvider"
+    },
+    {
+      "symbol": "GitFlowAutomationProvider",
+      "description": "Explicit typed confirmed operation using the shared queue/configuration services and God lifecycle/foundation guards.",
+      "confirmationRequired": true,
+      "source": "Editor/GitFlowBrick.cs",
+      "id": "submit_request"
+    },
+    {
+      "symbol": "GitFlowAutomationProvider",
+      "description": "Explicit typed confirmed operation using the shared queue/configuration services and God lifecycle/foundation guards.",
+      "confirmationRequired": true,
+      "source": "Editor/GitFlowBrick.cs",
+      "id": "apply_policy"
+    },
+    {
+      "symbol": "GitFlowAutomationProvider",
+      "description": "Explicit typed confirmed operation using the shared queue/configuration services and God lifecycle/foundation guards.",
+      "confirmationRequired": true,
+      "source": "Editor/GitFlowBrick.cs",
+      "id": "configure_publisher"
+    },
+    {
+      "symbol": "GitFlowAutomationProvider",
+      "description": "Explicit typed confirmed operation using the shared queue/configuration services and God lifecycle/foundation guards.",
+      "confirmationRequired": true,
+      "source": "Editor/GitFlowBrick.cs",
+      "id": "start_publisher"
+    },
+    {
+      "symbol": "GitFlowAutomationProvider",
+      "description": "Explicit typed confirmed operation using the shared queue/configuration services and God lifecycle/foundation guards.",
+      "confirmationRequired": true,
+      "source": "Editor/GitFlowBrick.cs",
+      "id": "stop_publisher"
     }
   ],
   "schemaVersion": "1.0.0",
@@ -96,6 +144,6 @@
       "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
       "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
     ],
-    "scope": "Editor-only read-only observation. Eight owning acceptance fixtures passed on exact Git candidate; supported example compiled. Native rendered UI remains unverified."
+    "scope": "Editor-only shared workflows plus a separately compiled independent Windows generic publisher. Source-bound acceptance and all unverified native/UI/access surfaces are recorded in Validation.md."
   }
 }

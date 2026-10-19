@@ -2,14 +2,14 @@
 
 ## Help
 
-Prerequisites: an enabled GitFlow module under God, Unity 6000.6.3f1 or newer, Git for Windows, separately acquired licensed Odin Inspector and Quantum Console. The package is Editor-only. Ordinary use needs no code, JSON editing, processor setup or configuration saves.
+Prerequisites: an enabled GitFlow module under God, Unity 6000.6.3f1 or newer, Git for Windows, separately acquired licensed Odin Inspector and Quantum Console. The package is Editor-only. Inspection needs no code or processor setup. The separate Submit and Publisher tabs use shared typed services and no-code controls; see [Publisher Help](Publisher.md).
 
 1. Open Tools > Geurts Game Forge > GitFlow, or its installed-brick view in God.
 2. Choose an existing local checkout. Enter the name of its existing remote, normally origin.
 3. Select Refresh queue once. Inspect the completed timestamp, queue/processor/lease summaries and visible findings before expanding request/evidence sections.
 4. Refresh explicitly when another observation is wanted. Requests within two seconds are refused. Concurrent identical API calls share the current task; another target is refused while it runs. Closing a view detaches that view; God owns the shared service and stopping the brick cancels its operation.
 
-No observation runs on opening, restoration, repaint, section expansion or operation discovery. Scope fields are transient, not saved module configuration. Prior results keep their original timestamp while a refresh runs or fails; the selected scope of the result is shown inside its observation. A queued request is not delivery. Failed results include the queue's blocker and a route to its owning operator; the viewer cannot retry, release a lease, submit or publish.
+No observation runs on opening, restoration, repaint, section expansion or operation discovery. Scope fields are transient unless Save form drafts through God is explicitly selected. Loading saved drafts stays offline. Prior results keep their original timestamp while a refresh runs or fails; the selected scope of the result is shown inside its observation. A queued request is not delivery. Failed results include the queue's blocker and a route to its owning operator; Inspect never retries, releases a lease, submits or publishes. Separate authorized controls retain their own guards.
 
 ## API and extension boundary
 
@@ -55,9 +55,30 @@ Unavailable HTTPS access: this release deliberately disables credential helpers 
 
 Git fetches use only a unique temporary bare object store and no FETCH_HEAD. Target branches, index, uncommitted files, settings and remote refs are never written. Configuration commands only read the existing remote URL. No repository Python, PowerShell, validation, publisher or runner is launched. Temporary object stores are removed after completion/failure. API use and UI callbacks must be awaited/observed; do not block Unity's main thread.
 
-## Planned capabilities
+## Submission and publisher API
 
-Idempotent submission and independent publishing; queue-owned versions, fenced leases and receipts; same-ID recovery, safe whitespace correction, native identities and stopped-owner runner upgrades; optional separately authorized AI repair. None of these operations exists in this release. The Automation Technique remains the workflow owner. Dreadvault's processor, runner, policy and configuration are unchanged.
+GitFlowBrick.QueueService and ConfigurationService are shared lifecycle-owned services used by the Submit/Publisher controls. See [Publisher Help](Publisher.md) for policy reviews, God operations, independent host configuration/launch, leases, validation, receipts and the exact clean-candidate/original-receipt continuation boundary. Native geurts/gitflow inspection additionally checks receipt identities, candidate trees and retained stream hashes; it never reruns validation or proves current-main ancestry. An optional GitFlowTarget processorRoot observes the selected native state file without locks. Safe whitespace correction, native identity adapters, committed-runner migration and optional AI repair remain planned. Dreadvault's processor, runner, policy and configuration are unchanged.
+
+
+<!-- GEURTS-EXAMPLE: Tools~/Examples/SubmissionExample.cs -->
+```csharp
+using System.Threading.Tasks;
+using Geurts.GameForge.GitFlow.Editor;
+
+namespace Geurts.GameForge.GitFlow.Examples
+{
+    /// <summary>Worker handoff through the same shared service as the Submit controls.</summary>
+    public static class SubmissionExample
+    {
+        /// <summary>Submits one exact snapshot and returns its pending original ID without starting or waiting for a publisher.</summary>
+        public static Task<GitFlowSubmissionResult> SubmitOnce(string repository, string source, string integratedBase, string completeHandoff)
+        {
+            if (GitFlowBrick.QueueService == null) throw new System.InvalidOperationException("Enable GitFlow in God.");
+            return GitFlowBrick.QueueService.SubmitAsync(new GitFlowSubmission(repository, source, integratedBase, "patch", "Reviewed update", completeHandoff));
+        }
+    }
+}
+```
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
@@ -67,7 +88,7 @@ Idempotent submission and independent publishing; queue-owned versions, fenced l
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.1"
+  "packageVersion": "0.2.0"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

@@ -1,26 +1,19 @@
 # Geurts Game Forge GitFlow
 
-Version: 0.1.1. Editor-only read-only queue inspection with explicit remedies for missing failure details; submission, publishing, recovery and AI repair are planned, not available.
+Version: 0.2.0. Editor-only queue inspection, submit-once handoff and a separately released independent Windows publisher for generic Git repositories. The project declares a plain SemVer file, protected controllers and required validation commands. Consumer installation and runner adoption remain manual.
 
-Use [Help and supported APIs](Documentation~/AIUsability.md). Start with **Tools > Geurts Game Forge > GitFlow**, choose an existing Git checkout and remote, and select **Refresh queue once**. God can embed the same tool. Opening/restoring a view performs no remote work. No consumer is installed or updated by source publication.
+Open **Tools > Geurts Game Forge > GitFlow**, or the embedded tool in God. Inspect is deliberately read-only. Submit returns the original queue ID without starting or waiting for a processor. Publisher provides no-code policy review/save, dedicated-root configuration, trusted runner launch, graceful stop and finite original-request continuation. All paths use the same [supported services](Documentation~/AIUsability.md).
 
-God 0.39.3 is the only mandatory Geurts brick. Import licensed Odin Inspector and Quantum Console separately. Newtonsoft JSON 3.2.2 supplies bounded metadata parsing. Unity 6000.6.3f1 is the minimum. See the authoritative Commandments catalogue for installation sources after publication; use exact Git candidate commits in disposable validation projects.
+God 0.39.3 is the only mandatory Geurts brick. Import licensed Odin Inspector and Quantum Console separately. Newtonsoft JSON 3.2.2 supplies Editor parsing. Unity 6000.6.3f1 is the minimum. The separately extracted Windows runner requires .NET 10 runtime and includes Newtonsoft.Json 13.0.4 under its retained MIT notice. Use the authoritative Commandments catalogue for the immutable package target; source publication does not update any consumer or running runner.
 
-The first adapter reads codex/queue schema-1 control records, protocol-1 leases (180 or 1800 seconds), local integration_processor evidence, and matching publication receipts. It does not execute repository scripts. HTTPS without credentials and absolute local remotes are supported; private authentication, SSH and custom transports are unavailable. Maximum 128 requests, one MiB per JSON/command output, 45 seconds per refresh and two seconds between completed refreshes. Large queues require a future paged adapter.
+[Publisher Help and contracts](Documentation~/Publisher.md) describe setup, strict gates, lease timings, versions, receipts, recovery and limitations. This adapter requires an atomic non-force direct-main Git workflow. Projects requiring PR approval, immutable game release assets, additional version stamps or native derived identities need their own adapter; those requirements cannot be silently waived.
 
-All results are historical observations. PID presence is not proof of processor ownership. A missing PID can prove the recorded process is stopped, while another owner remains unknown. A stale report remains stale; no lease expires based on its wall-clock date. Released leases are displayed as released. Raw validation evidence is reported, not rerun. A receipt match does not prove current-main ancestry, check success or artifact availability.
+Inspection reads legacy codex/queue and native geurts/gitflow records without locks or remote writes. Refresh is bounded to 128 requests, one MiB per object/output, 45 seconds and a two-second cooldown. Results retain timestamps, incomplete information and actionable failures. PID presence and lease audit dates never establish current ownership or abandonment. Native receipt identity/tree/retained-stream hashes are checked, while required check semantics and current-main ancestry remain outside inspection.
 
-See [validation scope](Documentation~/Validation.md) for source/environment evidence and unverified native surfaces. Consumer installation remains manual. No player build is part of this release.
+See [validation evidence and unverified surfaces](Documentation~/Validation.md). Tests use disposable repositories and a silent isolated Editor. No player build or Dreadvault processor/runner change is included.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{
-  "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
-    "com.unity.nuget.newtonsoft-json": "3.2.2"
-  },
-  "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.1"
-}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.2.0","dependencies":{"com.geurts.gameforge.god":"0.39.3","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->
