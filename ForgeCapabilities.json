@@ -137,12 +137,12 @@
   "validation": {
     "unityVersion": "6000.6.3f1",
     "unverified": [
-      "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
-      "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
-      "Current remote-main ancestry, validation artifact contents and execution. Receipt identity/source/version is checked; underlying claims are not rerun.",
-      "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.1.",
-      "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
-      "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
+      "Native rendered Editor normal/narrow layout, docking, host light/dark skins, hover/physical keyboard focus and high DPI. Hidden controls/tree checks do not certify pixels or physical input.",
+      "Actual OS owner lock probing, remote-host liveness, lease expiry and current-main ancestry are not certified by read-only inspection; unknown observations remain explicit.",
+      "Private HTTPS token access and real hosted branch protections/PR or immutable game release adapters are unverified; remote enforcement is never bypassed.",
+      "Arbitrary third-party GUI/helper window/focus/audio behavior. The generic policy requires silent unattended commands; representative native console children and detached startup are tested.",
+      "Steam/bootstrap and player/native gameplay remain outside this Editor-only and native console fixture; no player build was created.",
+      "Broad conflict repair, safe whitespace correction, native derived identity adapters, committed-runner migration and optional AI repair remain planned."
     ],
     "scope": "Editor-only shared workflows plus a separately compiled independent Windows generic publisher. Source-bound acceptance and all unverified native/UI/access surfaces are recorded in Validation.md."
   }

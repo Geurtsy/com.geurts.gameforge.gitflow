@@ -15,7 +15,7 @@ No observation runs on opening, restoration, repaint, section expansion or opera
 
 GitFlowBrick.Service is the shared lifecycle-owned GitFlowInspection, or null when disabled/unavailable. RefreshAsync(GitFlowTarget) runs one bounded request and returns an immutable GitFlowSnapshot. LastSnapshot exposes the last completed result without I/O. A caller may create and dispose an independent GitFlowInspection for explicitly isolated tooling; never create a publisher or acquire locks through an inspection adapter.
 
-The God operation ID is inspect_queue, accepting a GitFlowTarget payload. Its Inspect callback is admission only, with no network work. ExecuteAsync refreshes through the same service. Verification refers only to completeness of this read, never processor readiness, current-main ancestry, validation execution or delivery correctness. Unsupported/malformed/partial evidence remains visible. Discovering the operation has no side effects.
+The God operation ID is inspect_queue, accepting a GitFlowTarget payload. Its Inspect callback is admission only, with no network work. The separate native submit/configuration/host operation IDs are documented in Publisher Help; their discovery/admission are also offline. ExecuteAsync refreshes through the same service. Verification refers only to completeness of this read, never processor readiness, current-main ancestry, validation execution or delivery correctness. Unsupported/malformed/partial evidence remains visible. Discovering the operation has no side effects.
 
 The following exact example is compile-checked with the package:
 

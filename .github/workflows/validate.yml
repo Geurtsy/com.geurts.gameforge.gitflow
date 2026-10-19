@@ -12,7 +12,7 @@ jobs:
           dotnet-version: '10.0.402'
       - name: Validate source and release declarations
         shell: pwsh
-        run: ./Tools~/Validate-Release.ps1
+        run: ./Tools~/Validate-Release.ps1 -RequireUnityEvidence
       - name: Detached disposable publisher acceptance
         shell: pwsh
         run: ./Tools~/Test-Publisher.ps1 -EvidenceDirectory "${{ runner.temp }}/gf-evidence"

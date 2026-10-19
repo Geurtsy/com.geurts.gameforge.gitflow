@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "packageVersion": "0.2.0",
+  "coreFingerprint": "e2fdc16e016cfe61bc8f84c533f5309afa085d0bdd4a8fadaf44154d35d32ba3",
+  "report": "Documentation~/PublisherAcceptance-0.2.0.json",
+  "reportSha256": "0ed2caa131aadc721c9433f3a20b6eb408dc07e903308fd7afe67eb5cededc7e",
+  "passed": 10,
+  "failed": 0,
+  "sdk": "10.0.402",
+  "detachedParentNoConsole": true
+}
