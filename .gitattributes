@@ -2,3 +2,4 @@
 # Preserve generated NUnit evidence as exact bytes; source whitespace checks do not reformat it.
 Documentation~/Acceptance-0.1.0.xml binary
 Documentation~/Acceptance-0.1.1.xml binary
+Documentation~/Validation/AIReadEfficiency/Results.xml binary

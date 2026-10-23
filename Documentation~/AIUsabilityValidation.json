@@ -75,5 +75,5 @@
   "testResult": "Documentation~/Validation/AIReadEfficiency/Results.xml",
   "testResultSha256": "7b67c9c63f87551d590da54a7982511e246344b5f04ce905587f726e01279da1",
   "rawTestResultSha256": "7b67c9c63f87551d590da54a7982511e246344b5f04ce905587f726e01279da1",
-  "testResultNormalization": "Native Unity XML with CRLF working-tree line endings; raw output hash retained separately."
+  "testResultNormalization": "Unmodified native Unity XML; exact bytes preserved by Git attributes."
 }
