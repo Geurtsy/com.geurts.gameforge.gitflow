@@ -20,7 +20,7 @@ See [validation scope](Documentation~/Validation.md) for source/environment evid
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.1"
+  "packageVersion": "0.1.2"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

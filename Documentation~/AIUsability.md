@@ -1,5 +1,15 @@
 # GitFlow Help and public API
 
+## Read only for the task
+
+After the current Commandments entry and manifest, select the row matching the task. Follow additional links only when that work needs them. Release evidence and history are optional during game integration.
+
+| Task | Minimum package reading |
+|---|---|
+| Observe an existing queue | [Read this section](#help) |
+| Extend read-only observation | [Read this section](#api-and-extension-boundary) |
+| Interpret limits and failures | [Read this section](#observation-contract-and-common-problems) |
+
 ## Help
 
 Prerequisites: an enabled GitFlow module under God, Unity 6000.6.3f1 or newer, Git for Windows, separately acquired licensed Odin Inspector and Quantum Console. The package is Editor-only. Ordinary use needs no code, JSON editing, processor setup or configuration saves.
@@ -67,7 +77,7 @@ Idempotent submission and independent publishing; queue-owned versions, fenced l
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.1"
+  "packageVersion": "0.1.2"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

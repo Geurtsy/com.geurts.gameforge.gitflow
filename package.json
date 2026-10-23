@@ -1,13 +1,22 @@
 {
   "name": "com.geurts.gameforge.gitflow",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "displayName": "Geurts Game Forge GitFlow",
   "description": "Editor-only, read-only queue, processor, lease and receipt inspection. Explicit bounded refresh; shared no-code UI and API. Submission, publishing and repair are planned. Requires separately acquired Odin Inspector and Quantum Console.",
   "unity": "6000.6",
   "unityRelease": "3f1",
-  "dependencies": {"com.geurts.gameforge.god": "0.39.3", "com.unity.nuget.newtonsoft-json": "3.2.2"},
-  "author": {"name": "Geurts Game Forge", "url": "https://github.com/Geurtsy"},
-  "repository": {"type": "git", "url": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow.git"},
+  "dependencies": {
+    "com.geurts.gameforge.god": "0.39.3",
+    "com.unity.nuget.newtonsoft-json": "3.2.2"
+  },
+  "author": {
+    "name": "Geurts Game Forge",
+    "url": "https://github.com/Geurtsy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow.git"
+  },
   "documentationUrl": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow/blob/main/Documentation~/AIUsability.md",
   "changelogUrl": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow/blob/main/CHANGELOG.md"
 }

@@ -1,4 +1,4 @@
-# GitFlow 0.1.1 validation
+# GitFlow 0.1.2 validation
 
 Unity 6000.6.3f1 compiled the Git-resolved candidate and supported API example. Eight owning acceptance fixtures passed, zero failed/skipped. Exact candidate pins, source fingerprint and artifact hashes are in AIUsabilityValidation.json; the durable NUnit report is Acceptance-0.1.1.xml. Editor.log and the resolved fixture manifest/lockfile are release evidence assets. No test ran in a live consumer and no player build was created.
 
@@ -32,7 +32,7 @@ Validation claims/artifact content, current-main ancestry and native project beh
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.1"
+  "packageVersion": "0.1.2"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->
