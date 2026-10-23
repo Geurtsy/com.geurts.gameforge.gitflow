@@ -9,6 +9,7 @@ After the current Commandments entry and manifest, select the row matching the t
 | Observe an existing queue | [Read this section](#help) |
 | Extend read-only observation | [Read this section](#api-and-extension-boundary) |
 | Interpret limits and failures | [Read this section](#observation-contract-and-common-problems) |
+| Validate this owner (maintainers) | [Release gate](../Tools~/Validate-Release.ps1) and [recorded evidence](AIUsabilityValidation.json) |
 
 ## Help
 
