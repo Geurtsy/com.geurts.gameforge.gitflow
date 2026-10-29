@@ -78,7 +78,7 @@ Idempotent submission and independent publishing; queue-owned versions, fenced l
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2"
+  "packageVersion": "0.2.0"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

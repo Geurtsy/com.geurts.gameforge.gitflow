@@ -7,37 +7,48 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Unity 6000.6.3f1: 8 passed, 0 failed, 0 skipped; real Git preservation, fault fixtures, installed God dispatch and hidden UI/API identity."
+        "Current-source acceptance pending; historical 0.1.2 evidence retained separately."
       ],
       "maturity": "pre_release",
       "provider": "editor",
       "description": "Bounded read-only queue, local process observation, leases and receipts shared by UI/API."
     },
     {
-      "implemented": false,
+      "implemented": true,
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "not_implemented"
+        "Disposable real-Git acceptance in progress."
       ],
-      "maturity": "planned",
-      "provider": "none",
+      "maturity": "candidate",
+      "provider": "editor",
       "description": "Idempotent submission and an independent deterministic publisher."
     },
     {
-      "implemented": false,
+      "implemented": true,
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "not_implemented"
+        "Current-source acceptance pending."
       ],
-      "maturity": "planned",
-      "provider": "none",
-      "description": "Fenced recovery, native identities and optional authorized AI repair."
+      "maturity": "candidate",
+      "provider": "editor",
+      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported."
+    },
+    {
+      "id": "local_codex_selection",
+      "description": "Explicit local Codex model/effort discovery, persisted non-secret selection and bounded proposals.",
+      "implemented": true,
+      "maturity": "candidate",
+      "provider": "editor",
+      "operations": [],
+      "validation": [
+        "Installed codex-cli 0.149.1 metadata discovery succeeded; no paid inference executed."
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2",
+  "packageVersion": "0.2.0",
   "prerequisites": [
     {
       "required": true,
@@ -75,7 +86,7 @@
       "detail": "Non-interactive Git reads; authentication helpers disabled."
     }
   ],
-  "maturity": "pre_release",
+  "maturity": "candidate",
   "operations": [
     {
       "confirmationRequired": false,
@@ -88,14 +99,11 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
+    "scope": "Unreleased candidate. Current-source acceptance in progress; historical 0.1.2 reports are not current proof.",
     "unverified": [
-      "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
-      "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
-      "Current remote-main ancestry, validation artifact contents and execution. Receipt identity/source/version is checked; underlying claims are not rerun.",
-      "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.1.",
-      "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
-      "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
-    ],
-    "scope": "Editor-only read-only observation. Eight owning acceptance fixtures passed on exact Git candidate; supported example compiled. Native rendered UI remains unverified."
+      "Native Unity compilation and affected Editor/API acceptance pending.",
+      "Native visual layout and physical input pending.",
+      "Real GitHub concurrency and live model inference not yet verified. No consumer installed."
+    ]
   }
 }

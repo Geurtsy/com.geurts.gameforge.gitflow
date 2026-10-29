@@ -15,10 +15,12 @@ namespace Geurts.GameForge.GitFlow.Editor
         public const string PackageId = "com.geurts.gameforge.gitflow";
         public string Id => PackageId;
         public string DisplayName => "Geurts Game Forge GitFlow";
-        public string Version => "0.1.2";
+        public string Version => "0.2.0";
         public string[] Dependencies => new[] { "com.geurts.gameforge.god" };
         public static GitFlowInspection Service { get; private set; }
+        public static GitFlowHost Host { get; private set; }
         private GitFlowInspection _owned;
+        private GitFlowHost _host;
 
         /// <summary>Creates the idle shared inspector and publishes it within this brick's lifecycle.</summary>
         public void Start(BrickContext context)
@@ -26,10 +28,16 @@ namespace Geurts.GameForge.GitFlow.Editor
             if (Service != null) throw new InvalidOperationException("GitFlow already has an active owner.");
             _owned = new GitFlowInspection(); Service = _owned;
             context.Provide(_owned); context.Own(_owned);
+            _host = new GitFlowHost(context.Settings); Host = _host;
+            context.Provide(_host); context.Own(_host);
         }
 
         /// <summary>Cancels only this owner's inspection and releases its shared reference.</summary>
-        public void Stop() { _owned?.Dispose(); if (ReferenceEquals(Service, _owned)) Service = null; _owned = null; }
+        public void Stop()
+        {
+            _owned?.Dispose(); if (ReferenceEquals(Service, _owned)) Service = null; _owned = null;
+            _host?.Dispose(); if (ReferenceEquals(Host, _host)) Host = null; _host = null;
+        }
     }
 
     /// <summary>God operation adapter over the same service used by the no-code window.</summary>

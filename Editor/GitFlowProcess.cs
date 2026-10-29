@@ -30,6 +30,10 @@ namespace Geurts.GameForge.GitFlow.Editor
 
         /// <summary>Creates no console, assigns the still-suspended process to a kill-on-close job and reads bounded pipes.</summary>
         internal static string Run(ProcessStartInfo start, CancellationToken cancellation)
+            => RunExecutable(start, ResolveGit(), cancellation);
+
+        /// <summary>Contains an explicitly selected native executable and all descendants until completion or cancellation.</summary>
+        internal static string RunExecutable(ProcessStartInfo start, string executable, CancellationToken cancellation)
         {
             if (Environment.OSVersion.Platform != PlatformID.Win32NT) throw new PlatformNotSupportedException("GitFlow inspection supports Windows only.");
             IntPtr job = IntPtr.Zero, outputRead = IntPtr.Zero, outputWrite = IntPtr.Zero, errorRead = IntPtr.Zero, errorWrite = IntPtr.Zero;
@@ -43,7 +47,9 @@ namespace Geurts.GameForge.GitFlow.Editor
                 job = CreateJobObject(IntPtr.Zero, null); Require(job != IntPtr.Zero);
                 var limits = new ExtendedLimit { basic = new BasicLimit { flags = 0x2000 } }; // KILL_ON_JOB_CLOSE owns all Git/helper descendants.
                 Require(SetInformationJobObject(job, 9, ref limits, Marshal.SizeOf<ExtendedLimit>()));
-                string executable = ResolveGit();
+                executable = Path.GetFullPath(executable);
+                if (!File.Exists(executable) || !string.Equals(Path.GetExtension(executable), ".exe", StringComparison.OrdinalIgnoreCase))
+                    throw new FileNotFoundException("Select an installed native executable.", executable);
                 var startup = new Startup { size = Marshal.SizeOf<Startup>(), flags = 0x100, input = inputRead, output = outputWrite, error = errorWrite };
                 string block = string.Join("\0", start.EnvironmentVariables.Keys.Cast<string>().OrderBy(value => value, StringComparer.OrdinalIgnoreCase).Select(key => key + "=" + start.EnvironmentVariables[key])) + "\0\0";
                 environment = Marshal.StringToHGlobalUni(block);
@@ -68,7 +74,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                         Require(GetExitCodeProcess(child.process, out uint code));
                         Close(ref job); // Kill surviving helpers before EOF; a pipe cannot outlive the refresh budget.
                         string text = stdout.GetAwaiter().GetResult(), failure = stderr.GetAwaiter().GetResult();
-                        if (code != 0) throw new IOException("Git failed (exit " + code + "). " + failure.Substring(0, Math.Min(failure.Length, 2000)));
+                        if (code != 0) throw new IOException("Process failed (exit " + code + "). " + (failure + text).Substring(0, Math.Min((failure + text).Length, 4000)));
                         return text;
                     }
                     finally

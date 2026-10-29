@@ -1,3 +1,7 @@
+# 0.2.0 — Unreleased candidate
+
+Strict reusable integration host, local Codex model selector, exact-candidate evidence, fenced ownership display, workspace accounting and three-hour progress-bounded repair. No skip or validation bypass. Acceptance remains in progress; no consumer installation.
+
 # Changelog
 
 ## 0.1.2 - 2026-10-23
