@@ -4,7 +4,8 @@
   "currentDocuments": [
     "README.md",
     "Documentation~/AIUsability.md",
-    "Documentation~/Validation.md"
+    "Documentation~/Validation.md",
+    "Documentation~/QueueLocalChanges.md"
   ],
   "integrationRecipes": [],
   "schemaVersion": "1.0.0",

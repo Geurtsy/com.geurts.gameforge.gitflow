@@ -1,38 +1,61 @@
-YOUR SAVED UNITY CHANGE → QUEUED → INTEGRATED
+# Queue your Unity changes
 
-Open this guide again with Help - Queue local changes in the GitFlow window, or Tools > Geurts Game Forge > GitFlow Help. Everything on this page is available inside Unity.
+Make a change, save it, click Queue local changes, and check the confirmation. The queue is a waiting list. A background program checks and combines the waiting changes before they join the shared accepted project.
 
-ONE-TIME SETUP
-Enable GitFlow in God. Open Tools > Geurts Game Forge > GitFlow. Expand Queue host and local Codex. Select installed Python, this project's repository and its existing remote. Set Capture Scope to your task-owned folder, such as Assets/MyGame. Save project preferences. Codex model discovery is only needed for model features.
+Open this guide any time with Help - Queue local changes in the GitFlow window, or Tools > Geurts Game Forge > GitFlow Help. It stays inside Unity.
 
-Your queue operator must configure and start the publisher once, with a short new workspace root, the installed Unity Editor and required project tests. Existing legacy queues require a reviewed migration; this button does not migrate them. A start request alone does not prove the publisher is running. Inspect reusable queue once shows the recorded owner and state.
+TRY A SMALL CHANGE
+1. Change an enemy prefab's Movement Speed from 3 to 4 in the Inspector. Save the prefab and your scene.
+2. Open Tools > Geurts Game Forge > GitFlow. Expand Queue saved local changes. An optional title such as Increase enemy movement speed makes the change easier to recognize.
+3. Click Queue local changes. If Unity asks you to save a scene, save it. Give an untitled scene a filename first. Cancelling stops this action and keeps your work.
+4. Look for Queued. This confirms that a recorded checkpoint of your saved changes is on the waiting list. You do not need a separate Git client, terminal, manual commit or branch push for this action.
+5. Click Inspect reusable queue once when you want an update. Wait for the background checks and delivery; you do not need to repeat the same tests yourself.
 
-EXAMPLE: CHANGE AN INSPECTOR VALUE
-1. Change a saved enemy prefab's Movement Speed from 3 to 4. Keep its prefab and required .meta files in your Capture Scope.
-2. In Queue saved local changes, optionally enter a useful title such as Increase enemy movement speed. Preview saved changes shows eligible saved paths and exclusions; it does not save unsaved Inspector or scene changes.
-3. Select Queue local changes. GitFlow saves assets through Unity and prompts to save modified scenes. Give untitled scenes a path first. Cancelling saving stops capture. Close Play Mode and wait for imports or compilation first.
-4. Read Last exact result. A verified state of queued and a request ID mean the exact source snapshot is in the shared queue. Keep that ID. Your live branch, staged files and working edits stay as they were; the snapshot uses a separate Git index and does not require a Git client or branch push.
-5. Use Inspect reusable queue once for progress. Preparing and validating mean work is underway. Published means main changed. Integrated means the recorded publication and required checkout synchronization completed. Queued does not mean delivered.
+UNDERSTAND THE RESULT
+Queued: received, waiting for checks. Queued does not mean delivered.
+Preparing / Validating: the background program is combining or checking the changes.
+Published: the checked changes have reached main, the shared accepted version. Required local synchronization is still pending.
+Integrated: delivery and required local synchronization have completed.
+Blocked / Validation failed: work stopped for a specific problem. Your work is retained. There is no skip button.
 
-WHAT THE BUTTON INCLUDES
-It captures saved tracked changes, deletions and eligible untracked files in Capture Scope, plus their required Unity asset/folder metadata. Git ignores are respected. Caches, generated folders, licensed/vendor folders, validation/tool folders, queue-owned version records and package manifests are excluded. The result lists actual included files and exclusions. No ignored files are forced into Git.
+WHAT GETS INCLUDED?
+Capture Scope is the project folder selected during setup. The button takes saved changes in that folder and the Unity metadata that identifies those assets. Preview saved changes shows the saved files it would include and any excluded files. It does not save unsaved work itself.
 
-Choose a narrow scope when unrelated edits are present. GitFlow cannot infer which of two edits in the same file belongs to your task. The snapshot includes the current branch's committed history; use an appropriate task branch when its earlier commits are unrelated. Basic capture does not switch branches, stash, reset, remove edits, copy a Unity Library, or push main.
+Use a narrow task folder, such as Assets/MyGame/Enemies, if you are also working on something unrelated. The tool cannot distinguish two different tasks inside the same file. Cached, generated, licensed/vendor and validation/tool files are excluded, as are queue-owned version records and package manifests. Git's ignore rules still apply.
 
-VALIDATION AND DELIVERY
-The publisher runs required validation on the combined candidate before publication. Do not repeat unchanged checks just to watch progress. Failed required checks block the queue; there is no skip or bypass. Automatic repair is separately authorized and uses the selected local Codex model for up to three hours from the original start, stopping earlier when it makes no meaningful source progress.
+Your current files and staging remain in place. Staging is a Git client's selection of files for its next checkpoint; GitFlow uses a separate selection without changing yours. Your branch, a separate line of work, also stays in place. Earlier committed work on that branch is part of the snapshot's history, so use an appropriate task branch if that history contains unrelated work. A commit means a recorded checkpoint.
 
-The owner observation shows machine, owner identity, request, stage and last recorded renewal. These are dated observations; a recorded process ID or timestamp alone does not prove health or expiry. Unknown is not available. Ask your queue operator to reconcile a blocked or uncertain owner rather than starting competing processors.
+FIRST-TIME SETUP
+Enable GitFlow in God. In Queue host and local Codex, choose installed Python, this project's repository folder and its existing remote (normally origin). Choose Capture Scope, then Save project and model preferences. You can leave model selection empty for ordinary queue use.
 
-COMMON FIXES
-• No eligible changes: save your assets/scenes and check Capture Scope and the exclusions. The button reads saved files, not unsaved memory.
-• Checkout changed during capture: finish the edit/import or Git operation, review the refreshed paths, then capture again. Work is preserved.
-• Submission response uncertain: inspect the request ID before trying again. An unchanged snapshot has the same source identity and reuses its queue entry, even if the first response was lost. Do not repeatedly resubmit.
-• Validation failed: read the request's failure and retained evidence. Keep your work. The operator repairs and explicitly continues that same request; a second request cannot jump over it.
-• Published while your original checkout is dirty: main contains the delivery, but GitFlow refuses to overwrite your working files. Use your Git client with the operator to reconcile the preserved edits and cleanly pull. Do not discard work merely to clear this state. The publisher resumes synchronization without a new version or duplicate validation.
-• A change was outside scope or excluded: review it separately with the operator. Do not widen scope to include unrelated work or disable validation.
+Your queue operator configures the background program once using Operator - Configure and start publisher. It needs a short new workspace location, the installed Unity Editor and required project tests. Model discovery is only needed for model features. The queue does not migrate an existing older queue automatically. A start request needs a subsequent status check before it is considered ready.
 
-OPTIONAL: SUBMIT AN EXISTING COMMIT
-Submit committed work accepts a clean committed task branch. Save Unity, review task-owned files and necessary metadata in your Git client, commit with a meaningful message, then fill Title, Implementation summary and Version increment and select Submit exact source once. This route preserves the existing commit's identity. An ordinary Git push does not automatically enqueue. Direct pushes to main bypass the queue's integration review; use the repository's existing branch protection policy. GitFlow does not change hosting permissions or branch rules.
+THE BACKGROUND PROGRAM AND COMMON FIXES
+The processor is the background program that checks, combines and publishes changes. Publication means those changes reach the shared accepted version. Inspect reusable queue once shows its recorded computer, owner, current work and latest recorded update. These are dated observations, not a guarantee that it is healthy. Unknown does not mean available. The advanced Details panel retains the complete results for your operator.
 
-This is the human workflow guide. Documentation~/AIUsability.md separately defines supported automation APIs and evidence requirements.
+• No eligible changes: save your scene/assets and check Capture Scope and the preview's excluded list.
+• Unsaved or untitled scene: save it first. Play Mode, compilation and asset import must finish before capture.
+• Files changed during capture: finish editing or importing, review the preview, then try again. Nothing was discarded.
+• Uncertain confirmation: inspect the existing request first. The same unchanged snapshot reuses its original queue entry. Do not repeatedly submit it.
+• Failed checks: ask the operator to inspect the recorded failure and continue that same request after a correction. Later requests cannot jump over it.
+• Published but not Integrated: your original files may still contain local edits. GitFlow refuses to overwrite them. Ask the operator to reconcile those preserved edits and synchronize through supported Git tooling. Do not discard work merely to clear the message. Recovery does not assign another version or repeat completed checks.
+
+Automatic repair is optional and separately authorized. It uses the selected local Codex model, keeps its attempt history, and has up to three hours from its original start. It stops sooner if it makes no meaningful progress. Required checks still apply.
+
+OPTIONAL EXISTING-COMMIT ROUTE
+If you already use a Git client, Submit committed work accepts a clean recorded checkpoint: save Unity, select only task-owned changes and necessary metadata, record a meaningful commit, then fill Title, Implementation summary and Version increment and click Submit exact source once. This is optional; basic Queue local changes creates its own checkpoint.
+
+An ordinary Git push does not add work to the queue automatically. Direct pushes to main bypass this queue review. Follow the repository's existing branch protection policy; GitFlow does not change hosting permissions or rules.
+
+<!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
+```json
+{
+  "packageId": "com.geurts.gameforge.gitflow",
+  "packageVersion": "0.2.0",
+  "dependencies": {
+    "com.geurts.gameforge.god": "0.39.3",
+    "com.unity.nuget.newtonsoft-json": "3.2.2"
+  }
+}
+```
+<!-- GEURTS-RELEASE-CONTEXT:END -->

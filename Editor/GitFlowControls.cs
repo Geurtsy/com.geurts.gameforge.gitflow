@@ -98,7 +98,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                 _configuration.Models = (JArray)result["models"];
                 return result;
             });
-            Button(group, "Save model and project preferences", () =>
+            Button(group, "Save project and model preferences", () =>
             {
                 var selected = _configuration.Models.FirstOrDefault(item => (string)item["model"] == _configuration.Model);
                 if (!string.IsNullOrEmpty(_configuration.Model) && (selected == null || !selected["efforts"].Values<string>().Contains(_configuration.ReasoningEffort)))
@@ -171,7 +171,8 @@ namespace Geurts.GameForge.GitFlow.Editor
                     return new JObject { ["state"] = "cancelled" };
                 return await Host().DiagnoseAsync(_configuration.Preferences(), path, _cancellation.Token);
             });
-            _output = new TextField("Last exact result") { multiline = true, isReadOnly = true }; group.Add(_output);
+            var details = new Foldout { text = "Details - exact result and evidence", value = false }; group.Add(details);
+            _output = new TextField("Last exact result") { multiline = true, isReadOnly = true }; details.Add(_output);
             var help = new Foldout { text = "Help â€” local Codex and queue boundaries", value = false }; group.Add(help);
             help.Add(new HelpBox("Select installed Python and Codex, discover models, choose a model and supported reasoning effort, then save. Choices come from local Codex and may be cached; only an actual completed request verifies access. Sign in through Codex itself. Credentials never belong in project settings.\n\nSubmit once from a clean task branch. One configured background publisher owns validation and publication. Required failures block the queue; there is no skip action. Published means main changed; Integrated additionally proves required pulls. Storage measurement is read-only and never deletes workspaces.\n\nThe legacy read-only viewer below remains separate from this protocol. Automatic repair requires separate operator configuration and explicit consent; selecting a model alone never enables it.", HelpBoxMessageType.Info));
             foreach (var child in group.Children()) child.style.marginBottom = 8;
@@ -210,11 +211,21 @@ namespace Geurts.GameForge.GitFlow.Editor
                 try
                 {
                     JObject result = await action();
-                    if (!_disposed) { _output.value = result.ToString(); _status.text = (string)result["owner_summary"] ?? ("Finished: " + (string)(result["state"] ?? result["account_state"]) + ". Review the exact result below."); }
+                    if (!_disposed) { _output.value = result.ToString(); _status.text = Describe(result); }
                 }
                 catch (Exception error) { if (!_disposed) _status.text = "Error â€” " + error.Message; }
                 finally { _busy = false; }
             }) { text = title });
+        }
+
+        /// <summary>Explains the actual outcome before exposing detailed identifiers and evidence.</summary>
+        private static string Describe(JObject result)
+        {
+            string state = (string)result["state"];
+            if (state == "queued") return "Queued: your saved checkpoint is on the waiting list. It has not joined the shared accepted project yet. Use Inspect reusable queue once for an update.";
+            if (state == "published") return "Published: the checked changes reached the shared accepted project. Required local synchronization is still pending.";
+            if (state == "integrated") return "Integrated: the checked changes reached the shared project and required synchronization completed.";
+            return (string)result["owner_summary"] ?? ("Finished: " + (string)(result["state"] ?? result["account_state"]) + ". Open Details for the exact result.");
         }
 
         /// <summary>Releases only this view's Odin resources and cancels its in-flight bridge request.</summary>

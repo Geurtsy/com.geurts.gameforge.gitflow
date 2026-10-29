@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using Geurts.GameForge.God.Editor;
 using UnityEditor;
-using UnityEditor.PackageManager;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -19,9 +19,10 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Reads the installed guide through Unity's package location, with no network or queue action.</summary>
         public static string ReadGuide()
         {
-            string package = PackageInfo.FindForAssembly(typeof(GitFlowHelp).Assembly)?.resolvedPath;
+            string package = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(GitFlowHelp).Assembly)?.resolvedPath;
             if (string.IsNullOrEmpty(package)) throw new InvalidOperationException("GitFlow is not resolved by Unity Package Manager.");
-            return File.ReadAllText(Path.Combine(package, "Documentation~", "QueueLocalChanges.md"));
+            string guide = File.ReadAllText(Path.Combine(package, "Documentation~", "QueueLocalChanges.md"));
+            return Regex.Replace(guide, @"(?s)<!-- GEURTS-RELEASE-CONTEXT:BEGIN -->.*?<!-- GEURTS-RELEASE-CONTEXT:END -->", "").Trim();
         }
 
         /// <summary>Renders the full selectable help text in a wrapping, scrollable owned Unity view.</summary>
