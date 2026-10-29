@@ -4,6 +4,7 @@ import ctypes
 from ctypes import wintypes
 import os
 import subprocess
+import time
 
 
 if os.name == 'nt':
@@ -66,7 +67,7 @@ def child_process(arguments, **options):
                     stream.close()
 
 
-def process_run(arguments, *, input=None, capture_output=False, timeout=300, **options):
+def process_run(arguments, *, input=None, capture_output=False, timeout=300, cancelled=None, **options):
     """Subprocess.run equivalent with descendant cleanup on success, failure and timeout."""
     if input is not None:
         options['stdin'] = subprocess.PIPE
@@ -76,5 +77,18 @@ def process_run(arguments, *, input=None, capture_output=False, timeout=300, **o
         options['stdout'] = subprocess.PIPE
         options['stderr'] = subprocess.PIPE
     with child_process(arguments, **options) as process:
-        stdout, stderr = process.communicate(input=input, timeout=timeout)
+        deadline = time.monotonic() + timeout
+        while True:
+            if cancelled is not None and cancelled.is_set():
+                raise RuntimeError('Owned process cancelled after its publication lease was lost.')
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(arguments, timeout)
+            try:
+                stdout, stderr = process.communicate(input=input, timeout=min(0.5, remaining) if cancelled is not None else remaining)
+                break
+            except subprocess.TimeoutExpired:
+                input = None
+                if cancelled is None:
+                    raise
         return subprocess.CompletedProcess(arguments, process.returncode, stdout, stderr)

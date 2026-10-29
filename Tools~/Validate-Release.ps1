@@ -128,8 +128,8 @@ foreach ($recipe in @($documents.integrationRecipes)) {
     $testSource = [IO.File]::ReadAllText((Resolve-Owned $recipe.testSource))
     foreach ($testName in $recipe.tests) { Require ($testSource.Contains(($testName -split '\.')[-1])) "Unknown declared integration test: $testName" }
 }
-# Hash exactly the C# implementation, tests and supported examples; evidence/docs-only commits do not invalidate a tested source snapshot.
-$sourceFiles = @(Get-ChildItem -LiteralPath $RepositoryRoot -Recurse -File -Filter '*.cs' | Where-Object { $_.FullName -notmatch '[\\/]\.git[\\/]' } | Sort-Object { $_.FullName.Substring($RepositoryRoot.Length).Replace('\','/') })
+# Bind every executable C#/Python source and assembly definition; documentation-only commits do not invalidate tested code.
+$sourceFiles = @(Get-ChildItem -LiteralPath $RepositoryRoot -Recurse -File | Where-Object { $_.Extension -in @('.cs', '.py', '.asmdef') -and $_.FullName -notmatch '[\\/](\.git|__pycache__)[\\/]' } | Sort-Object { $_.FullName.Substring($RepositoryRoot.Length).Replace('\','/') })
 $entries = foreach ($file in $sourceFiles) {
     $relative = $file.FullName.Substring($RepositoryRoot.Length + 1).Replace('\','/')
     $content = [IO.File]::ReadAllText($file.FullName).Replace("`r`n", "`n").Replace("`r", "`n")

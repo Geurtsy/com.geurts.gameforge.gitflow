@@ -6,7 +6,7 @@ import re
 import sys
 import xml.etree.ElementTree as xml
 
-from GitFlowQueue import QueueError, durable, plain
+from GitFlowQueue import QueueError, durable, plain, file_digest
 from GitFlowProcess import process_run
 
 
@@ -30,11 +30,15 @@ def execute(arguments):
                         '-testResults', str(evidence / 'Results.xml')])
     with (evidence / 'process.log').open('wb') as output:
         result = process_run(command, cwd=root, stdout=output, stderr=output, timeout=7200)
-    if result.returncode or not log.is_file():
+    if not log.is_file():
         raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')
     text = log.read_text(encoding='utf-8-sig', errors='replace')
-    if re.search(r'\b(?:warning|error)\s+(?:CS|BC|IL|NU)\d+|scripts have compiler errors|compilation failed', text, re.I):
+    diagnostics = [line for line in text.splitlines() if re.search(r'\b(?:warning|error)\s+(?:CS|BC|IL|NU|UAC)\d+|scripts have compiler errors|compilation failed', line, re.I)]
+    if diagnostics:
+        durable(evidence / 'diagnostics.json', dict(complete_matching_diagnostics=diagnostics, full_log_sha256=file_digest(log)))
         raise QueueError('Compiler warning/error in the complete Unity log; required gate failed.')
+    if result.returncode:
+        raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')
     if arguments.action == 'run-tests':
         report = xml.parse(evidence / 'Results.xml').getroot()
         if (report.attrib.get('result') != 'Passed' or int(report.attrib.get('failed', '0')) != 0

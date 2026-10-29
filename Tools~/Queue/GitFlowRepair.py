@@ -67,8 +67,18 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
     before = fingerprint(files)
     if before in record['seen']:
         raise q.QueueError('No meaningful progress: this source candidate was already attempted in the original repair window.')
+    diagnostics = {}
+    if getattr(failure, 'folder', None):
+        folder = q.plain(failure.folder)
+        selected = folder / 'diagnostics.json'
+        if not selected.exists():
+            selected = folder / 'output.log'
+        if selected.is_file():
+            if selected.stat().st_size > 16384:
+                raise q.QueueError('Complete failure diagnostics exceed the bounded repair context; retain them for operator review.')
+            diagnostics[selected.name] = selected.read_text(encoding='utf-8-sig')
     context = q.encoded(dict(request=value['id'], source=value['source'], candidate=q.git(workspace, 'rev-parse', 'HEAD'),
-                            failure=str(failure), allowed_files=files,
+                            failure=str(failure), diagnostics=diagnostics, allowed_files=files,
                             rule='Complete file text is provided. Change only a unique necessary fragment; no whole-file replacement, test edits or policy edits.'))
     if len(context.encode()) > 65536:
         raise q.QueueError('Complete repair context exceeds 65536 bytes; no partial conflict context was sent.')

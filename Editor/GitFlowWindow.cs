@@ -33,10 +33,11 @@ namespace Geurts.GameForge.GitFlow.Editor
             VisualElement root = rootVisualElement; root.Clear(); ForgeEditorTheme.ApplyToolkit(root);
             root.style.paddingLeft = root.style.paddingRight = root.style.paddingTop = root.style.paddingBottom = 12;
             var title = new Label("Geurts Game Forge GitFlow"); title.style.fontSize = 20; root.Add(title);
-            root.Add(new Label("Read-only queue and processor observations. Refresh deliberately; snapshots are never live telemetry."));
+            root.Add(new Label("Capture saved changes, submit exact source and inspect recorded queue progress."));
+            root.Add(new Button(GitFlowHelp.Open) { text = "Help - Queue local changes" });
             var scroll = new ScrollView(); scroll.style.flexGrow = 1; root.Add(scroll);
             _controls?.Dispose(); _controls = new GitFlowControls(scroll);
-            var scope = Section(scroll, "Repository and refresh", true);
+            var scope = Section(scroll, "Legacy queue viewer - Repository and refresh", false);
             _repository = new TextField("Repository") { value = Path.GetFullPath(Path.Combine(Application.dataPath, "..")) };
             _remote = new TextField("Existing remote") { value = "origin" };
             _repository.isDelayed = true; _remote.isDelayed = true;

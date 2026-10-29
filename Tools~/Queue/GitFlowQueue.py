@@ -1,4 +1,4 @@
-"""GitFlow's deterministic, strict integration host. No skip or automatic repair.
+"""GitFlow's deterministic, strict integration host. No validation bypass.
 
 One shared Git object store, one exclusively owned reusable worktree, immutable
 requests and candidate-bound gate evidence. Project adapters own native behavior.
@@ -32,12 +32,24 @@ class QueueError(RuntimeError):
     """An actionable blocker; never treated as a successful integration."""
 
 
+class GateFailure(QueueError):
+    """Retains a bounded diagnostic location for an independently guarded source repair."""
+    def __init__(self, message, folder):
+        super().__init__(message)
+        self.folder = str(folder)
+
+
 def encoded(value):
     return json.dumps(value, sort_keys=True, indent=2, ensure_ascii=False) + '\n'
 
 
 def digest(value):
     return hashlib.sha256(value if isinstance(value, bytes) else encoded(value).encode()).hexdigest()
+
+
+def file_digest(path):
+    with Path(path).open('rb') as source:
+        return hashlib.file_digest(source, 'sha256').hexdigest() if hasattr(hashlib, 'file_digest') else digest(source.read())
 
 
 def utc():
@@ -135,15 +147,16 @@ def exclusive(path):
                 fcntl.flock(handle, fcntl.LOCK_UN)
 
 
-def object_commit(root, parent, value, message, artifacts=None):
+def object_commit(root, parent, value, message, artifacts=None, inherited=None):
     """Create a control commit without changing HEAD, index, worktree or FETCH_HEAD."""
     files = {REQUEST: encoded(value).encode(), **(artifacts or {})}
-    rows = []
+    blobs = dict(inherited or {})
     for name, content in sorted(files.items()):
         if not re.fullmatch(r'[A-Za-z0-9_.-]+', name):
             raise QueueError('Control artifact names must be flat and predictable.')
         blob = run(['git', 'hash-object', '-w', '--stdin'], root, data=content).decode().strip()
-        rows.append('100644 blob ' + blob + '\t' + name + '\n')
+        blobs[name] = blob
+    rows = ['100644 blob ' + blob + '\t' + name + '\n' for name, blob in sorted(blobs.items())]
     tree = run(['git', 'mktree'], root, data=''.join(rows).encode()).decode().strip()
     return git(root, 'commit-tree', tree, '-p', parent, '-m', message)
 
@@ -197,6 +210,14 @@ def submit(root, remote, title, size, summary, dependencies=()):
     root = plain(root)
     clean(root)
     source = git(root, 'rev-parse', 'HEAD')
+    return submit_source(root, remote, source, title, size, summary, dependencies)
+
+
+def submit_source(root, remote, source, title, size, summary, dependencies=(), capture=None):
+    """Submit an exact committed source, including a separately captured dirty-checkout snapshot."""
+    if not re.fullmatch('[0-9a-f]{40}', source):
+        raise QueueError('Submission requires an exact full source commit.')
+    git(root, 'cat-file', '-e', source + '^{commit}')
     identifier = 'request_' + source
     reference = PREFIX + identifier
     existing = remote_ref(root, remote, reference)
@@ -218,6 +239,8 @@ def submit(root, remote, title, size, summary, dependencies=()):
             raise QueueError('Dependency must identify an existing exact request.')
     value = dict(schema=SCHEMA, id=identifier, source=source, base=base, title=title, summary=summary,
                  size=size, dependencies=list(dependencies), submitted_utc=utc(), state='queued', attempts=[])
+    if capture is not None:
+        value['capture'] = capture
     child = object_commit(root, source, value, 'Submit ' + identifier)
     try:
         git(root, 'push', remote, child + ':' + reference)
@@ -230,6 +253,13 @@ def submit(root, remote, title, size, summary, dependencies=()):
     if remote_ref(root, remote, reference) != child:
         raise QueueError('Submission response is uncertain; inspect the deterministic request ID before any retry: ' + identifier)
     return value
+
+
+def queue_local_changes(root, remote, scopes, title, size, summary):
+    """One user action captures saved scoped files and verifies an idempotent queue submission."""
+    from GitFlowCapture import capture
+    snapshot = capture(sys.modules[__name__], plain(root), scopes)
+    return submit_source(root, remote, snapshot['source'], title, size, summary, capture=snapshot)
 
 
 def validate_policy(policy):
@@ -279,6 +309,7 @@ def configure(root, remote, workspace_root, policy):
         main = remote_ref(root, remote, 'refs/heads/main')
         if not main:
             raise QueueError('Remote main is missing.')
+        next_version(git(root, 'show', main + ':' + policy['version_file']).strip(), 'patch')
         config = dict(schema=SCHEMA, repository=str(root), remote=remote, workspace_root=str(workspace_root),
                       remote_url=git(root, 'remote', 'get-url', remote), policy=policy, policy_hash=digest(policy),
                       runner=str(Path(__file__).resolve()), runner_hash=runner_hash(), created_utc=utc())
@@ -317,7 +348,8 @@ def input_key(workspace, check, policy_hash, environment):
 def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache):
     """Mandatory final gates always run. Specialist reuse requires existing matching bytes."""
     environment = dict(python=sys.version, platform=sys.platform, host=socket.gethostname(),
-                       git=git(workspace, '--version'), declared=check.get('environment', {}))
+                       git=git(workspace, '--version'), declared=check.get('environment', {}),
+                       tools={arg: file_digest(arg) for arg in check['command'] if Path(arg).is_absolute() and Path(arg).is_file()})
     key = input_key(workspace, check, policy_hash, environment)
     cached = cache.get(key)
     if check['kind'] == 'specialist' and cached:
@@ -336,8 +368,13 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
     durable(folder / 'invocation.json', dict(run=identity, candidate=candidate, inputs=key,
             command=arguments, environment=environment, started_utc=started))
     try:
-        output = run(arguments, workspace, timeout=check['timeout_seconds'])
-        (folder / 'output.log').write_bytes(output)
+        active = leases.ACTIVE.get()
+        with (folder / 'output.log').open('wb') as output:
+            result_process = process_run(arguments, cwd=workspace, stdout=output, stderr=output,
+                timeout=check['timeout_seconds'], cancelled=active.stop if active else None,
+                env=dict(os.environ, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='Never'))
+        if result_process.returncode:
+            raise QueueError('Required gate ' + check['name'] + ' failed with exit ' + str(result_process.returncode) + '; full output retained at ' + str(folder))
         clean(workspace)
         if git(workspace, 'rev-parse', 'HEAD') != candidate:
             raise QueueError('Gate changed candidate HEAD.')
@@ -345,14 +382,23 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
         if (result.get('run') != identity or result.get('candidate') != candidate or result.get('status') != 'passed'
                 or result.get('warnings') != 0 or result.get('errors') != 0 or result.get('skipped', 0) != 0):
             raise QueueError('Gate lacks a successful exact-candidate report with zero warnings/errors/skips.')
-        artifacts = {path.name: digest(path.read_bytes()) for path in folder.iterdir() if path.is_file()}
+        artifacts = {}
+        total = 0
+        for path in folder.iterdir():
+            plain(path)
+            if not path.is_file():
+                raise QueueError('Gate artifacts must be regular flat files; unsupported evidence was retained.')
+            total += path.stat().st_size
+            if total > 128 * 1024 * 1024:
+                raise QueueError('Gate evidence exceeds the 128 MiB portable evidence limit; preserve it and refine the owning adapter.')
+            artifacts[path.name] = file_digest(path)
         value = dict(name=check['name'], kind=check['kind'], candidate=candidate, key=key, environment=environment,
                      started_utc=started, completed_utc=utc(), folder=str(folder), artifacts=artifacts, reused=False)
         cache[key] = value
         return value
     except Exception as error:
         durable(folder / 'failure.json', dict(run=identity, candidate=candidate, error=type(error).__name__ + ': ' + str(error)))
-        raise
+        raise GateFailure(str(error), folder) from error
 
 
 def next_version(current, size):
@@ -399,12 +445,36 @@ def update_state(root, **value):
 
 
 def publish_record(root, remote, lease, previous, reference, value, artifacts=None, targets=()):
-    child = object_commit(root, previous, value, 'Queue ' + value['state'] + ' ' + value['id'], artifacts)
+    # Keep portable evidence in every later state, including a post-push pull failure or restart.
+    inherited = {}
+    for row in git(root, 'ls-tree', previous).splitlines():
+        header, name = row.split('\t', 1)
+        if not re.fullmatch(r'[A-Za-z0-9_.-]+', name) or header.split()[1] != 'blob':
+            raise QueueError('Malformed queue control artifact tree.')
+        inherited[name] = header.split()[2]
+    child = object_commit(root, previous, value, 'Queue ' + value['state'] + ' ' + value['id'], artifacts, inherited)
     lease.publish(root, remote, [child + ':' + reference, *targets])
     if remote_ref(root, remote, reference) != child:
         lease.failed(QueueError('Published queue result could not be verified.'))
         raise QueueError('Publication is uncertain; reconcile this exact request instead of resubmitting.')
     return child
+
+
+def verify_published_evidence(root, identity, value):
+    """A resumed publication must retain its exact portable receipt and every referenced artifact."""
+    receipt = json.loads(run(['git', 'show', identity + ':receipt.json'], root))
+    if (receipt != value.get('receipt') or receipt.get('source') != value['source']
+            or receipt.get('main_commit') != value['main_commit'] or not receipt.get('checks')):
+        raise QueueError('Published receipt is missing or differs from the exact delivery.')
+    for index, check in enumerate(receipt['checks']):
+        if check.get('candidate') != value['main_commit'] or not check.get('artifacts'):
+            raise QueueError('Published gate evidence does not identify the delivered candidate.')
+        for name, expected in check['artifacts'].items():
+            if not re.fullmatch(r'[A-Za-z0-9_.-]+', name):
+                raise QueueError('Malformed portable evidence path.')
+            content = run(['git', 'show', identity + ':' + str(index) + '-' + name], root)
+            if digest(content) != expected:
+                raise QueueError('Published validation artifact checksum differs.')
 
 
 def workspace_for(root, config, main):
@@ -467,6 +537,7 @@ def process_once(root, expected_request=None, expected_candidate=None):
         artifacts = {}
         try:
             if value['state'] == 'published':
+                verify_published_evidence(root, previous, value)
                 value['pulls'] = synchronize(root, config, workspace, value)
                 value['state'] = 'integrated'
                 publish_record(root, remote, lease, previous, reference, value)
@@ -485,7 +556,7 @@ def process_once(root, expected_request=None, expected_candidate=None):
                 if not ancestor(workspace, main, head):
                     git(workspace, 'merge', '--no-ff', '--no-edit', main)
                 candidate = git(workspace, 'rev-parse', 'HEAD')
-                if value['attempts'] and candidate == value['attempts'][-1].get('candidate'):
+                if value['state'] in {'validation_failed', 'blocked'} and value['attempts'] and candidate == value['attempts'][-1].get('candidate'):
                     raise QueueError('Unchanged failed inputs are not retried. Supply a reviewed source correction.')
             else:
                 workspace = workspace_for(root, config, main)
@@ -659,6 +730,13 @@ def main():
     submission.add_argument('--summary', required=True)
     submission.add_argument('--size', choices=['patch', 'minor', 'major'], required=True)
     submission.add_argument('--dependency', action='append', default=[])
+    capture = subcommands.add_parser('queue-local-changes')
+    capture.add_argument('--scope', action='append', required=True)
+    capture.add_argument('--title', default='Saved Unity project changes')
+    capture.add_argument('--summary', default='Capture the saved first-party changes in the configured task scope.')
+    capture.add_argument('--size', choices=['patch', 'minor', 'major'], default='patch')
+    preview = subcommands.add_parser('preview-local-changes')
+    preview.add_argument('--scope', action='append', required=True)
     setup = subcommands.add_parser('configure')
     setup.add_argument('--workspace-root', required=True)
     setup.add_argument('--policy', required=True)
@@ -676,6 +754,11 @@ def main():
     root = plain(arguments.repository)
     if arguments.command == 'submit':
         result = submit(root, arguments.remote, arguments.title, arguments.size, arguments.summary, arguments.dependency)
+    elif arguments.command == 'queue-local-changes':
+        result = queue_local_changes(root, arguments.remote, arguments.scope, arguments.title, arguments.size, arguments.summary)
+    elif arguments.command == 'preview-local-changes':
+        from GitFlowCapture import inventory
+        result = dict(state='preview', **inventory(sys.modules[__name__], root, arguments.scope))
     elif arguments.command == 'configure':
         result = configure(root, arguments.remote, arguments.workspace_root, read_json(arguments.policy))
     elif arguments.command == 'process':

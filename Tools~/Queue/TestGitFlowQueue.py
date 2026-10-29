@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import datetime
 import unittest
 from unittest import mock
 
@@ -135,6 +136,97 @@ class QueueAcceptance(unittest.TestCase):
         self.assertEqual((library / 'fixture_cache.bin').stat().st_ino, identity)
         self.assertEqual(queue.common(workspace), queue.common(self.repository))
         self.assertEqual(len(list(self.workspace_root.glob('Workspace*'))), 1)
+
+    def test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work(self):
+        assets = self.repository / 'Assets' / 'Game'
+        assets.mkdir(parents=True)
+        (assets / 'Enemy.asset').write_bytes(b'MovementSpeed: 3\r\n')
+        (assets / 'Enemy.asset.meta').write_bytes(b'guid: 12345678901234567890123456789012\r\n')
+        (self.repository / 'Assets/Game.meta').write_text('folderAsset: yes\n')
+        queue.git(self.repository, 'add', 'Assets')
+        queue.git(self.repository, 'commit', '-m', 'Existing inspector asset')
+        queue.git(self.repository, 'push', 'origin', 'main')
+        head = queue.git(self.repository, 'rev-parse', 'HEAD')
+        (assets / 'Enemy.asset').write_bytes(b'MovementSpeed: 4\r\n')
+        (self.repository / 'feature.txt').write_text('unrelated staged work\n')
+        queue.git(self.repository, 'add', 'feature.txt')
+        (self.repository / 'feature.txt').write_text('unrelated later working edit\n')
+        index = (self.repository / '.git/index').read_bytes()
+        status = queue.git(self.repository, 'status', '--porcelain')
+        value = queue.queue_local_changes(self.repository, 'origin', ['Assets/Game'], 'Enemy speed', 'patch', 'Raise speed from 3 to 4')
+        again = queue.queue_local_changes(self.repository, 'origin', ['Assets/Game'], 'Same capture', 'patch', 'Same saved bytes')
+        self.assertEqual(value['id'], again['id'])
+        self.assertEqual(value['state'], 'queued')
+        self.assertEqual(queue.git(self.repository, 'rev-parse', 'HEAD'), head)
+        self.assertEqual(queue.git(self.repository, 'branch', '--show-current'), 'main')
+        self.assertEqual((self.repository / '.git/index').read_bytes(), index)
+        self.assertEqual(queue.git(self.repository, 'status', '--porcelain'), status)
+        self.assertEqual(queue.git(self.repository, 'show', value['source'] + ':Assets/Game/Enemy.asset'), 'MovementSpeed: 4')
+        self.assertEqual(queue.git(self.repository, 'show', value['source'] + ':feature.txt'), 'base')
+        self.assertIn('Assets/Game/Enemy.asset.meta', value['capture']['files'])
+        self.assertIn('Assets/Game.meta', value['capture']['files'])
+
+    def test_capture_exclusions_and_changed_bytes_stop_without_submission(self):
+        import GitFlowCapture as capture
+        assets = self.repository / 'Assets'
+        (assets / 'Game').mkdir(parents=True)
+        (assets / 'Plugins').mkdir()
+        (assets / 'Game/Enemy.asset').write_text('speed: 3\n')
+        (assets / 'Plugins/vendor.dll').write_bytes(b'licensed fixture')
+        original = capture.signature
+        calls = []
+        def changing_signature(*args):
+            result = original(*args)
+            calls.append(1)
+            if len(calls) == 1:
+                (assets / 'Game/Enemy.asset').write_text('speed: 4\n')
+            return result
+        with mock.patch.object(capture, 'signature', side_effect=changing_signature):
+            self.assertRaisesRegex(queue.QueueError, 'changed during capture', queue.queue_local_changes,
+                self.repository, 'origin', ['Assets'], 'Capture', 'patch', 'Fixture')
+        self.assertEqual(queue.entries(self.repository, 'origin'), [])
+        self.assertEqual((assets / 'Game/Enemy.asset').read_text(), 'speed: 4\n')
+        plan = capture.inventory(queue, self.repository, ['Assets'])
+        self.assertNotIn('Assets/Plugins/vendor.dll', plan['paths'])
+        self.assertIn('Assets/Plugins/vendor.dll', plan['excluded'])
+
+    def test_main_cannot_publish_while_gate_runs_or_overwrite_new_main(self):
+        self.source()
+        execute = queue.execute_gate
+        moved = []
+        def gate(*args, **kwargs):
+            self.assertEqual(queue.remote_ref(self.repository, 'origin', 'refs/heads/main'), self.base)
+            result = execute(*args, **kwargs)
+            external = queue.git(self.repository, 'commit-tree', self.base + '^{tree}', '-p', self.base, '-m', 'Independent main movement')
+            queue.git(self.repository, 'push', 'origin', external + ':refs/heads/main')
+            moved.append(external)
+            return result
+        with mock.patch.object(queue, 'execute_gate', side_effect=gate):
+            self.assertRaisesRegex(queue.QueueError, 'Main moved', queue.process_once, self.repository)
+        self.assertEqual(queue.remote_ref(self.repository, 'origin', 'refs/heads/main'), moved[0])
+        self.assertEqual(queue.entries(self.repository, 'origin')[0][2]['state'], 'validation_failed')
+
+    def test_repair_no_progress_stops_and_original_three_hour_window_survives(self):
+        import GitFlowRepair as repair
+        (self.repository / 'Assets').mkdir()
+        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
+        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
+        before = (self.repository / 'Assets/Game.cs').read_bytes()
+        def transport(executable, model, effort, context, **kwargs):
+            content = json.loads(context)
+            item = content['allowed_files']['Assets/Game.cs']
+            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'], old_text=' }', new_text=' }  ')]))
+        lease = mock.Mock()
+        self.assertRaisesRegex(queue.QueueError, 'No meaningful progress', repair.repair, queue, self.repository, value,
+            policy, queue.QueueError('compile failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
+        self.assertEqual((self.repository / 'Assets/Game.cs').read_bytes(), before)
+        started = value['repair']['first_started_utc']
+        policy['repair']['model'] = 'different-model'
+        self.assertRaisesRegex(queue.QueueError, 'No meaningful progress', repair.repair, queue, self.repository, value,
+            policy, queue.QueueError('same failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
+        self.assertEqual(value['repair']['first_started_utc'], started)
+        start = datetime.datetime.fromisoformat(started)
+        self.assertEqual(repair.remaining(value['repair'], start + datetime.timedelta(hours=3)), 0)
 
 
 if __name__ == '__main__':

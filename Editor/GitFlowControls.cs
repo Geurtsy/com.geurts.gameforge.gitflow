@@ -10,7 +10,9 @@ using Newtonsoft.Json.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace Geurts.GameForge.GitFlow.Editor
@@ -22,10 +24,10 @@ namespace Geurts.GameForge.GitFlow.Editor
         [Serializable]
         internal sealed class Configuration
         {
-            [FoldoutGroup("Local tools", Expanded = true), BoxGroup("Local tools/Paths", ShowLabel = false), FilePath(Extensions = "exe")]
+            [FoldoutGroup("Local tools", Expanded = true), BoxGroup("Local tools/Paths", ShowLabel = false), Sirenix.OdinInspector.FilePath(Extensions = "exe")]
             [Tooltip("Installed Python 3.10 or newer. No runtime is downloaded automatically.")]
             public string PythonExecutable;
-            [FoldoutGroup("Local tools"), BoxGroup("Local tools/Paths"), FilePath(Extensions = "exe")]
+            [FoldoutGroup("Local tools"), BoxGroup("Local tools/Paths"), Sirenix.OdinInspector.FilePath(Extensions = "exe")]
             [Tooltip("Installed native codex.exe. Codex owns its existing sign-in.")]
             public string CodexExecutable;
             [FoldoutGroup("Model selection", Expanded = true), BoxGroup("Model selection/Values", ShowLabel = false), ValueDropdown(nameof(ModelChoices))]
@@ -40,6 +42,9 @@ namespace Geurts.GameForge.GitFlow.Editor
             [FoldoutGroup("Repository"), BoxGroup("Repository/Target")]
             [Tooltip("Existing Git remote name; this control does not change remotes.")]
             public string Remote = "origin";
+            [FoldoutGroup("Repository"), BoxGroup("Repository/Target")]
+            [Tooltip("Task-owned folder captured by Queue local changes. Choose a narrower folder when other work is present. Generated, licensed vendor and validation files are excluded.")]
+            public string CaptureScope = "Assets";
             [NonSerialized] public JArray Models = new JArray();
 
             /// <summary>Returns provider-reported display labels paired with their exact model identities.</summary>
@@ -52,7 +57,7 @@ namespace Geurts.GameForge.GitFlow.Editor
 
             /// <summary>Copies non-secret authoring fields into the shared settings contract.</summary>
             internal GitFlowPreferences Preferences() => new GitFlowPreferences { PythonExecutable = PythonExecutable ?? "", CodexExecutable = CodexExecutable ?? "",
-                Model = Model ?? "", ReasoningEffort = ReasoningEffort ?? "", Repository = Repository ?? "", Remote = Remote ?? "" };
+                Model = Model ?? "", ReasoningEffort = ReasoningEffort ?? "", Repository = Repository ?? "", Remote = Remote ?? "", CaptureScope = CaptureScope ?? "Assets" };
         }
 
         private readonly Configuration _configuration;
@@ -79,6 +84,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                     _configuration.Model = saved.Model; _configuration.ReasoningEffort = saved.ReasoningEffort;
                     if (!string.IsNullOrEmpty(saved.Repository)) _configuration.Repository = saved.Repository;
                     _configuration.Remote = saved.Remote;
+                    _configuration.CaptureScope = saved.CaptureScope ?? "Assets";
                 }
             }
             catch (Exception error) { failure = error.Message; }
@@ -95,13 +101,26 @@ namespace Geurts.GameForge.GitFlow.Editor
             Button(group, "Save model and project preferences", () =>
             {
                 var selected = _configuration.Models.FirstOrDefault(item => (string)item["model"] == _configuration.Model);
-                if (selected == null || !selected["efforts"].Values<string>().Contains(_configuration.ReasoningEffort))
+                if (!string.IsNullOrEmpty(_configuration.Model) && (selected == null || !selected["efforts"].Values<string>().Contains(_configuration.ReasoningEffort)))
                     throw new InvalidOperationException("Discover models and explicitly select a supported model and reasoning effort first.");
                 Host().Save(_configuration.Preferences());
                 return Task.FromResult(new JObject { ["state"] = "saved", ["detail"] = "Selection saved. No inference, source change or processor action was authorized." });
             });
             Button(group, "Inspect reusable queue once", () => Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "inspect" }, cancellation: _cancellation.Token));
             Button(group, "Measure configured publisher storage", () => Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "storage" }, 150, _cancellation.Token));
+            var capture = new Foldout { text = "Queue saved local changes", value = true }; group.Add(capture);
+            capture.Add(new HelpBox("Queue local changes saves assets and prompts for modified scenes, captures eligible saved files in Capture Scope plus required Unity metadata, and submits a separate exact commit. Your branch, staging and working edits stay in place. Choose a narrow task folder when unrelated edits are present. The queue owns final validation and publication.", HelpBoxMessageType.Info));
+            var captureTitle = new TextField("Optional title") { value = "Saved Unity project changes" };
+            var captureSummary = new TextField("Optional summary") { value = "Saved first-party changes in the configured task scope." };
+            capture.Add(captureTitle); capture.Add(captureSummary);
+            Button(capture, "Preview saved changes", () => Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "preview-local-changes", "--scope", _configuration.CaptureScope }, cancellation: _cancellation.Token));
+            Button(capture, "Queue local changes", async () =>
+            {
+                SaveActiveProject(_configuration.Repository);
+                return await Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "queue-local-changes", "--scope", _configuration.CaptureScope,
+                    "--title", string.IsNullOrWhiteSpace(captureTitle.value) ? "Saved Unity project changes" : captureTitle.value,
+                    "--summary", string.IsNullOrWhiteSpace(captureSummary.value) ? "Saved first-party changes in the configured task scope." : captureSummary.value }, 300, _cancellation.Token);
+            });
             var publisher = new Foldout { text = "Operator â€” Configure and start publisher", value = false }; group.Add(publisher);
             var workspace = new TextField("New short workspace root"); var unity = new TextField("Installed Unity executable");
             var tests = new TextField("Required project test filter"); var repair = new Toggle("Authorize automatic source repair for up to three hours");
@@ -161,6 +180,25 @@ namespace Geurts.GameForge.GitFlow.Editor
 
         /// <summary>Returns the enabled lifecycle service and exposes a useful unavailable state otherwise.</summary>
         private static GitFlowHost Host() => GitFlowBrick.Host ?? throw new InvalidOperationException("Enable GitFlow in God before using the host.");
+
+        /// <summary>Saves through supported Unity APIs and refuses to silently omit unsaved or untitled scene work.</summary>
+        private static void SaveActiveProject(string repository)
+        {
+            string active = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+            if (!string.Equals(Path.GetFullPath(repository), active, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Queue local changes captures this active Unity project. Select its repository first.");
+            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating)
+                throw new InvalidOperationException("Finish Play Mode, compilation and asset import before capturing saved changes.");
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                throw new InvalidOperationException("Scene saving was cancelled. No source snapshot was submitted.");
+            for (int index = 0; index < SceneManager.sceneCount; index++)
+            {
+                Scene scene = SceneManager.GetSceneAt(index);
+                if (scene.isDirty || (string.IsNullOrEmpty(scene.path) && scene.rootCount > 0))
+                    throw new InvalidOperationException("Save every modified or untitled scene before queueing. Unsaved work has been preserved.");
+            }
+            AssetDatabase.SaveAssets();
+        }
 
         /// <summary>Adds an awaited explicit action, preserving visible errors and cancellation without async exception leakage.</summary>
         private void Button(VisualElement parent, string title, Func<Task<JObject>> action)

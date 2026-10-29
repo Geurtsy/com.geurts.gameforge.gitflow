@@ -143,12 +143,13 @@ namespace Geurts.GameForge.GitFlow.Editor
         public string ReasoningEffort = "";
         public string Repository = "";
         public string Remote = "origin";
+        public string CaptureScope = "Assets";
 
         /// <summary>Rejects unsupported payloads and malformed values while allowing disconnected initial setup.</summary>
         public string ValidateSettings()
         {
             if (Schema != 1) return "Unsupported GitFlow settings format. Preserve the existing file.";
-            if (new[] { PythonExecutable, CodexExecutable, Model, ReasoningEffort, Repository, Remote }.Any(value => value == null || value.Length > 259 || value.Contains('\0')))
+            if (new[] { PythonExecutable, CodexExecutable, Model, ReasoningEffort, Repository, Remote, CaptureScope }.Any(value => value == null || value.Length > 259 || value.Contains('\0')))
                 return "GitFlow settings contain an invalid or oversized value.";
             return null;
         }

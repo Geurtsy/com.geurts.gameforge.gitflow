@@ -7,3 +7,5 @@
 *.user
 .vs/
 TestResults*.xml
+__pycache__/
+*.pyc
