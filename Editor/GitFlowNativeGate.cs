@@ -15,6 +15,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private static readonly List<CompilerMessage> _messages = new List<CompilerMessage>();
         private static string _evidence, _run, _candidate;
         private static int _assemblies;
+        private static bool _compilationStarted;
 
         /// <summary>Forces full script compilation so a warm Library cannot hide previously cached compiler warnings.</summary>
         public static void BeginCompilation()
@@ -22,11 +23,15 @@ namespace Geurts.GameForge.GitFlow.Editor
             RequireBatch();
             if (Argument("-gitFlowCompilationProtocol") != "1") throw new ArgumentException("Unsupported full compilation protocol.");
             _evidence = Argument("-gitFlowEvidence"); _run = Argument("-gitFlowRun"); _candidate = Argument("-gitFlowCandidate");
-            Directory.CreateDirectory(_evidence); _messages.Clear(); _assemblies = 0;
+            Directory.CreateDirectory(_evidence); _messages.Clear(); _assemblies = 0; _compilationStarted = false;
+            CompilationPipeline.compilationStarted += StartCompilation;
             CompilationPipeline.assemblyCompilationFinished += CollectCompilation;
             CompilationPipeline.compilationFinished += FinishCompilation;
             CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
         }
+
+        /// <summary>Records the requested pipeline start before accepting its later completion callback.</summary>
+        private static void StartCompilation(object context) { _compilationStarted = true; }
 
         /// <summary>Retains every compiler message emitted by each assembly in this explicit full pass.</summary>
         private static void CollectCompilation(string assembly, CompilerMessage[] messages)
@@ -37,22 +42,24 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Writes the exact-run diagnostic result only after the full compilation pipeline finishes.</summary>
         private static void FinishCompilation(object context)
         {
+            CompilationPipeline.compilationStarted -= StartCompilation;
             CompilationPipeline.assemblyCompilationFinished -= CollectCompilation;
             CompilationPipeline.compilationFinished -= FinishCompilation;
             int warnings = _messages.Count(item => item.type == CompilerMessageType.Warning);
-            int errors = _messages.Count(item => item.type == CompilerMessageType.Error) + (_assemblies == 0 ? 1 : 0);
-            bool passed = warnings == 0 && errors == 0;
+            int errors = _messages.Count(item => item.type == CompilerMessageType.Error) + (!_compilationStarted ? 1 : 0);
+            int expectedAssemblies = CompilationPipeline.GetAssemblies().Length;
             File.WriteAllText(Path.Combine(_evidence, "diagnostics.json"), JsonConvert.SerializeObject(new
             {
                 complete_matching_diagnostics = _messages.Select(item => item.file + "(" + item.line + "," + item.column + "): " + item.type + " " + item.message).ToArray(),
-                compiled_assemblies = _assemblies, full_script_rebuild = true
+                observed_assembly_callbacks = _assemblies, full_script_rebuild_requested = true
             }));
-            File.WriteAllText(Path.Combine(_evidence, "result.json"), JsonConvert.SerializeObject(new
+            File.WriteAllText(Path.Combine(_evidence, "compilation.json"), JsonConvert.SerializeObject(new
             {
-                run = _run, candidate = _candidate, status = passed ? "passed" : "failed", warnings, errors, skipped = 0,
-                compiled_assemblies = _assemblies, full_script_rebuild = true, unity = UnityEngine.Application.unityVersion
+                run = _run, candidate = _candidate, status = "native_pipeline_completed", observed_warnings = warnings, observed_errors = errors,
+                observed_assembly_callbacks = _assemblies, expected_assemblies = expectedAssemblies,
+                pipeline_started = _compilationStarted, full_script_rebuild_requested = true, unity = UnityEngine.Application.unityVersion
             }));
-            EditorApplication.Exit(passed ? 0 : 2);
+            EditorApplication.Exit(errors == 0 && warnings == 0 && expectedAssemblies > 0 ? 0 : 2);
         }
 
         /// <summary>Writes the assigned player version through Unity's supported API; never rewrites serialized YAML.</summary>
