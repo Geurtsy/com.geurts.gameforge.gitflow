@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import datetime
+from concurrent.futures import ThreadPoolExecutor
 import unittest
 from unittest import mock
 
@@ -245,6 +246,99 @@ class QueueAcceptance(unittest.TestCase):
         self.assertEqual(revised['workspace_root'], prior['workspace_root'])
         self.assertEqual(revised['runner_history'][0]['runner_hash'], prior['runner_hash'])
         self.assertRaisesRegex(queue.QueueError, 'Configuration changed', queue.upgrade_runner, self.repository, identity)
+
+    def test_repair_stops_when_changed_source_has_same_independent_failure(self):
+        import GitFlowRepair as repair
+        (self.repository / 'Assets').mkdir()
+        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
+        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
+        calls = []
+        def transport(executable, model, effort, context, **kwargs):
+            calls.append(1)
+            item = json.loads(context)['allowed_files']['Assets/Game.cs']
+            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'], old_text='speed = 3', new_text='speed = 4')]))
+        lease = mock.Mock()
+        repair.repair(queue, self.repository, value, policy, queue.QueueError('same independent compiler failure'),
+            self.workspace_root / 'Evidence', lambda: None, lease, transport)
+        self.assertIn('speed = 4', (self.repository / 'Assets/Game.cs').read_text())
+        self.assertRaisesRegex(queue.QueueError, 'same failure', repair.repair, queue, self.repository, value, policy,
+            queue.QueueError('same independent compiler failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(value['repair']['attempts'][-1]['state'], 'no_progress_after_validation')
+
+    def test_concurrent_claims_have_one_winner_and_renewal_resets_observation(self):
+        queue.git(self.repository, 'update-ref', 'refs/remotes/origin/main', self.base)
+        contenders = [queue.leases.Lease(queue, self.repository, 'origin') for _ in range(2)]
+        def claim(owner):
+            try:
+                owner.acquire()
+                return owner
+            except queue.leases.Contended:
+                return None
+        with ThreadPoolExecutor(max_workers=2) as threads:
+            results = list(threads.map(claim, contenders))
+        winners = [item for item in results if item]
+        self.assertEqual(len(winners), 1)
+        winner = winners[0]
+        clock = [0.0]
+        observer = queue.leases.Lease(queue, self.repository, 'origin', clock=lambda: clock[0])
+        self.assertRaises(queue.leases.Contended, observer.acquire)
+        first = winner.oid
+        winner.advance(); winner.advance()
+        self.assertNotEqual(first, winner.oid)
+        clock[0] = queue.leases.SECONDS + 1
+        self.assertRaises(queue.leases.Contended, observer.acquire)
+        self.assertEqual(queue.remote_ref(self.repository, 'origin', queue.LOCK), winner.oid)
+        winner.close()
+
+    def test_uncertain_ack_fences_owner_without_repeating_accepted_atomic_write(self):
+        queue.git(self.repository, 'update-ref', 'refs/remotes/origin/main', self.base)
+        lease = queue.leases.Lease(queue, self.repository, 'origin').acquire()
+        real = queue.leases.transport
+        pushes = []
+        target = 'refs/heads/gameforge/uncertain-fixture'
+        def uncertain(q, root, *arguments, **kwargs):
+            result = real(q, root, *arguments, **kwargs)
+            if arguments[0] == 'push':
+                pushes.append(arguments)
+                raise subprocess.TimeoutExpired('injected lost acknowledgement', 300)
+            return result
+        with mock.patch.object(queue.leases, 'transport', side_effect=uncertain):
+            self.assertRaises(queue.leases.LeaseError, lease.publish, self.repository, 'origin', [self.base + ':' + target])
+            self.assertRaises(queue.leases.LeaseError, lease.publish, self.repository, 'origin', [self.base + ':' + target])
+        self.assertEqual(len(pushes), 1)
+        self.assertEqual(queue.remote_ref(self.repository, 'origin', target), self.base)
+        self.assertTrue(lease.stop.is_set())
+        self.assertRaises(queue.leases.LeaseError, lease.close)
+
+    def test_unknown_and_legacy_owner_records_are_never_treated_as_available(self):
+        queue.git(self.repository, 'update-ref', 'refs/remotes/origin/main', self.base)
+        parent = self.base
+        for metadata in [dict(legacy=True), dict(lease_protocol=99), dict(lease_protocol=1, state='owned')]:
+            child = queue.object_commit(self.repository, parent, metadata, 'Unsupported fixture owner')
+            queue.git(self.repository, 'push', 'origin', child + ':' + queue.LOCK)
+            lease = queue.leases.Lease(queue, self.repository, 'origin')
+            self.assertRaises(queue.leases.LeaseError, lease.acquire)
+            self.assertEqual(queue.remote_ref(self.repository, 'origin', queue.LOCK), child)
+            self.assertEqual(queue.inspect_owner(self.repository, 'origin')['state'], 'unknown')
+            parent = child
+
+    def test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance(self):
+        check = dict(self.policy['checks'][0], kind='specialist', inputs=['feature.txt', 'Gate.py'])
+        cache = {}
+        evidence = self.workspace_root / 'Evidence'
+        first = queue.execute_gate(self.repository, evidence, check, self.base, 'fixture-policy', cache)
+        unrelated = self.source('unrelated.txt', 'unrelated\n')
+        second = queue.execute_gate(self.repository, evidence, check, unrelated['source'], 'fixture-policy', cache)
+        self.assertTrue(second['reused'])
+        self.assertEqual(second['evidence_candidate'], self.base)
+        self.assertEqual(second['candidate'], unrelated['source'])
+        (self.repository / 'feature.txt').write_text('changed declared input\n')
+        queue.git(self.repository, 'add', 'feature.txt'); queue.git(self.repository, 'commit', '-m', 'Changed specialist input')
+        head = queue.git(self.repository, 'rev-parse', 'HEAD')
+        third = queue.execute_gate(self.repository, evidence, check, head, 'fixture-policy', cache)
+        self.assertFalse(third['reused'])
+        self.assertNotEqual(third['key'], first['key'])
 
 
 if __name__ == '__main__':

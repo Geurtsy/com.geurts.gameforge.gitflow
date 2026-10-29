@@ -42,6 +42,21 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
         raise q.QueueError('The original three-hour repair window is exhausted.')
     if record['attempts'] and record['attempts'][-1]['state'] in {'requesting', 'applying'}:
         raise q.QueueError('Interrupted repair has an uncertain outcome. Preserve its exact proposal/candidate and reconcile before continuation.')
+    failure_content = str(failure)
+    if getattr(failure, 'folder', None):
+        folder = q.plain(failure.folder)
+        diagnostics_path = folder / 'diagnostics.json'
+        if diagnostics_path.is_file():
+            diagnostics = q.read_json(diagnostics_path)
+            failure_content = q.encoded(diagnostics.get('complete_matching_diagnostics', diagnostics))
+        elif (folder / 'output.log').is_file():
+            failure_content = (folder / 'output.log').read_text(encoding='utf-8-sig', errors='replace')
+    failure_identity = q.digest(failure_content.replace(str(workspace), '{workspace}').encode())
+    if (record['attempts'] and record['attempts'][-1]['state'] == 'applied_pending_validation'
+            and record['attempts'][-1].get('failure_evidence') == failure_identity):
+        record['attempts'][-1]['state'] = 'no_progress_after_validation'
+        checkpoint()
+        raise q.QueueError('No meaningful progress: independently repeated validation produced the same failure after the source repair.')
     protected = set(policy.get('protected_paths', [])) | {policy['version_file']} | set(policy.get('native_version_outputs', []))
     for check in policy['checks']:
         protected.update(arg for arg in check['command'] if not arg.startswith(('-', '{')))
@@ -84,7 +99,7 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
         raise q.QueueError('Complete repair context exceeds 65536 bytes; no partial conflict context was sent.')
     record['seen'].append(before)
     attempt = dict(started_utc=now.isoformat(), before=before, failure=q.digest(str(failure).encode()),
-                   model=settings['model'], effort=settings['effort'], state='requesting', remaining_seconds=budget)
+                   failure_evidence=failure_identity, model=settings['model'], effort=settings['effort'], state='requesting', remaining_seconds=budget)
     record['attempts'].append(attempt)
     checkpoint()  # A crash cannot silently erase the paid attempt or restart its clock.
     lease.guard()

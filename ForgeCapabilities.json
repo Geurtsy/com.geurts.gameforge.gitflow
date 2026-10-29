@@ -45,6 +45,17 @@
       "validation": [
         "Installed codex-cli 0.149.1 metadata discovery succeeded; no paid inference executed."
       ]
+    },
+    {
+      "id": "saved_change_capture",
+      "description": "Preserved scoped saved-change capture, idempotent submission and a beginner guide rendered inside Unity.",
+      "implemented": true,
+      "maturity": "candidate",
+      "provider": "editor",
+      "operations": [],
+      "validation": [
+        "Native Inspector-save and preservation acceptance; final candidate report pending."
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
@@ -83,7 +94,14 @@
       "kind": "external_tool",
       "minimumVersion": "",
       "id": "git_for_windows",
-      "detail": "Non-interactive Git reads; authentication helpers disabled."
+      "detail": "Non-interactive Git reads and explicitly authorized fenced queue writes; no unattended authentication prompts."
+    },
+    {
+      "id": "python",
+      "kind": "external_tool",
+      "required": true,
+      "minimumVersion": "3.10",
+      "detail": "Explicitly selected native Python; no automatic installation or update."
     }
   ],
   "maturity": "candidate",

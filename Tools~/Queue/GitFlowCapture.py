@@ -6,7 +6,7 @@ import tempfile
 DEFAULT_SCOPES = ['Assets']
 EXCLUDED_PARTS = {'library', 'temp', 'obj', 'logs', 'build', 'builds', 'usersettings',
                   'plugins', '_thirdparty', 'thirdparty', 'third-party', '_generated', 'generated',
-                  '.git', '.github', '.codex', 'tools', 'tools~', 'tests', 'testing'}
+                  '.git', '.github', '.codex', 'tools', 'tools~', 'tests', 'tests~', 'test', 'testing'}
 
 
 def inventory(q, root, scopes):

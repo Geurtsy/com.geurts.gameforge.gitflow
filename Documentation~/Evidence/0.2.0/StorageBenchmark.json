@@ -1,0 +1,205 @@
+{
+  "elapsed_seconds": 2.8597023999973317,
+  "limits": "Unique logical bytes, not allocated clusters. Synthetic retained-clone baseline; no production workspace was modified.",
+  "samples": [
+    {
+      "request": 1,
+      "retained_full_clones": {
+        "complete": true,
+        "elapsed_seconds": 0.026,
+        "issues": [],
+        "measurement": "logical_file_bytes",
+        "roots": [
+          {
+            "bytes": 4222845,
+            "categories": {
+              "git_data": 2125683,
+              "source_and_assets": 2097162
+            },
+            "files": 35,
+            "root": "C:\\gq_storage_h0stjqnu\\Original"
+          },
+          {
+            "bytes": 21066700,
+            "categories": {
+              "git_data": 2126786,
+              "source_and_assets": 2162698,
+              "unity_library": 16777216
+            },
+            "files": 32,
+            "root": "C:\\gq_storage_h0stjqnu\\Baseline"
+          }
+        ],
+        "schema": 1,
+        "total_bytes": 25289545,
+        "unique_file_bytes": 25289545
+      },
+      "shared_reusable_workspace": {
+        "complete": true,
+        "elapsed_seconds": 0.015,
+        "issues": [],
+        "measurement": "logical_file_bytes",
+        "roots": [
+          {
+            "bytes": 4222845,
+            "categories": {
+              "git_data": 2125683,
+              "source_and_assets": 2097162
+            },
+            "files": 35,
+            "root": "C:\\gq_storage_h0stjqnu\\Original"
+          },
+          {
+            "bytes": 18939979,
+            "categories": {
+              "git_data": 65,
+              "logs_and_evidence": 65536,
+              "source_and_assets": 2097162,
+              "unity_library": 16777216
+            },
+            "files": 5,
+            "root": "C:\\gq_storage_h0stjqnu\\Reusable"
+          }
+        ],
+        "schema": 1,
+        "total_bytes": 23162824,
+        "unique_file_bytes": 23162824
+      }
+    },
+    {
+      "request": 2,
+      "retained_full_clones": {
+        "complete": true,
+        "elapsed_seconds": 0.036,
+        "issues": [],
+        "measurement": "logical_file_bytes",
+        "roots": [
+          {
+            "bytes": 4222845,
+            "categories": {
+              "git_data": 2125683,
+              "source_and_assets": 2097162
+            },
+            "files": 35,
+            "root": "C:\\gq_storage_h0stjqnu\\Original"
+          },
+          {
+            "bytes": 42133400,
+            "categories": {
+              "git_data": 4253572,
+              "source_and_assets": 4325396,
+              "unity_library": 33554432
+            },
+            "files": 64,
+            "root": "C:\\gq_storage_h0stjqnu\\Baseline"
+          }
+        ],
+        "schema": 1,
+        "total_bytes": 46356245,
+        "unique_file_bytes": 46356245
+      },
+      "shared_reusable_workspace": {
+        "complete": true,
+        "elapsed_seconds": 0.015,
+        "issues": [],
+        "measurement": "logical_file_bytes",
+        "roots": [
+          {
+            "bytes": 4222845,
+            "categories": {
+              "git_data": 2125683,
+              "source_and_assets": 2097162
+            },
+            "files": 35,
+            "root": "C:\\gq_storage_h0stjqnu\\Original"
+          },
+          {
+            "bytes": 19005515,
+            "categories": {
+              "git_data": 65,
+              "logs_and_evidence": 131072,
+              "source_and_assets": 2097162,
+              "unity_library": 16777216
+            },
+            "files": 6,
+            "root": "C:\\gq_storage_h0stjqnu\\Reusable"
+          }
+        ],
+        "schema": 1,
+        "total_bytes": 23228360,
+        "unique_file_bytes": 23228360
+      }
+    },
+    {
+      "request": 3,
+      "retained_full_clones": {
+        "complete": true,
+        "elapsed_seconds": 0.053,
+        "issues": [],
+        "measurement": "logical_file_bytes",
+        "roots": [
+          {
+            "bytes": 4222845,
+            "categories": {
+              "git_data": 2125683,
+              "source_and_assets": 2097162
+            },
+            "files": 35,
+            "root": "C:\\gq_storage_h0stjqnu\\Original"
+          },
+          {
+            "bytes": 63200100,
+            "categories": {
+              "git_data": 6380358,
+              "source_and_assets": 6488094,
+              "unity_library": 50331648
+            },
+            "files": 96,
+            "root": "C:\\gq_storage_h0stjqnu\\Baseline"
+          }
+        ],
+        "schema": 1,
+        "total_bytes": 67422945,
+        "unique_file_bytes": 67422945
+      },
+      "shared_reusable_workspace": {
+        "complete": true,
+        "elapsed_seconds": 0.018,
+        "issues": [],
+        "measurement": "logical_file_bytes",
+        "roots": [
+          {
+            "bytes": 4222845,
+            "categories": {
+              "git_data": 2125683,
+              "source_and_assets": 2097162
+            },
+            "files": 35,
+            "root": "C:\\gq_storage_h0stjqnu\\Original"
+          },
+          {
+            "bytes": 19071051,
+            "categories": {
+              "git_data": 65,
+              "logs_and_evidence": 196608,
+              "source_and_assets": 2097162,
+              "unity_library": 16777216
+            },
+            "files": 7,
+            "root": "C:\\gq_storage_h0stjqnu\\Reusable"
+          }
+        ],
+        "schema": 1,
+        "total_bytes": 23293896,
+        "unique_file_bytes": 23293896
+      }
+    }
+  ],
+  "schema": 1,
+  "workload": {
+    "cache_bytes": 16777216,
+    "evidence_bytes_per_request": 65536,
+    "requests": 3,
+    "source_bytes": 2097152
+  }
+}

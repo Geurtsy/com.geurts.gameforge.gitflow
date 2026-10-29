@@ -393,7 +393,7 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
         folder = plain(cached['folder'])
         if all(plain(folder / name).is_file() and digest((folder / name).read_bytes()) == value
                for name, value in cached['artifacts'].items()):
-            return dict(cached, reused=True, candidate=candidate)
+            return dict(cached, reused=True, candidate=candidate, evidence_candidate=cached.get('evidence_candidate', cached['candidate']))
     identity = uuid.uuid4().hex
     folder = plain(evidence_root / (check['name'] + '_' + identity))
     folder.mkdir(parents=True)
@@ -429,7 +429,7 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
             if total > 128 * 1024 * 1024:
                 raise QueueError('Gate evidence exceeds the 128 MiB portable evidence limit; preserve it and refine the owning adapter.')
             artifacts[path.name] = file_digest(path)
-        value = dict(name=check['name'], kind=check['kind'], candidate=candidate, key=key, environment=environment,
+        value = dict(name=check['name'], kind=check['kind'], candidate=candidate, evidence_candidate=candidate, key=key, environment=environment,
                      started_utc=started, completed_utc=utc(), folder=str(folder), artifacts=artifacts, reused=False)
         cache[key] = value
         return value

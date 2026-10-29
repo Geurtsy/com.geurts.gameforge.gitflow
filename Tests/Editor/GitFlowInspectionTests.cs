@@ -251,6 +251,16 @@ namespace Geurts.GameForge.GitFlow.Tests
                 inspector.FindProperty("m_LocalPosition").vector3Value = new Vector3(4, 0, 0);
                 inspector.ApplyModifiedProperties(); EditorSceneManager.MarkSceneDirty(scene);
                 Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
+                var owned = new Material(Shader.Find("Hidden/InternalErrorShader"));
+                var excluded = new Material(Shader.Find("Hidden/InternalErrorShader"));
+                AssetDatabase.CreateFolder(folder, "Plugins");
+                AssetDatabase.CreateAsset(owned, folder + "/Owned.mat");
+                AssetDatabase.CreateAsset(excluded, folder + "/Plugins/Excluded.mat");
+                owned.name = "Owned change"; excluded.name = "Preserved unrelated change";
+                EditorUtility.SetDirty(owned); EditorUtility.SetDirty(excluded);
+                GitFlowControls.SaveActiveProject(Path.GetFullPath(Path.Combine(Application.dataPath, "..")), folder);
+                Assert.That(EditorUtility.IsDirty(owned), Is.False, "Included asset was not saved through its native API.");
+                Assert.That(EditorUtility.IsDirty(excluded), Is.True, "Excluded unsaved asset state was changed.");
                 File.Copy(scenePath, Path.Combine(_checkout, "Assets/Enemy.unity"), true);
                 byte[] saved = File.ReadAllBytes(Path.Combine(_checkout, "Assets/Enemy.unity"));
                 byte[] index = File.ReadAllBytes(Path.Combine(_checkout, ".git/index"));

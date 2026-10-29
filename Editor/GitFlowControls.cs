@@ -116,7 +116,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             Button(capture, "Preview saved changes", () => Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "preview-local-changes", "--scope", _configuration.CaptureScope }, cancellation: _cancellation.Token));
             Button(capture, "Queue local changes", async () =>
             {
-                SaveActiveProject(_configuration.Repository);
+                SaveActiveProject(_configuration.Repository, _configuration.CaptureScope);
                 return await Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "queue-local-changes", "--scope", _configuration.CaptureScope,
                     "--title", string.IsNullOrWhiteSpace(captureTitle.value) ? "Saved Unity project changes" : captureTitle.value,
                     "--summary", string.IsNullOrWhiteSpace(captureSummary.value) ? "Saved first-party changes in the configured task scope." : captureSummary.value }, 300, _cancellation.Token);
@@ -192,22 +192,39 @@ namespace Geurts.GameForge.GitFlow.Editor
         private static GitFlowHost Host() => GitFlowBrick.Host ?? throw new InvalidOperationException("Enable GitFlow in God before using the host.");
 
         /// <summary>Saves through supported Unity APIs and refuses to silently omit unsaved or untitled scene work.</summary>
-        private static void SaveActiveProject(string repository)
+        internal static void SaveActiveProject(string repository, string scope)
         {
             string active = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
             if (!string.Equals(Path.GetFullPath(repository), active, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("Queue local changes captures this active Unity project. Select its repository first.");
             if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling || EditorApplication.isUpdating)
                 throw new InvalidOperationException("Finish Play Mode, compilation and asset import before capturing saved changes.");
-            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-                throw new InvalidOperationException("Scene saving was cancelled. No source snapshot was submitted.");
+            string relative = (scope ?? "").Replace('\\', '/').TrimEnd('/');
+            if (string.IsNullOrWhiteSpace(relative) || relative.Split('/').Contains("..") || !(relative == "Assets" || relative.StartsWith("Assets/", StringComparison.Ordinal)))
+                throw new InvalidOperationException("The Unity button requires a task-owned Assets folder as Capture Scope.");
+            var excluded = new HashSet<string>(new[] { "plugins", "_thirdparty", "thirdparty", "third-party", "_generated", "generated", "tools", "tools~", "tests", "tests~", "test", "testing" }, StringComparer.OrdinalIgnoreCase);
+            Func<string, bool> included = path => (path == relative || path.StartsWith(relative + "/", StringComparison.Ordinal)) && !path.Split('/').Any(excluded.Contains);
+            var scenes = new List<Scene>();
             for (int index = 0; index < SceneManager.sceneCount; index++)
             {
                 Scene scene = SceneManager.GetSceneAt(index);
-                if (scene.isDirty || (string.IsNullOrEmpty(scene.path) && scene.rootCount > 0))
+                if (string.IsNullOrEmpty(scene.path) && (scene.isDirty || scene.rootCount > 0))
+                    throw new InvalidOperationException("Save your untitled scene to a project location first. No unsaved work was captured.");
+                if (included(scene.path)) scenes.Add(scene);
+            }
+            var prefab = PrefabStageUtility.GetCurrentPrefabStage();
+            if (prefab != null && prefab.scene.isDirty)
+                throw new InvalidOperationException("Save the open prefab in Prefab Mode first. Its unsaved edits are preserved.");
+            if (!EditorSceneManager.SaveModifiedScenesIfUserWantsTo(scenes.ToArray()))
+                throw new InvalidOperationException("Scene saving was cancelled. No source snapshot was submitted.");
+            foreach (Scene scene in scenes)
+            {
+                if (scene.isDirty)
                     throw new InvalidOperationException("Save every modified or untitled scene before queueing. Unsaved work has been preserved.");
             }
-            AssetDatabase.SaveAssets();
+            foreach (UnityEngine.Object asset in Resources.FindObjectsOfTypeAll<UnityEngine.Object>())
+                if (EditorUtility.IsPersistent(asset) && EditorUtility.IsDirty(asset) && included(AssetDatabase.GetAssetPath(asset)))
+                    AssetDatabase.SaveAssetIfDirty(asset);
         }
 
         /// <summary>Adds an awaited explicit action, preserving visible errors and cancellation without async exception leakage.</summary>
@@ -234,6 +251,16 @@ namespace Geurts.GameForge.GitFlow.Editor
             if (state == "queued") return "Queued: your saved checkpoint is on the waiting list. It has not joined the shared accepted project yet. Use Inspect reusable queue once for an update.";
             if (state == "published") return "Published: the checked changes reached the shared accepted project. Required local synchronization is still pending.";
             if (state == "integrated") return "Integrated: the checked changes reached the shared project and required synchronization completed.";
+            if (result["requests"] is JArray requests)
+            {
+                JObject owner = result["owner"] as JObject;
+                string ownership = (string)owner?["state"] == "recorded_owned"
+                    ? "Recorded background owner: " + (string)owner["machine"] + ". Stage: " + (string)owner["stage"] + ". Process health is not verified."
+                    : (string)owner?["summary"] ?? "Background owner is unknown.";
+                string entries = string.Join("\n", requests.Reverse().Take(8).Select(item => (string)item["title"] + ": " + (string)item["state"]));
+                return ownership + "\n" + (requests.Count == 0 ? "No waiting-list entries were observed." : entries) +
+                    (requests.Count > 8 ? "\nOlder entries are available in Details." : "") + "\nThis is a dated observation. Queued is waiting; Published still needs synchronization; Integrated is complete.";
+            }
             return (string)result["owner_summary"] ?? ("Finished: " + (string)(result["state"] ?? result["account_state"]) + ". Open Details for the exact result.");
         }
 

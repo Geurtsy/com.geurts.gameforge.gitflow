@@ -1,34 +1,68 @@
-# GitFlow Help and public API
+# GitFlow supported automation contract
 
-## Read only for the task
+Version 0.2.0 is an unreleased candidate. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
 
-After the current Commandments entry and manifest, select the row matching the task. Follow additional links only when that work needs them. Release evidence and history are optional during game integration.
+## Choose the relevant surface
 
-| Task | Minimum package reading |
-|---|---|
-| Observe an existing queue | [Read this section](#help) |
-| Extend read-only observation | [Read this section](#api-and-extension-boundary) |
-| Interpret limits and failures | [Read this section](#observation-contract-and-common-problems) |
-| Validate this owner (maintainers) | [Release gate](../Tools~/Validate-Release.ps1) and [recorded evidence](AIUsabilityValidation.json) |
+- Human workflow: open Tools > Geurts Game Forge > GitFlow. The Help button and GitFlow Help menu render the installed QueueLocalChanges.md guide inside Unity. Opening help performs no queue or model action.
+- New reusable queue: GitFlowBrick.Host owns local preferences and explicit host operations. UI controls use this same service. Opening the window, model selection and module enable start no queue job, inference or package update.
+- Legacy observation: GitFlowBrick.Service remains the bounded read-only GitFlowInspection. The lower legacy viewer uses refs/heads/codex/queue; it is separate from the new gameforge queue protocol. Its God operation is inspect_queue. It cannot submit or operate a legacy processor.
 
-## Help
+## Prerequisites and lifecycle
 
-Prerequisites: an enabled GitFlow module under God, Unity 6000.6.3f1 or newer, Git for Windows, separately acquired licensed Odin Inspector and Quantum Console. The package is Editor-only. Ordinary use needs no code, JSON editing, processor setup or configuration saves.
+God is the only mandatory Forge brick. Use the exact dependency minimums in package.json, licensed Odin Inspector and Quantum Console, Git for Windows, and explicitly selected native Python 3.10 or newer. This candidate's native process containment is verified on Windows only. Model features additionally require installed local Codex and its existing sign-in. No credentials are stored in project settings and no API-key backend is provided.
 
-1. Open Tools > Geurts Game Forge > GitFlow, or its installed-brick view in God.
-2. Choose an existing local checkout. Enter the name of its existing remote, normally origin.
-3. Select Refresh queue once. Inspect the completed timestamp, queue/processor/lease summaries and visible findings before expanding request/evidence sections.
-4. Refresh explicitly when another observation is wanted. Requests within two seconds are refused. Concurrent identical API calls share the current task; another target is refused while it runs. Closing a view detaches that view; God owns the shared service and stopping the brick cancels its operation.
+GitFlowBrick.Host is null while unavailable. Load/Save use God's validated BrickSettingsStore. Preferences contain only paths, repository/remote, capture scope, model and effort. Stopping the brick cancels its own bridge requests; the explicitly started background publisher is independent. Await methods, observe failures, and never block Unity's main thread. A serial bridge refuses overlapping operations.
 
-No observation runs on opening, restoration, repaint, section expansion or operation discovery. Scope fields are transient, not saved module configuration. Prior results keep their original timestamp while a refresh runs or fails; the selected scope of the result is shown inside its observation. A queued request is not delivery. Failed results include the queue's blocker and a route to its owning operator; the viewer cannot retry, release a lease, submit or publish.
+## Saved-change capture and submission
 
-## API and extension boundary
+The Unity Queue local changes action verifies this is the active project, waits for imports/compilation/Play Mode to finish, saves included dirty assets with AssetDatabase.SaveAssetIfDirty, and uses the supported scene-save prompt only for included scenes. It refuses untitled scenes and unsaved Prefab Mode work with actionable messages. Excluded/unrelated dirty assets and scenes remain unchanged. CaptureScope is a task-owned Assets folder in the UI.
 
-GitFlowBrick.Service is the shared lifecycle-owned GitFlowInspection, or null when disabled/unavailable. RefreshAsync(GitFlowTarget) runs one bounded request and returns an immutable GitFlowSnapshot. LastSnapshot exposes the last completed result without I/O. A caller may create and dispose an independent GitFlowInspection for explicitly isolated tooling; never create a publisher or acquire locks through an inspection adapter.
+The shared API is Host.ExecuteQueueAsync(preferences, arguments, timeoutSeconds, cancellation). For already saved data, arguments ["queue-local-changes", "--scope", "Assets/MyGame", "--title", "Meaningful title", "--summary", "Actual change"] run the same capture/submit host. The API does not save Editor memory; callers must use supported Unity APIs first. preview-local-changes with --scope reads the saved capture plan. Do not create an operation ID for these direct methods: inspect_queue remains the only registered God operation in this candidate.
 
-The God operation ID is inspect_queue, accepting a GitFlowTarget payload. Its Inspect callback is admission only, with no network work. ExecuteAsync refreshes through the same service. Verification refers only to completeness of this read, never processor readiness, current-main ancestry, validation execution or delivery correctness. Unsupported/malformed/partial evidence remains visible. Discovering the operation has no side effects.
+Capture uses a temporary GIT_INDEX_FILE initialized from the current HEAD. It selects eligible saved working bytes/deletions and nonignored new files in the requested scope, plus required Unity metadata. Generated/vendor/validation/tool folders and queue-owned versions/package manifests are excluded. Literal NUL-delimited pathspecs prevent broad staging. It compares raw bytes, path inventory, HEAD and the original index before committing. An existing unresolved merge or a concurrent source change fails without checkout mutation.
 
-The following exact example is compile-checked with the package:
+The resulting checkpoint is an ordinary commit with the original HEAD as parent. Canonical snapshot metadata makes an unchanged capture idempotent even after a response is lost. The live HEAD, branch, index and working bytes are preserved. Existing committed branch history is included; a scope cannot isolate earlier unrelated commits or distinguish two tasks in one file. No stash/reset, forced ignored-file add, direct-main push or second Unity clone occurs.
+
+The optional submit command requires an already clean committed task branch. It accepts title, summary, patch/minor/major size and explicit dependency request IDs. Both routes verify the remote immutable source request. The request ID is derived from the full source commit. A submission response ambiguity triggers one read reconciliation, never a repeated uncertain write. Existing legacy queue refs block new-protocol submission/configuration until an explicitly reviewed migration occurs.
+
+## Publisher, ownership and recovery
+
+An operator configures one new short root. Ownership markers bind the repository, remote, runner hash and validation policy. One detached Git worktree shares the repository's object database; its Unity Library is reused. Failed/dirty candidates are preserved. There is no skip, bypass or advisory gate.
+
+The publisher serializes the oldest request, verifies dependencies, combines source with main, assigns one semantic version, and calls the native version adapter through PlayerSettings.bundleVersion. Protocol-1 version proof is explicitly requested and required. Legacy helper invocations without that flag retain their older behavior. Project-specific native derived identities require their own project adapter and required gate; this generic helper does not claim to implement them.
+
+Every configured check is required. Compilation and final gates always run against the exact candidate. Specialist evidence can be reused only for identical declared source objects, policy, command, environment and tool bytes, with unchanged retained artifact hashes. Use inputs ["."] when complete dependencies are uncertain. Zero errors, warnings and skips are required. A final check requires a report identifying the current invocation and candidate, and must leave the source clean and unchanged. Moving main stops the candidate for explicit reviewed continuation instead of causing an automatic revalidation loop.
+
+Required checks finish before an atomic update of main, request state and the shared lease. Portable receipts and raw gate artifacts live in the request commit, outside game source. Later states preserve them. Published recovery verifies the complete portable receipt/artifact hashes and main/source ancestry before completing required pulls, with no second version or repeated checks. Dirty original checkouts remain untouched and leave the request Published until explicitly reconciled. A non-main task branch is not silently moved.
+
+Queue refs use refs/heads/gameforge/queue and the shared lease uses refs/heads/gameforge/integration-lease. Lease protocol 1 uses 1800-second ownership, 30-second renewal and bounded 300-second transport; supported older 180-second records are observed for their declared interval. A contender observes an unchanged exact object for the full monotonic interval. PID and wall-clock timestamps never grant ownership. All publication targets are atomically fenced. Ambiguous writes fence the owner and preserve verification evidence. Owner inspection exposes machine, owner, request/stage and recorded renewal separately from unknown process health.
+
+Start configured background publisher starts one deterministic native program. It is not proof of readiness; inspect the shared owner and local recorded state. Graceful stop finishes the owned request before exiting. Prepare stopped publisher to resume only removes a known stop marker under OS ownership locks. Blocked requests require exact same-request continuation with reviewed request/candidate commits. Unchanged failed inputs are not retried.
+
+After a manual Forge update, Adopt this installed runner after stopping requires stopped local owners, a released shared owner and the exact reviewed configuration identity. It preserves requests, candidates, repair history and evidence, journals both configurations and updates only the configured runner/owned adapter paths. An interrupted ownership/configuration mismatch fails closed for operator reconciliation. This action installs nothing and does not restart the processor.
+
+## Local Codex and bounded repair
+
+DiscoverModelsAsync uses local codex app-server initialize, account/read without token refresh, and paged model/list. It returns provider model IDs and supported reasoning efforts; it does not infer catalogue values from desktop labels. Discovery is not an inference request or entitlement proof. DiagnoseAsync requires explicitly reviewed bounded context and account usage consent; it returns one proposal without applying it.
+
+Optional automatic repair is separately authorized at operator configuration, pins the selected local model/effort and retains its original three-hour start across retries, restart and runner/model changes. Individual inference and Git/lease budgets remain separate. Only complete bounded task-owned source files are supplied. Validation/controller/native/generated/vendor files are protected. Exact unique fragment edits require the original raw hash; whole-file replacement, partial conflicts, stale edits and protected targets are rejected. Raw replies and hashes are retained before application. No meaningful change, repeated source, whitespace-only change, or the same independent validation failure after a repair stops further attempts early. Interrupted uncertain attempts require reconciliation; no paid retry is inferred.
+
+The repair guard is deterministically tested with fixture proposals. Live paid inference remains unverified; metadata discovery alone must never be described as successful model execution.
+
+## Disk use and retention
+
+Storage measurement is read-only, bounded and reports unique logical file bytes and incomplete paths. It does not report physical allocated clusters or delete anything. The fixed three-request benchmark retains one source/cache per full-clone baseline request and compares that with one shared workspace/cache plus all evidence. See Evidence/0.2.0/StorageBenchmark.json for actual samples and limits. Production Dreadvault measurements are separate read-only snapshots, not claimed savings.
+
+All failed candidates and evidence are retained. The gate portable-artifact limit is 128 MiB per gate; oversize evidence blocks publication. There is no automatic cleanup, compression or deletion of user workspaces, old Library directories, recovery archives or queue history. Long-term archive policy and low-disk operational thresholds need an explicit owning project decision.
+
+## Manual Forge updates only
+
+GitFlow never installs or updates itself, another Forge package or managed Commandments on startup, refresh, module enable, model selection or queue activity. Actual package/documentation updates belong to the user's current explicit Update action and owning confirmation. Processing user-submitted game changes is the separate, explicitly authorized queue workflow. God manual-update-policy changes are owned by another task; this candidate uses existing shared settings/theme APIs and does not edit that worktree.
+
+## Legacy read-only API example
+
+The legacy inspector retains its 45-second / 128-request read bounds, dated snapshots, no automatic refresh, preserved checkout and temporary observation object store. Public HTTPS and absolute local remotes are its supported transports. It reads recorded legacy claims; it does not prove live integration or operate the legacy runner.
 
 <!-- GEURTS-EXAMPLE: Tools~/Examples/InspectionExample.cs -->
 ```csharp
@@ -52,33 +86,21 @@ namespace Geurts.GameForge.GitFlow.Examples
 }
 ```
 
-## Observation contract and common problems
+## Provenance and validation limits
 
-The adapter reads IntegrationRequest.json at immutable objects advertised by refs/heads/codex/queue/* and refs/heads/codex/integration-lock. Request schema is integer 1, ref and ID must agree, and source is an exact SHA-1 commit. Supported statuses are queued, processing, validating, integrated/delivered and blocked/failed. Other statuses stay Unknown with a finding, including superseded records whose delivery ancestry is outside this adapter. Original JSON preserves validation inputs/results/unverified claims and additional fields.
+GitFlowLease.py adapts the user-owned Dreadvault Tools/IntegrationQueue/lock_lease.py at commit 088c912769bb4de67443707a24558d6dee08e4f0, adding the reusable adapter, contained process transport and recorded owner work fields. Dreadvault's live processor, policy, queue and Unity session are outside this package's implementation scope.
 
-Delivered records require an exact main_commit and a schema-1 receipt at Tools/IntegrationQueue/Receipts/<original-id>.json. Receipt ID/source/version must match. Inspection reports the recorded state separately from receipt availability. It never reruns checks, opens evidence links, imports source, executes downloaded code or infers current remote-main ancestry from a receipt.
-
-Local state is read from the common Git directory's integration_processor/processor-state.json. The directory is never created by inspection. A known PID is checked read-only through the OS. Presence cannot distinguish PID reuse, a healthy owner or a hung process. Missing PID evidence and reports older than two minutes remain Unknown/Stale; explicit blocked/failed reports retain failure details. No file-lock probe or processor command is used. Healthy/validating/busy phases in JSON remain reported observations, not verified liveness.
-
-Protocol-1 leases accept only recorded 180/1800-second policies, known owner fields and owned/released states. A released ref is Released, not Busy. One inspection cannot establish monotonic renewal/abandonment evidence. Legacy/future/malformed records require their owner; timestamps never authorize takeover.
-
-Unavailable HTTPS access: this release deliberately disables credential helpers and interactive prompts. Use a public HTTPS remote or a trusted absolute local remote for inspection; private/SSH transport needs a later supported read-only adapter. It does not change stored remotes. Unknown processor ownership: consult the configured owner through its supported operator surface. Malformed records: preserve evidence and ask that owner to repair them. Timeout: the current observation failed; no automatic retry is scheduled. Cleanup failures expose the exact owned temporary path.
-
-Git fetches use only a unique temporary bare object store and no FETCH_HEAD. Target branches, index, uncommitted files, settings and remote refs are never written. Configuration commands only read the existing remote URL. No repository Python, PowerShell, validation, publisher or runner is launched. Temporary object stores are removed after completion/failure. API use and UI callbacks must be awaited/observed; do not block Unity's main thread.
-
-## Planned capabilities
-
-Idempotent submission and independent publishing; queue-owned versions, fenced leases and receipts; same-ID recovery, safe whitespace correction, native identities and stopped-owner runner upgrades; optional separately authorized AI repair. None of these operations exists in this release. The Automation Technique remains the workflow owner. Dreadvault's processor, runner, policy and configuration are unchanged.
+The release gate binds C#, Python and assembly definitions. Validation.md names actual acceptance and remaining publication blockers. Headless tree construction is not a rendered interactive UI acceptance; model metadata is not paid inference; local bare remotes are not actual GitHub contention evidence. Never substitute historical 0.1.2 reports for this candidate.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
 {
+  "packageId": "com.geurts.gameforge.gitflow",
+  "packageVersion": "0.2.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.39.3",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
-  },
-  "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.2.0"
+  }
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->
