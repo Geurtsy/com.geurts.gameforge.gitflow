@@ -7,7 +7,7 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Current-source acceptance pending; historical 0.1.2 evidence retained separately."
+        "Current-source native acceptance passes; physical queue controls and in-Unity Help checked with recorded scope."
       ],
       "maturity": "pre_release",
       "provider": "editor",
@@ -18,7 +18,7 @@
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "Disposable real-Git acceptance in progress."
+        "17 real-Git acceptance tests pass. Actual GitHub temporary-ref arbitration passes; required stock native compilation remains blocked."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -29,7 +29,7 @@
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "Current-source acceptance pending."
+        "Durable three-hour clock, three consecutive stalled attempts, repair feedback, same-ID recovery and stopped-runner adoption pass disposable tests. No live paid repair performed."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -54,7 +54,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Native Inspector-save and preservation acceptance; final candidate report pending."
+        "Native Inspector-save/capture and dirty asset/index/branch preservation pass; physical queue controls and Help verified in a disposable Unity window."
       ]
     }
   ],
@@ -117,11 +117,13 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Unreleased candidate. Current-source acceptance in progress; historical 0.1.2 reports are not current proof.",
+    "scope": "Unreleased candidate. Native feature assertions, real-Git acceptance and scoped physical UI checks pass. Required stock full compilation fails on eleven vendor warnings.",
     "unverified": [
-      "Native Unity compilation and affected Editor/API acceptance pending.",
-      "Native visual layout and physical input pending.",
-      "Real GitHub concurrency and live model inference not yet verified. No consumer installed."
+      "Stock Quantum Console 2.6.7 emits eleven compiler warnings on Unity 6000.6.3f1; mandatory zero-warning release gate fails.",
+      "Narrow-window resizing; scoped visual checks are listed in the native report.",
+      "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
+      "Real elapsed 30-minute lease soak and multiple physical machines.",
+      "Project-specific native identity adapters."
     ]
   }
 }

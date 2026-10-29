@@ -1,7 +1,70 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.2.0",
+  "sourceCandidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "sourceFingerprint": "a88cb8be1790c5bc2f75b09aeedd806ca6af31ce50d79e8d00a5d098a88231fb",
+  "unityVersion": "6000.6.3f1",
+  "passed": 10,
+  "failed": 0,
+  "skipped": 0,
+  "examplesCompiled": true,
+  "testResult": "Documentation~/Evidence/0.2.0/UnityAcceptance.xml",
+  "testResultSha256": "81b4b9b97127221ad7646b1b78d3f7eda9a89fb356f1af1a8b0c5af3ed2c2696",
+  "queueAcceptance": {
+    "passed": 17,
+    "failed": 0,
+    "report": "Documentation~/Evidence/0.2.0/QueueAcceptance.log",
+    "sha256": "599a263e2033cbc2efe887b666f65e268bda902fa352a509a5db5bde0e3c5bb0"
+  },
+  "compilerGate": {
+    "status": "failed",
+    "warnings": 11,
+    "errors": 0,
+    "report": "Documentation~/Evidence/0.2.0/StockCompilerGate.json",
+    "sha256": "d9dbbdbc6985660767b23101ab8ee790330b613aa9249832fecc12825a26dc53"
+  },
+  "nativeVisualAcceptance": "verified",
+  "nativeVisualReport": "Documentation~/Evidence/0.2.0/NativeVisualAcceptance.json",
+  "nativeVisualReportSha256": "82cd055cf4b12151f56e77906388db5e6c6c753fd75a826130f470013c444e18",
   "publicationReady": false,
-  "scope": "Unreleased candidate; current-source acceptance in progress.",
+  "scope": "Unreleased candidate. Native feature assertions, real-Git acceptance and scoped physical UI checks pass. Required stock full compilation fails on eleven vendor warnings.",
+  "resolvedDependencies": {
+    "com.geurts.gameforge.gitflow": {
+      "version": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow.git#bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+      "source": "git",
+      "hash": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f"
+    },
+    "com.geurts.gameforge.god": {
+      "version": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#b7a001234dd5b149cc767dd1ab305df4c6e876d7",
+      "source": "git",
+      "hash": "b7a001234dd5b149cc767dd1ab305df4c6e876d7"
+    },
+    "com.unity.inputsystem": {
+      "version": "1.20.0",
+      "source": "registry"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.2",
+      "source": "registry"
+    },
+    "com.unity.test-framework": {
+      "version": "1.8.0",
+      "source": "builtin"
+    },
+    "com.unity.ugui": {
+      "version": "2.6.0",
+      "source": "builtin"
+    }
+  },
+  "licensedDependencies": {
+    "odin": "4.0.2.4",
+    "quantumConsole": "2.6.7 unmodified stock"
+  },
+  "unverified": [
+    "Narrow-window resizing; scoped visual checks are listed in the native report.",
+    "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
+    "Real elapsed 30-minute lease soak and multiple physical machines.",
+    "Project-specific native identity adapters."
+  ],
   "historicalEvidence": "Documentation~/History/AIUsabilityValidation-0.1.2.json"
 }

@@ -1,6 +1,12 @@
 # 0.2.0 — Unreleased candidate
 
-Strict reusable integration host, local Codex model selector, exact-candidate evidence, fenced ownership display, workspace accounting and three-hour progress-bounded repair. No skip or validation bypass. Acceptance remains in progress; no consumer installation.
+Strict reusable integration host with one shared worktree, exact-source idempotent submission, ownership-fenced publication and retained evidence. Failed checks block later requests; no skip or validation bypass exists.
+
+Add Queue local changes in Unity with scoped saving, isolated capture, Unity metadata preservation and an in-Editor beginner guide. Keep the live branch, staging selection and unrelated edits intact. The committed-work route remains optional.
+
+Add local Codex model/effort discovery and separately authorized repair, disabled by default. Preserve the original three-hour deadline and stop after three consecutive attempts without progress. Keep protected validation, native settings, vendor files and queue authority outside model control.
+
+Add explicit stopped-runner adoption of already installed code, recorded owner/machine/request/stage observations, measured storage accounting and strict source-bound release evidence. Forge never installs or updates automatically through GitFlow. Native assertions pass; the stock vendor compiler gate remains blocked. No consumer installation or release publication is performed.
 
 # Changelog
 
