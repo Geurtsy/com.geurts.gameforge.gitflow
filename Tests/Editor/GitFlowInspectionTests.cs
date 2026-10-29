@@ -13,7 +13,11 @@ using Geurts.GameForge.GitFlow.Editor;
 using Geurts.GameForge.God.Editor;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Geurts.GameForge.God;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace Geurts.GameForge.GitFlow.Tests
@@ -215,6 +219,48 @@ namespace Geurts.GameForge.GitFlow.Tests
             }
             finally { service.Dispose(); listener.Stop(); }
             CollectionAssert.AreEquivalent(before, Directory.GetDirectories(Path.GetTempPath(), "ggf_inspect_*"));
+        }
+
+        /// <summary>Captures an actual native saved Inspector change through the same installed host used by the button.</summary>
+        [Test]
+        public async Task NativeSavedInspectorChangeQueuesAndPreservesWorkingState()
+        {
+            string python = Environment.GetEnvironmentVariable("GEURTS_GITFLOW_TEST_PYTHON");
+            Assert.That(File.Exists(python), Is.True, "Acceptance requires an explicit installed Python executable.");
+            string folder = "Assets/GitFlowCaptureAcceptance_" + Guid.NewGuid().ToString("N");
+            AssetDatabase.CreateFolder("Assets", Path.GetFileName(folder));
+            string scenePath = folder + "/Enemy.unity";
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            try
+            {
+                var enemy = new GameObject("Enemy"); SceneManager.MoveGameObjectToScene(enemy, scene);
+                enemy.transform.localPosition = new Vector3(3, 0, 0);
+                Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
+                AssetDatabase.ImportAsset(scenePath, ImportAssetOptions.ForceSynchronousImport);
+                Directory.CreateDirectory(Path.Combine(_checkout, "Assets"));
+                File.Copy(scenePath, Path.Combine(_checkout, "Assets/Enemy.unity"));
+                File.Copy(scenePath + ".meta", Path.Combine(_checkout, "Assets/Enemy.unity.meta"));
+                Run(_checkout, "add", "Assets"); Run(_checkout, "commit", "-m", "Native saved scene baseline");
+                string head = Run(_checkout, "rev-parse", "HEAD").Trim();
+                var inspector = new SerializedObject(enemy.transform);
+                inspector.FindProperty("m_LocalPosition").vector3Value = new Vector3(4, 0, 0);
+                inspector.ApplyModifiedProperties(); EditorSceneManager.MarkSceneDirty(scene);
+                Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
+                File.Copy(scenePath, Path.Combine(_checkout, "Assets/Enemy.unity"), true);
+                byte[] saved = File.ReadAllBytes(Path.Combine(_checkout, "Assets/Enemy.unity"));
+                byte[] index = File.ReadAllBytes(Path.Combine(_checkout, ".git/index"));
+                using (var host = new GitFlowHost(new BrickSettingsStore(Path.Combine(_root, "settings"))))
+                {
+                    var preferences = new GitFlowPreferences { PythonExecutable = python, Repository = _checkout, Remote = "origin", CaptureScope = "Assets" };
+                    JObject result = await host.ExecuteQueueAsync(preferences, new[] { "queue-local-changes", "--scope", "Assets", "--title", "Move enemy from 3 to 4" }, 120);
+                    Assert.That((string)result["state"], Is.EqualTo("queued"));
+                    Assert.That(Run(_checkout, "show", (string)result["source"] + ":Assets/Enemy.unity"), Does.Contain("x: 4"));
+                    Assert.That(Run(_checkout, "rev-parse", "HEAD").Trim(), Is.EqualTo(head));
+                    CollectionAssert.AreEqual(index, File.ReadAllBytes(Path.Combine(_checkout, ".git/index")));
+                    CollectionAssert.AreEqual(saved, File.ReadAllBytes(Path.Combine(_checkout, "Assets/Enemy.unity")));
+                }
+            }
+            finally { EditorSceneManager.CloseScene(scene, true); AssetDatabase.DeleteAsset(folder); }
         }
 
         /// <summary>Creates exact protocol request metadata and a source/version-matched receipt for the delivered case.</summary>

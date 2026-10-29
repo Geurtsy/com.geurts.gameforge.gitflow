@@ -62,7 +62,7 @@ namespace Geurts.GameForge.GitFlow.Editor
 
         private readonly Configuration _configuration;
         private readonly PropertyTree _tree;
-        private readonly ForgeEditorTheme _theme = new ForgeEditorTheme();
+        private ForgeEditorTheme _theme;
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
         private readonly Label _status;
         private readonly TextField _output;
@@ -89,7 +89,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             }
             catch (Exception error) { failure = error.Message; }
             _tree = PropertyTree.Create(_configuration);
-            group.Add(new IMGUIContainer(() => { using (_theme.Scope()) _tree.Draw(false); }));
+            group.Add(new IMGUIContainer(() => { if (_theme == null) _theme = new ForgeEditorTheme(); using (_theme.Scope()) _tree.Draw(false); }));
             _status = new Label(failure ?? "Not checked. Model discovery sends no project context and makes no inference request.");
             _status.style.whiteSpace = WhiteSpace.Normal; group.Add(_status);
             Button(group, "Discover local Codex models", async () =>
@@ -229,6 +229,6 @@ namespace Geurts.GameForge.GitFlow.Editor
         }
 
         /// <summary>Releases only this view's Odin resources and cancels its in-flight bridge request.</summary>
-        public void Dispose() { _disposed = true; _cancellation.Cancel(); _tree.Dispose(); _theme.Dispose(); }
+        public void Dispose() { _disposed = true; _cancellation.Cancel(); _tree.Dispose(); _theme?.Dispose(); }
     }
 }

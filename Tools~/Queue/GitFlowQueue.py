@@ -418,12 +418,15 @@ def stamp_version(workspace, policy, version, evidence_root):
     old = path.read_bytes()
     if old.decode('utf-8-sig').strip() == version:
         return  # Same-ID continuation retains its already assigned unpublished version.
-    path.write_bytes((version + ('\r\n' if b'\r\n' in old else '\n')).encode())
     if policy.get('native_version_command'):
         folder = plain(evidence_root / ('version_' + uuid.uuid4().hex))
         folder.mkdir(parents=True, exist_ok=False)
         command = [arg.replace('{repository}', str(workspace)).replace('{version}', version).replace('{evidence}', str(folder)) for arg in policy['native_version_command']]
-        run(command, workspace, timeout=7200)
+        try:
+            run(command, workspace, timeout=7200)
+        except QueueError as error:
+            raise GateFailure(str(error), folder) from error
+    path.write_bytes((version + ('\r\n' if b'\r\n' in old else '\n')).encode())
     allowed = [policy['version_file'], *policy.get('native_version_outputs', [])]
     changed = git(workspace, 'diff', '--name-only').splitlines()
     if any(path not in allowed for path in changed):
@@ -580,7 +583,12 @@ def process_once(root, expected_request=None, expected_candidate=None):
             policy = config['policy']
             main_version = git(root, 'show', main + ':' + policy['version_file']).strip()
             version = next_version(main_version, value['size'])
-            stamp_version(workspace, policy, version, evidence_root)
+            while True:
+                try:
+                    stamp_version(workspace, policy, version, evidence_root)
+                    break
+                except GateFailure as error:
+                    repair_failure(error)
             candidate = git(workspace, 'rev-parse', 'HEAD')
             attempt = dict(candidate=candidate, base_main=main, version=version, started_utc=utc(), policy=config['policy_hash'])
             value['attempts'].append(attempt)

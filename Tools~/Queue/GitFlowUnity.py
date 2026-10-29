@@ -19,7 +19,7 @@ def execute(arguments):
     command = [str(editor), '-batchmode', '-nographics', '-nosound', '-projectPath', str(root), '-logFile', str(log)]
     if arguments.action == 'synchronize-version':
         command.extend(['-quit', '-executeMethod', 'Geurts.GameForge.GitFlow.Editor.GitFlowNativeGate.SynchronizeVersion',
-                        '-gitFlowVersion', arguments.version])
+                        '-gitFlowVersion', arguments.version, '-gitFlowEvidence', str(evidence)])
     elif arguments.action == 'compile-project':
         command.extend(['-quit', '-executeMethod', 'Geurts.GameForge.GitFlow.Editor.GitFlowNativeGate.CompilationCompleted',
                         '-gitFlowEvidence', str(evidence), '-gitFlowRun', arguments.run, '-gitFlowCandidate', arguments.candidate])
@@ -39,6 +39,10 @@ def execute(arguments):
         raise QueueError('Compiler warning/error in the complete Unity log; required gate failed.')
     if result.returncode:
         raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')
+    if arguments.action == 'synchronize-version':
+        proof = json.loads((evidence / 'version-proof.json').read_text())
+        if proof.get('protocol') != 1 or proof.get('version') != arguments.version or plain(proof.get('project', '')) != root:
+            raise QueueError('Native version proof does not match this exact publisher project and assigned version.')
     if arguments.action == 'run-tests':
         report = xml.parse(evidence / 'Results.xml').getroot()
         if (report.attrib.get('result') != 'Passed' or int(report.attrib.get('failed', '0')) != 0

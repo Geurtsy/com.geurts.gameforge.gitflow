@@ -18,6 +18,14 @@ namespace Geurts.GameForge.GitFlow.Editor
             if (!System.Text.RegularExpressions.Regex.IsMatch(version, @"^\d+\.\d+\.\d+$")) throw new ArgumentException("Invalid assigned version.");
             PlayerSettings.bundleVersion = version;
             AssetDatabase.SaveAssets();
+            string evidence = Argument("-gitFlowEvidence");
+            Directory.CreateDirectory(evidence);
+            if (PlayerSettings.bundleVersion != version) throw new InvalidOperationException("Unity did not retain the assigned player version.");
+            File.WriteAllText(Path.Combine(evidence, "version-proof.json"), JsonConvert.SerializeObject(new
+            {
+                protocol = 1, version, project = Path.GetFullPath(Path.Combine(UnityEngine.Application.dataPath, "..")),
+                unity = UnityEngine.Application.unityVersion, api = "PlayerSettings.bundleVersion"
+            }));
         }
 
         /// <summary>Records arrival after successful native compilation; the host independently checks the complete compiler log.</summary>
