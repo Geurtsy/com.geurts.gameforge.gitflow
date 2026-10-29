@@ -6,7 +6,7 @@ Add Queue local changes in Unity with scoped saving, isolated capture, Unity met
 
 Add local Codex model/effort discovery and separately authorized repair, disabled by default. Preserve the original three-hour deadline and stop after three consecutive attempts without progress. Keep protected validation, native settings, vendor files and queue authority outside model control.
 
-Add explicit stopped-runner adoption of already installed code, recorded owner/machine/request/stage observations, measured storage accounting and strict source-bound release evidence. Forge never installs or updates automatically through GitFlow. Native assertions pass; the stock vendor compiler gate remains blocked. No consumer installation or release publication is performed.
+Add explicit stopped-runner adoption of already installed code, recorded owner/machine/request/stage observations, measured storage accounting and strict source-bound release evidence. Forge never installs or updates automatically through GitFlow. Native assertions pass; the stock vendor compiler gate remains blocked. A separately approved private compatibility experiment passes full compilation and ten native checks, with original inputs, patch identity, effective compiler flags and the initial test-configuration failure retained as evidence. No consumer installation or release publication is performed.
 
 # Changelog
 

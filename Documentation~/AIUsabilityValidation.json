@@ -27,7 +27,7 @@
   "nativeVisualReport": "Documentation~/Evidence/0.2.0/NativeVisualAcceptance.json",
   "nativeVisualReportSha256": "82cd055cf4b12151f56e77906388db5e6c6c753fd75a826130f470013c444e18",
   "publicationReady": false,
-  "scope": "Unreleased candidate. Native feature assertions, real-Git acceptance and scoped physical UI checks pass. Required stock full compilation fails on eleven vendor warnings.",
+  "scope": "Unreleased candidate. Native feature assertions, real-Git acceptance and scoped physical UI checks pass. Stock full compilation fails on eleven vendor warnings. A separately identified private derivative passes full compilation and all ten native checks; this does not authorize a public release.",
   "resolvedDependencies": {
     "com.geurts.gameforge.gitflow": {
       "version": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow.git#bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
@@ -66,5 +66,23 @@
     "Real elapsed 30-minute lease soak and multiple physical machines.",
     "Project-specific native identity adapters."
   ],
-  "historicalEvidence": "Documentation~/History/AIUsabilityValidation-0.1.2.json"
+  "historicalEvidence": "Documentation~/History/AIUsabilityValidation-0.1.2.json",
+  "privateCompatibilityExperiment": {
+    "profile": "QC-2.6.7-private-Unity6000.6-compat03",
+    "status": "passed_private_experiment",
+    "report": "Documentation~/Evidence/0.2.0/PrivateQC-GitFlowAcceptance.json",
+    "sha256": "8d57c8e74bf1c53bd0dadc56e3f1175bd998659661c672b0c5f5b2c665a8bee5",
+    "compilerWarnings": 0,
+    "compilerErrors": 0,
+    "nativePassed": 10,
+    "nativeFailed": 0,
+    "nativeSkipped": 0,
+    "publicationAuthorized": false,
+    "stockVendorCompatibility": false
+  },
+  "localCodexDiscovery": {
+    "report": "Documentation~/Evidence/0.2.0/LocalCodexDiscovery.json",
+    "sha256": "1db343cdba045078859fd0e714858403b517930ef3afc316c61243db2ba52d3c",
+    "inferenceRun": false
+  }
 }
