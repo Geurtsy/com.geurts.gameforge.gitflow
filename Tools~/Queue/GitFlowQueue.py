@@ -218,6 +218,8 @@ def submit_source(root, remote, source, title, size, summary, dependencies=(), c
     if not re.fullmatch('[0-9a-f]{40}', source):
         raise QueueError('Submission requires an exact full source commit.')
     git(root, 'cat-file', '-e', source + '^{commit}')
+    if git(root, 'ls-remote', '--refs', remote, 'refs/heads/codex/integration-lock', 'refs/heads/codex/queue/*'):
+        raise QueueError('A legacy queue exists. Use its existing submission route until an explicit migration is completed.')
     identifier = 'request_' + source
     reference = PREFIX + identifier
     existing = remote_ref(root, remote, reference)
@@ -336,6 +338,41 @@ def configuration(root):
     if git(root, 'remote', 'get-url', config['remote']) != config['remote_url']:
         raise QueueError('Configured remote changed; operator reconciliation required.')
     return config
+
+
+def upgrade_runner(root, expected_configuration):
+    """An explicit stopped-owner action adopts this installed runner without updating any package or resetting work."""
+    control = common(root) / 'gameforge_queue'
+    with exclusive(control / 'service.lock'), exclusive(control / 'processor.lock'), exclusive(control / 'configuration.lock'):
+        path = control / 'configuration.json'
+        prior = read_json(path)
+        if digest(prior) != expected_configuration or prior.get('schema') != SCHEMA:
+            raise QueueError('Configuration changed. Inspect it again before a reviewed runner upgrade.')
+        root_owner = plain(prior['workspace_root']) / 'ownership.json'
+        if read_json(root_owner) != prior or prior['policy_hash'] != digest(prior['policy']):
+            raise QueueError('Ownership/configuration mismatch; preserve both records for reconciliation.')
+        if git(root, 'remote', 'get-url', prior['remote']) != prior['remote_url']:
+            raise QueueError('Remote identity changed; upgrade cannot proceed.')
+        owner = inspect_owner(root, prior['remote'])
+        if owner['state'] not in {'released', 'not_configured'}:
+            raise QueueError('Shared owner is not verifiably released. A stale or unknown observation is not upgrade authorization.')
+        revised = dict(prior)
+        revised['policy'] = json.loads(encoded(prior['policy']))
+        old_folder = Path(prior['runner']).parent
+        new_folder = Path(__file__).resolve().parent
+        for command in [item['command'] for item in revised['policy']['checks']] + [revised['policy'].get('native_version_command', [])]:
+            for index, argument in enumerate(command):
+                if Path(argument).parent == old_folder and Path(argument).name == 'GitFlowUnity.py':
+                    command[index] = str(new_folder / 'GitFlowUnity.py')
+        validate_policy(revised['policy'])
+        revised.update(runner=str(Path(__file__).resolve()), runner_hash=runner_hash(), policy_hash=digest(revised['policy']), upgraded_utc=utc())
+        revised['runner_history'] = [*prior.get('runner_history', []), dict(runner=prior['runner'], runner_hash=prior['runner_hash'], policy_hash=prior['policy_hash'])]
+        journal = control / ('upgrade_' + uuid.uuid4().hex + '.json')
+        durable(journal, dict(state='prepared', prior=prior, revised=revised))
+        durable(root_owner, revised)
+        durable(path, revised)
+        durable(journal, dict(state='completed', prior=prior, revised=revised))
+        return dict(state='runner_adopted', detail='Existing installed runner adopted explicitly. No package was installed or updated. Restart separately; candidate, requests, repair start and evidence were preserved.')
 
 
 def input_key(workspace, check, policy_hash, environment):
@@ -676,7 +713,7 @@ def inspect_owner(root, remote):
             return dict(state='changed_during_read', summary='Shared owner changed during refresh. Refresh again; ownership is unknown.',
                         observed_utc=observed, process_health='unknown')
         state = 'released' if value['state'] == 'released' else 'recorded_owned'
-        summary = 'Available â€” last owner released the lease.' if state == 'released' else (
+        summary = 'Available — last owner released the lease.' if state == 'released' else (
             'Recorded owner: ' + value['host'] + ' | stage: ' + str(value.get('stage') or 'unknown') +
             ' | request: ' + str(value.get('request') or 'none recorded'))
         return dict(state=state, summary=summary, observed_utc=observed, control_commit=identity,
@@ -758,6 +795,9 @@ def main():
     for name in ('serve', 'request-stop', 'resume-service'):
         command = subcommands.add_parser(name)
         command.add_argument('--operator', action='store_true', required=True)
+    upgrade = subcommands.add_parser('upgrade-runner')
+    upgrade.add_argument('--operator', action='store_true', required=True)
+    upgrade.add_argument('--expected-configuration', required=True)
     arguments = parser.parse_args()
     root = plain(arguments.repository)
     if arguments.command == 'submit':
@@ -780,6 +820,8 @@ def main():
         result = {'state': 'stop_requested', 'detail': 'The current owned request finishes before shutdown. This is not stopped-owner proof.'}
     elif arguments.command == 'resume-service':
         result = resume_service(root)
+    elif arguments.command == 'upgrade-runner':
+        result = upgrade_runner(root, arguments.expected_configuration)
     elif arguments.command == 'storage':
         config = configuration(root)
         result = inspect_storage([config['workspace_root'], common(root)])
@@ -789,6 +831,11 @@ def main():
         result['owner_summary'] = result['owner']['summary']
         if state_file(root).exists():
             result['recorded_processor'] = read_json(state_file(root))
+        config_path = common(root) / 'gameforge_queue/configuration.json'
+        if config_path.exists():
+            config = read_json(config_path)
+            result['configuration_identity'] = digest(config)
+            result['recorded_runner'] = dict(path=config.get('runner'), hash=config.get('runner_hash'))
     print(encoded(result))
 
 

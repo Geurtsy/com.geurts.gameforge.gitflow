@@ -19,7 +19,7 @@ def execute(arguments):
     command = [str(editor), '-batchmode', '-nographics', '-nosound', '-projectPath', str(root), '-logFile', str(log)]
     if arguments.action == 'synchronize-version':
         command.extend(['-quit', '-executeMethod', 'Geurts.GameForge.GitFlow.Editor.GitFlowNativeGate.SynchronizeVersion',
-                        '-gitFlowVersion', arguments.version, '-gitFlowEvidence', str(evidence)])
+                        '-gitFlowVersion', arguments.version, '-gitFlowEvidence', str(evidence), '-gitFlowVersionProofProtocol', '1'])
     elif arguments.action == 'compile-project':
         command.extend(['-quit', '-executeMethod', 'Geurts.GameForge.GitFlow.Editor.GitFlowNativeGate.CompilationCompleted',
                         '-gitFlowEvidence', str(evidence), '-gitFlowRun', arguments.run, '-gitFlowCandidate', arguments.candidate])

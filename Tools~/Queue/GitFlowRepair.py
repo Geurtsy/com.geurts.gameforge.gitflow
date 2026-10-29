@@ -52,7 +52,7 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
         path = Path(relative)
         parts = {part.casefold() for part in path.parts}
         if (relative in protected or any(relative.startswith(item.rstrip('/') + '/') for item in protected)
-                or parts & {'tools', 'tests', 'testing', 'editor', 'projectsettings', 'packages', '.github', '.codex', '_thirdparty', 'plugins', '_generated'}
+                or parts & {'tools', 'tools~', 'tests', 'tests~', 'test', 'testing', 'editor', 'projectsettings', 'packages', '.github', '.codex', '_thirdparty', 'plugins', '_generated'}
                 or path.suffix.casefold() not in {'.cs', '.py'}):
             continue
         target = q.plain(workspace / path)

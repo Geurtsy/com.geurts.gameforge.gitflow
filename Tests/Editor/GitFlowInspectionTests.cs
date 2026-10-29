@@ -225,11 +225,16 @@ namespace Geurts.GameForge.GitFlow.Tests
         [Test]
         public async Task NativeSavedInspectorChangeQueuesAndPreservesWorkingState()
         {
+            Assert.That(Application.isBatchMode, Is.True, "This native-save acceptance belongs only in a disposable batch project.");
             string python = Environment.GetEnvironmentVariable("GEURTS_GITFLOW_TEST_PYTHON");
             Assert.That(File.Exists(python), Is.True, "Acceptance requires an explicit installed Python executable.");
             string folder = "Assets/GitFlowCaptureAcceptance_" + Guid.NewGuid().ToString("N");
             AssetDatabase.CreateFolder("Assets", Path.GetFileName(folder));
             string scenePath = folder + "/Enemy.unity";
+            // The disposable batch runner begins with an untitled empty scene; preserve it through Unity's native API.
+            Scene initial = SceneManager.GetActiveScene();
+            bool savedInitial = string.IsNullOrEmpty(initial.path);
+            if (savedInitial) Assert.That(EditorSceneManager.SaveScene(initial, folder + "/Initial.unity"), Is.True);
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
             try
             {
@@ -260,7 +265,12 @@ namespace Geurts.GameForge.GitFlow.Tests
                     CollectionAssert.AreEqual(saved, File.ReadAllBytes(Path.Combine(_checkout, "Assets/Enemy.unity")));
                 }
             }
-            finally { EditorSceneManager.CloseScene(scene, true); AssetDatabase.DeleteAsset(folder); }
+            finally
+            {
+                EditorSceneManager.CloseScene(scene, true);
+                if (savedInitial) EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                AssetDatabase.DeleteAsset(folder);
+            }
         }
 
         /// <summary>Creates exact protocol request metadata and a source/version-matched receipt for the delivered case.</summary>

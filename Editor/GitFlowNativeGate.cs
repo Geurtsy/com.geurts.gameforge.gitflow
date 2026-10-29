@@ -18,6 +18,8 @@ namespace Geurts.GameForge.GitFlow.Editor
             if (!System.Text.RegularExpressions.Regex.IsMatch(version, @"^\d+\.\d+\.\d+$")) throw new ArgumentException("Invalid assigned version.");
             PlayerSettings.bundleVersion = version;
             AssetDatabase.SaveAssets();
+            if (!Environment.GetCommandLineArgs().Contains("-gitFlowVersionProofProtocol")) return;
+            if (Argument("-gitFlowVersionProofProtocol") != "1") throw new ArgumentException("Unsupported native version proof protocol.");
             string evidence = Argument("-gitFlowEvidence");
             Directory.CreateDirectory(evidence);
             if (PlayerSettings.bundleVersion != version) throw new InvalidOperationException("Unity did not retain the assigned player version.");

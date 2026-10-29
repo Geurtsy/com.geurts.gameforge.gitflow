@@ -71,7 +71,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Creates controls and loads local settings only; no discovery, inference or queue action runs on opening.</summary>
         internal GitFlowControls(VisualElement parent)
         {
-            var group = new Foldout { text = "Queue host and local Codex â€” Not checked", value = false };
+            var group = new Foldout { text = "Queue host and local Codex — Not checked", value = false };
             group.AddToClassList("forge-card"); group.style.marginTop = 16; group.style.paddingLeft = group.style.paddingRight = 12; parent.Add(group);
             _configuration = new Configuration { Repository = Path.GetFullPath(Path.Combine(Application.dataPath, "..")) };
             string failure = null;
@@ -121,7 +121,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                     "--title", string.IsNullOrWhiteSpace(captureTitle.value) ? "Saved Unity project changes" : captureTitle.value,
                     "--summary", string.IsNullOrWhiteSpace(captureSummary.value) ? "Saved first-party changes in the configured task scope." : captureSummary.value }, 300, _cancellation.Token);
             });
-            var publisher = new Foldout { text = "Operator â€” Configure and start publisher", value = false }; group.Add(publisher);
+            var publisher = new Foldout { text = "Operator — Configure and start publisher", value = false }; group.Add(publisher);
             var workspace = new TextField("New short workspace root"); var unity = new TextField("Installed Unity executable");
             var tests = new TextField("Required project test filter"); var repair = new Toggle("Authorize automatic source repair for up to three hours");
             publisher.Add(workspace); publisher.Add(unity); publisher.Add(tests); publisher.Add(repair);
@@ -151,6 +151,15 @@ namespace Geurts.GameForge.GitFlow.Editor
             });
             Button(publisher, "Request graceful publisher stop", () => Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "request-stop", "--operator" }, cancellation: _cancellation.Token));
             Button(publisher, "Prepare stopped publisher to resume", () => Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "resume-service", "--operator" }, cancellation: _cancellation.Token));
+            Button(publisher, "Adopt this installed runner after stopping", async () =>
+            {
+                JObject observed = await Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "inspect" }, cancellation: _cancellation.Token);
+                string identity = (string)observed["configuration_identity"];
+                if (string.IsNullOrEmpty(identity)) throw new InvalidOperationException("There is no existing publisher configuration to upgrade.");
+                if (!EditorUtility.DisplayDialog("Adopt installed GitFlow runner", "After the background program has stopped and shared ownership is released, adopt the GitFlow code that is already installed in this project? Existing requests, saved work, repair time and evidence are preserved. This action does not install or update Forge packages or documentation, and does not restart the publisher.", "Adopt installed runner", "Cancel"))
+                    return new JObject { ["state"] = "cancelled" };
+                return await Host().ExecuteQueueAsync(_configuration.Preferences(), new[] { "upgrade-runner", "--operator", "--expected-configuration", identity }, cancellation: _cancellation.Token);
+            });
             var submission = new Foldout { text = "Submit committed work", value = false }; group.Add(submission);
             var title = new TextField("Title"); var summary = new TextField("Implementation summary") { multiline = true };
             var size = new DropdownField("Version increment", new List<string> { "patch", "minor", "major" }, 0);
@@ -173,10 +182,10 @@ namespace Geurts.GameForge.GitFlow.Editor
             });
             var details = new Foldout { text = "Details - exact result and evidence", value = false }; group.Add(details);
             _output = new TextField("Last exact result") { multiline = true, isReadOnly = true }; details.Add(_output);
-            var help = new Foldout { text = "Help â€” local Codex and queue boundaries", value = false }; group.Add(help);
+            var help = new Foldout { text = "Help — local Codex and queue boundaries", value = false }; group.Add(help);
             help.Add(new HelpBox("Select installed Python and Codex, discover models, choose a model and supported reasoning effort, then save. Choices come from local Codex and may be cached; only an actual completed request verifies access. Sign in through Codex itself. Credentials never belong in project settings.\n\nSubmit once from a clean task branch. One configured background publisher owns validation and publication. Required failures block the queue; there is no skip action. Published means main changed; Integrated additionally proves required pulls. Storage measurement is read-only and never deletes workspaces.\n\nThe legacy read-only viewer below remains separate from this protocol. Automatic repair requires separate operator configuration and explicit consent; selecting a model alone never enables it.", HelpBoxMessageType.Info));
             foreach (var child in group.Children()) child.style.marginBottom = 8;
-            group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex â€” " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
+            group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex — " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
         }
 
         /// <summary>Returns the enabled lifecycle service and exposes a useful unavailable state otherwise.</summary>
@@ -213,7 +222,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                     JObject result = await action();
                     if (!_disposed) { _output.value = result.ToString(); _status.text = Describe(result); }
                 }
-                catch (Exception error) { if (!_disposed) _status.text = "Error â€” " + error.Message; }
+                catch (Exception error) { if (!_disposed) _status.text = "Error — " + error.Message; }
                 finally { _busy = false; }
             }) { text = title });
         }

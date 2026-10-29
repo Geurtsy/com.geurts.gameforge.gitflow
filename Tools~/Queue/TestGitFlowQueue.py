@@ -228,6 +228,24 @@ class QueueAcceptance(unittest.TestCase):
         start = datetime.datetime.fromisoformat(started)
         self.assertEqual(repair.remaining(value['repair'], start + datetime.timedelta(hours=3)), 0)
 
+    def test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner(self):
+        self.source()
+        prior = queue.configuration(self.repository)
+        identity = queue.digest(prior)
+        queue.git(self.repository, 'update-ref', 'refs/remotes/origin/main', self.base)
+        lease = queue.leases.Lease(queue, self.repository, 'origin').acquire()
+        self.assertRaisesRegex(queue.QueueError, 'not verifiably released', queue.upgrade_runner, self.repository, identity)
+        self.assertEqual(queue.configuration(self.repository), prior)
+        lease.close()
+        before = queue.entries(self.repository, 'origin')
+        result = queue.upgrade_runner(self.repository, identity)
+        self.assertEqual(result['state'], 'runner_adopted')
+        self.assertEqual(queue.entries(self.repository, 'origin'), before)
+        revised = queue.configuration(self.repository)
+        self.assertEqual(revised['workspace_root'], prior['workspace_root'])
+        self.assertEqual(revised['runner_history'][0]['runner_hash'], prior['runner_hash'])
+        self.assertRaisesRegex(queue.QueueError, 'Configuration changed', queue.upgrade_runner, self.repository, identity)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
