@@ -258,6 +258,7 @@ namespace Geurts.GameForge.GitFlow.Tests
                 AssetDatabase.CreateAsset(excluded, folder + "/Plugins/Excluded.mat");
                 owned.name = "Owned change"; excluded.name = "Preserved unrelated change";
                 EditorUtility.SetDirty(owned); EditorUtility.SetDirty(excluded);
+                Assert.That(EditorUtility.IsDirty(excluded), Is.True, "Fixture must begin with an unsaved excluded asset.");
                 GitFlowControls.SaveActiveProject(Path.GetFullPath(Path.Combine(Application.dataPath, "..")), folder);
                 Assert.That(EditorUtility.IsDirty(owned), Is.False, "Included asset was not saved through its native API.");
                 Assert.That(EditorUtility.IsDirty(excluded), Is.True, "Excluded unsaved asset state was changed.");
@@ -274,6 +275,9 @@ namespace Geurts.GameForge.GitFlow.Tests
                     CollectionAssert.AreEqual(index, File.ReadAllBytes(Path.Combine(_checkout, ".git/index")));
                     CollectionAssert.AreEqual(saved, File.ReadAllBytes(Path.Combine(_checkout, "Assets/Enemy.unity")));
                 }
+                enemy.transform.localPosition = new Vector3(5, 0, 0); EditorSceneManager.MarkSceneDirty(scene);
+                Assert.Throws<InvalidOperationException>(() => GitFlowControls.SaveActiveProject(Path.GetFullPath(Path.Combine(Application.dataPath, "..")), folder));
+                Assert.That(scene.isDirty, Is.True); Assert.That(EditorUtility.IsDirty(excluded), Is.True);
             }
             finally
             {

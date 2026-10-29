@@ -215,15 +215,20 @@ namespace Geurts.GameForge.GitFlow.Editor
             var prefab = PrefabStageUtility.GetCurrentPrefabStage();
             if (prefab != null && prefab.scene.isDirty)
                 throw new InvalidOperationException("Save the open prefab in Prefab Mode first. Its unsaved edits are preserved.");
-            if (!EditorSceneManager.SaveModifiedScenesIfUserWantsTo(scenes.ToArray()))
+            UnityEngine.Object[] dirtyAssets = Resources.FindObjectsOfTypeAll<UnityEngine.Object>()
+                .Where(asset => EditorUtility.IsPersistent(asset) && EditorUtility.IsDirty(asset)).ToArray();
+            Scene[] dirtyScenes = scenes.Where(scene => scene.isDirty).ToArray();
+            if (dirtyScenes.Length > 0 && dirtyAssets.Any(asset => !included(AssetDatabase.GetAssetPath(asset))))
+                throw new InvalidOperationException("An unrelated asset has unsaved edits. Save the selected scene deliberately before queueing so Unity's scene-save flow cannot save unrelated assets.");
+            if (dirtyScenes.Length > 0 && !EditorSceneManager.SaveModifiedScenesIfUserWantsTo(dirtyScenes))
                 throw new InvalidOperationException("Scene saving was cancelled. No source snapshot was submitted.");
             foreach (Scene scene in scenes)
             {
                 if (scene.isDirty)
                     throw new InvalidOperationException("Save every modified or untitled scene before queueing. Unsaved work has been preserved.");
             }
-            foreach (UnityEngine.Object asset in Resources.FindObjectsOfTypeAll<UnityEngine.Object>())
-                if (EditorUtility.IsPersistent(asset) && EditorUtility.IsDirty(asset) && included(AssetDatabase.GetAssetPath(asset)))
+            foreach (UnityEngine.Object asset in dirtyAssets)
+                if (included(AssetDatabase.GetAssetPath(asset)))
                     AssetDatabase.SaveAssetIfDirty(asset);
         }
 
