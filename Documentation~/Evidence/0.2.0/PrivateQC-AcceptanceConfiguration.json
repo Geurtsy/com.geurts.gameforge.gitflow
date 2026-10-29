@@ -1,0 +1,12 @@
+{
+  "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "profile": "QC-2.6.7-private-Unity6000.6-compat03",
+  "passed": 9,
+  "failed": 1,
+  "skipped": 0,
+  "reason": "The invocation omitted GEURTS_GITFLOW_TEST_PYTHON; native capture acceptance requires an explicit installed Python path.",
+  "correction": "Set GEURTS_GITFLOW_TEST_PYTHON=C:/Python314/python.exe for a fresh run, without changing package, vendor, test or validation source.",
+  "rawReport": "Documentation~/Evidence/0.2.0/PrivateQC-AcceptanceMissingConfiguration.xml",
+  "sha256": "b7dd1a9b054f4cd3ded43669648ef5e23bc55169f720c620d949044ae1b87aef",
+  "logLocalPath": "C:/gqv/Evidence/PrivateQC/Acceptance/Unity.log"
+}

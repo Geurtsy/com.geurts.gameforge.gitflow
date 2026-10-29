@@ -1,0 +1,23 @@
+{
+  "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "sourceFingerprint": "a88cb8be1790c5bc2f75b09aeedd806ca6af31ce50d79e8d00a5d098a88231fb",
+  "static_release_validation": "passed",
+  "require_unity_evidence": "blocked",
+  "blocking_reason": "Required full compilation is blocked by compiler diagnostics; passing assertions do not waive this gate.",
+  "warnings": 11,
+  "errors": 0,
+  "main_updated": false,
+  "release_tag_created": false,
+  "catalogue_updated": false,
+  "consumer_installed": false,
+  "private_compatibility_experiment": {
+    "profile": "QC-2.6.7-private-Unity6000.6-compat03",
+    "compiler_gate": "passed",
+    "native_tests_passed": 10,
+    "native_tests_failed": 0,
+    "report": "Documentation~/Evidence/0.2.0/PrivateQC-GitFlowAcceptance.json",
+    "sha256": "8d57c8e74bf1c53bd0dadc56e3f1175bd998659661c672b0c5f5b2c665a8bee5",
+    "publication_authorized": false
+  },
+  "release_remedy": "A supported dependency profile that satisfies zero-warning validation is still required. The privately approved derivative is test-only and cannot replace the failed stock release profile or authorize redistribution."
+}

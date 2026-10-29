@@ -1,0 +1,16 @@
+{
+  "status": "failed",
+  "warnings": 11,
+  "errors": 0,
+  "full_script_rebuild": true,
+  "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "unity": "6000.6.3f1",
+  "profile": "Unmodified Quantum Console 2.6.7 complete source tree; Odin 4.0.2.4.",
+  "source": "Derived from native completion proof and independent complete-log scan; no successful gate result was emitted.",
+  "native_report": "Documentation~/Evidence/0.2.0/Stock-compilation.json",
+  "native_report_sha256": "38a6bd107d894a2bb32631c23b3b966091c17186de75ef5fa8fa6eb492d09ed1",
+  "diagnostics": "Documentation~/Evidence/0.2.0/Stock-diagnostics.json",
+  "diagnostics_sha256": "886e2afc1975276e2dbf80c1a159ffda063fff993e3a0e3ac053485694807bb1",
+  "full_log_local_path": "C:\\gqv\\Evidence\\StockCompilationRepairRevision\\Unity.log",
+  "full_log_sha256": "5b76feb6a73ab8f7ed52d5a03c616659a9752262678fbbd362d26990d6f9815a"
+}

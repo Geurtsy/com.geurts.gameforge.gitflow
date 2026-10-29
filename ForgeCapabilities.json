@@ -7,37 +7,59 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Unity 6000.6.3f1: 8 passed, 0 failed, 0 skipped; real Git preservation, fault fixtures, installed God dispatch and hidden UI/API identity."
+        "Current-source native acceptance passes; physical queue controls and in-Unity Help checked with recorded scope."
       ],
       "maturity": "pre_release",
       "provider": "editor",
       "description": "Bounded read-only queue, local process observation, leases and receipts shared by UI/API."
     },
     {
-      "implemented": false,
+      "implemented": true,
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "not_implemented"
+        "17 real-Git acceptance tests pass. Actual GitHub temporary-ref arbitration passes; required stock native compilation remains blocked."
       ],
-      "maturity": "planned",
-      "provider": "none",
+      "maturity": "candidate",
+      "provider": "editor",
       "description": "Idempotent submission and an independent deterministic publisher."
     },
     {
-      "implemented": false,
+      "implemented": true,
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "not_implemented"
+        "Durable three-hour clock, three consecutive stalled attempts, repair feedback, same-ID recovery and stopped-runner adoption pass disposable tests. No live paid repair performed."
       ],
-      "maturity": "planned",
-      "provider": "none",
-      "description": "Fenced recovery, native identities and optional authorized AI repair."
+      "maturity": "candidate",
+      "provider": "editor",
+      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported."
+    },
+    {
+      "id": "local_codex_selection",
+      "description": "Explicit local Codex model/effort discovery, persisted non-secret selection and bounded proposals.",
+      "implemented": true,
+      "maturity": "candidate",
+      "provider": "editor",
+      "operations": [],
+      "validation": [
+        "Installed codex-cli 0.149.1 metadata discovery succeeded; no paid inference executed."
+      ]
+    },
+    {
+      "id": "saved_change_capture",
+      "description": "Preserved scoped saved-change capture, idempotent submission and a beginner guide rendered inside Unity.",
+      "implemented": true,
+      "maturity": "candidate",
+      "provider": "editor",
+      "operations": [],
+      "validation": [
+        "Native Inspector-save/capture and dirty asset/index/branch preservation pass; physical queue controls and Help verified in a disposable Unity window."
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2",
+  "packageVersion": "0.2.0",
   "prerequisites": [
     {
       "required": true,
@@ -72,10 +94,17 @@
       "kind": "external_tool",
       "minimumVersion": "",
       "id": "git_for_windows",
-      "detail": "Non-interactive Git reads; authentication helpers disabled."
+      "detail": "Non-interactive Git reads and explicitly authorized fenced queue writes; no unattended authentication prompts."
+    },
+    {
+      "id": "python",
+      "kind": "external_tool",
+      "required": true,
+      "minimumVersion": "3.10",
+      "detail": "Explicitly selected native Python; no automatic installation or update."
     }
   ],
-  "maturity": "pre_release",
+  "maturity": "candidate",
   "operations": [
     {
       "confirmationRequired": false,
@@ -88,14 +117,13 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
+    "scope": "Unreleased candidate. Native feature assertions, real-Git acceptance and scoped physical UI checks pass. Required stock full compilation fails on eleven vendor warnings.",
     "unverified": [
-      "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
-      "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
-      "Current remote-main ancestry, validation artifact contents and execution. Receipt identity/source/version is checked; underlying claims are not rerun.",
-      "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.1.",
-      "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
-      "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
-    ],
-    "scope": "Editor-only read-only observation. Eight owning acceptance fixtures passed on exact Git candidate; supported example compiled. Native rendered UI remains unverified."
+      "Stock Quantum Console 2.6.7 emits eleven compiler warnings on Unity 6000.6.3f1; mandatory zero-warning release gate fails.",
+      "Narrow-window resizing; scoped visual checks are listed in the native report.",
+      "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
+      "Real elapsed 30-minute lease soak and multiple physical machines.",
+      "Project-specific native identity adapters."
+    ]
   }
 }

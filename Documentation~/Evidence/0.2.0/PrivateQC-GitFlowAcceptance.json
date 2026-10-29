@@ -1,0 +1,35 @@
+{
+  "profile": "QC-2.6.7-private-Unity6000.6-compat03",
+  "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "sourceFingerprint": "a88cb8be1790c5bc2f75b09aeedd806ca6af31ce50d79e8d00a5d098a88231fb",
+  "status": "passed_private_experiment",
+  "passed": 10,
+  "failed": 0,
+  "skipped": 0,
+  "durationSeconds": 52.3131054,
+  "requiredEnvironment": {
+    "GEURTS_GITFLOW_TEST_PYTHON": "C:/Python314/python.exe"
+  },
+  "testResult": "Documentation~/Evidence/0.2.0/PrivateQC-UnityAcceptance.xml",
+  "testResultSha256": "24a6b312046d988dd194ab56b35a52efb308202cb54f401be0fef3398e07d109",
+  "testGate": "Documentation~/Evidence/0.2.0/PrivateQC-TestGate.json",
+  "testGateSha256": "7f7cb175d5aae18b835e6e27df246242335b5cec3f8f582dfbc3cfe0d91e848c",
+  "compilerGate": "Documentation~/Evidence/0.2.0/PrivateQCCompilerGate.json",
+  "compilerGateSha256": "e8e8bf4a4fc040a1a9ab0d5e6c38a29e304f04a7162f8dd875d34347093e6c68",
+  "profileReport": "Documentation~/Evidence/0.2.0/PrivateQCProfile.json",
+  "profileReportSha256": "351d4455231483407337f1b7a615a61a219a643c59931b630ee07e989aeab669",
+  "initialConfigurationFailure": "Documentation~/Evidence/0.2.0/PrivateQC-AcceptanceConfiguration.json",
+  "initialConfigurationFailureSha256": "978f714f62eb69ed94240666b17964b1f9e51d3221cfae2814823c7dcb6b2a97",
+  "fullTestLogLocalPath": "C:/gqv/Evidence/PrivateQC/AcceptanceConfigured/Unity.log",
+  "fullTestLogSha256": "ce6cb1f1fe97b86784fce07ffd6ea36a340af03dcbf23e399202560e44abc383",
+  "fullCompileLogLocalPath": "C:/gqv/Evidence/PrivateQC/FullCompilation/Unity.log",
+  "queueEvidenceReuse": {
+    "report": "Documentation~/Evidence/0.2.0/QueueAcceptance.log",
+    "sha256": "599a263e2033cbc2efe887b666f65e268bda902fa352a509a5db5bde0e3c5bb0",
+    "passed": 17,
+    "reason": "GitFlow executable source, tests and queue tools are unchanged; the private derivative changes only licensed Unity vendor sources. Native acceptance was rerun for this changed dependency profile."
+  },
+  "publicationAuthorized": false,
+  "stockVendorCompatibility": false,
+  "commercialSourceIncluded": false
+}

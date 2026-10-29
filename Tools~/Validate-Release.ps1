@@ -128,8 +128,8 @@ foreach ($recipe in @($documents.integrationRecipes)) {
     $testSource = [IO.File]::ReadAllText((Resolve-Owned $recipe.testSource))
     foreach ($testName in $recipe.tests) { Require ($testSource.Contains(($testName -split '\.')[-1])) "Unknown declared integration test: $testName" }
 }
-# Hash exactly the C# implementation, tests and supported examples; evidence/docs-only commits do not invalidate a tested source snapshot.
-$sourceFiles = @(Get-ChildItem -LiteralPath $RepositoryRoot -Recurse -File -Filter '*.cs' | Where-Object { $_.FullName -notmatch '[\\/]\.git[\\/]' } | Sort-Object { $_.FullName.Substring($RepositoryRoot.Length).Replace('\','/') })
+# Bind every executable C#/Python source and assembly definition; documentation-only commits do not invalidate tested code.
+$sourceFiles = @(Get-ChildItem -LiteralPath $RepositoryRoot -Recurse -File | Where-Object { $_.Extension -in @('.cs', '.py', '.asmdef') -and $_.FullName -notmatch '[\\/](\.git|__pycache__)[\\/]' } | Sort-Object { $_.FullName.Substring($RepositoryRoot.Length).Replace('\','/') })
 $entries = foreach ($file in $sourceFiles) {
     $relative = $file.FullName.Substring($RepositoryRoot.Length + 1).Replace('\','/')
     $content = [IO.File]::ReadAllText($file.FullName).Replace("`r`n", "`n").Replace("`r", "`n")
@@ -150,6 +150,16 @@ if ($RequireUnityEvidence) {
     [xml]$report = [IO.File]::ReadAllText($reportPath)
     $run = $report.'test-run'
     Require ($null -ne $run -and $run.result -eq 'Passed' -and [int]$run.failed -eq 0 -and [int]$run.skipped -eq 0 -and [int]$run.passed -eq $evidence.passed) 'Actual acceptance results disagree with the evidence or contain skipped/failed checks.'
+    Require ($evidence.queueAcceptance.failed -eq 0 -and $evidence.queueAcceptance.passed -gt 0) 'Required real-Git queue acceptance is incomplete.'
+    $queueReport = Resolve-Owned $evidence.queueAcceptance.report
+    Require ((Get-FileHash -LiteralPath $queueReport -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $evidence.queueAcceptance.sha256) 'Queue acceptance report bytes differ.'
+    Require ([IO.File]::ReadAllText($queueReport) -match '(?m)^OK\s*$') 'Queue acceptance did not complete successfully.'
+    Require ($evidence.compilerGate.status -eq 'passed' -and $evidence.compilerGate.warnings -eq 0 -and $evidence.compilerGate.errors -eq 0) 'Required full compilation is blocked by compiler diagnostics; passing assertions do not waive this gate.'
+    $compilerReport = Resolve-Owned $evidence.compilerGate.report
+    Require ((Get-FileHash -LiteralPath $compilerReport -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $evidence.compilerGate.sha256) 'Compiler evidence bytes differ.'
+    $compiler = [IO.File]::ReadAllText($compilerReport) | ConvertFrom-Json
+    Require ($compiler.status -eq 'passed' -and $compiler.warnings -eq 0 -and $compiler.errors -eq 0 -and $compiler.full_script_rebuild) 'Native compilation evidence is not an accepted full rebuild.'
+    Require ($evidence.nativeVisualAcceptance -eq 'verified') 'Rendered native controls and interaction remain unverified; explicit desktop-testing authorization is required.'
     foreach ($recipe in @($documents.integrationRecipes)) {
         if ($null -eq $recipe) { continue }
         $record = @($evidence.integrationRecipes | Where-Object { $_.source -eq $recipe.source })

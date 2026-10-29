@@ -13,7 +13,11 @@ using Geurts.GameForge.GitFlow.Editor;
 using Geurts.GameForge.God.Editor;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using Geurts.GameForge.God;
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace Geurts.GameForge.GitFlow.Tests
@@ -215,6 +219,72 @@ namespace Geurts.GameForge.GitFlow.Tests
             }
             finally { service.Dispose(); listener.Stop(); }
             CollectionAssert.AreEquivalent(before, Directory.GetDirectories(Path.GetTempPath(), "ggf_inspect_*"));
+        }
+
+        /// <summary>Captures an actual native saved Inspector change through the same installed host used by the button.</summary>
+        [Test]
+        public async Task NativeSavedInspectorChangeQueuesAndPreservesWorkingState()
+        {
+            Assert.That(Application.isBatchMode, Is.True, "This native-save acceptance belongs only in a disposable batch project.");
+            string python = Environment.GetEnvironmentVariable("GEURTS_GITFLOW_TEST_PYTHON");
+            Assert.That(File.Exists(python), Is.True, "Acceptance requires an explicit installed Python executable.");
+            string folder = "Assets/GitFlowCaptureAcceptance_" + Guid.NewGuid().ToString("N");
+            AssetDatabase.CreateFolder("Assets", Path.GetFileName(folder));
+            string scenePath = folder + "/Enemy.unity";
+            // The disposable batch runner begins with an untitled empty scene; preserve it through Unity's native API.
+            Scene initial = SceneManager.GetActiveScene();
+            bool savedInitial = string.IsNullOrEmpty(initial.path);
+            if (savedInitial) Assert.That(EditorSceneManager.SaveScene(initial, folder + "/Initial.unity"), Is.True);
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+            try
+            {
+                var enemy = new GameObject("Enemy"); SceneManager.MoveGameObjectToScene(enemy, scene);
+                enemy.transform.localPosition = new Vector3(3, 0, 0);
+                Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
+                AssetDatabase.ImportAsset(scenePath, ImportAssetOptions.ForceSynchronousImport);
+                Directory.CreateDirectory(Path.Combine(_checkout, "Assets"));
+                File.Copy(scenePath, Path.Combine(_checkout, "Assets/Enemy.unity"));
+                File.Copy(scenePath + ".meta", Path.Combine(_checkout, "Assets/Enemy.unity.meta"));
+                Run(_checkout, "add", "Assets"); Run(_checkout, "commit", "-m", "Native saved scene baseline");
+                string head = Run(_checkout, "rev-parse", "HEAD").Trim();
+                var inspector = new SerializedObject(enemy.transform);
+                inspector.FindProperty("m_LocalPosition").vector3Value = new Vector3(4, 0, 0);
+                inspector.ApplyModifiedProperties(); EditorSceneManager.MarkSceneDirty(scene);
+                Assert.That(EditorSceneManager.SaveScene(scene, scenePath), Is.True);
+                var owned = new Material(Shader.Find("Hidden/InternalErrorShader"));
+                var excluded = new Material(Shader.Find("Hidden/InternalErrorShader"));
+                AssetDatabase.CreateFolder(folder, "Plugins");
+                AssetDatabase.CreateAsset(owned, folder + "/Owned.mat");
+                AssetDatabase.CreateAsset(excluded, folder + "/Plugins/Excluded.mat");
+                owned.name = "Owned change"; excluded.name = "Preserved unrelated change";
+                EditorUtility.SetDirty(owned); EditorUtility.SetDirty(excluded);
+                Assert.That(EditorUtility.IsDirty(excluded), Is.True, "Fixture must begin with an unsaved excluded asset.");
+                GitFlowControls.SaveActiveProject(Path.GetFullPath(Path.Combine(Application.dataPath, "..")), folder);
+                Assert.That(EditorUtility.IsDirty(owned), Is.False, "Included asset was not saved through its native API.");
+                Assert.That(EditorUtility.IsDirty(excluded), Is.True, "Excluded unsaved asset state was changed.");
+                File.Copy(scenePath, Path.Combine(_checkout, "Assets/Enemy.unity"), true);
+                byte[] saved = File.ReadAllBytes(Path.Combine(_checkout, "Assets/Enemy.unity"));
+                byte[] index = File.ReadAllBytes(Path.Combine(_checkout, ".git/index"));
+                using (var host = new GitFlowHost(new BrickSettingsStore(Path.Combine(_root, "settings"))))
+                {
+                    var preferences = new GitFlowPreferences { PythonExecutable = python, Repository = _checkout, Remote = "origin", CaptureScope = "Assets" };
+                    JObject result = await host.ExecuteQueueAsync(preferences, new[] { "queue-local-changes", "--scope", "Assets", "--title", "Move enemy from 3 to 4" }, 120);
+                    Assert.That((string)result["state"], Is.EqualTo("queued"));
+                    Assert.That(Run(_checkout, "show", (string)result["source"] + ":Assets/Enemy.unity"), Does.Contain("x: 4"));
+                    Assert.That(Run(_checkout, "rev-parse", "HEAD").Trim(), Is.EqualTo(head));
+                    CollectionAssert.AreEqual(index, File.ReadAllBytes(Path.Combine(_checkout, ".git/index")));
+                    CollectionAssert.AreEqual(saved, File.ReadAllBytes(Path.Combine(_checkout, "Assets/Enemy.unity")));
+                }
+                enemy.transform.localPosition = new Vector3(5, 0, 0); EditorSceneManager.MarkSceneDirty(scene);
+                Assert.Throws<InvalidOperationException>(() => GitFlowControls.SaveActiveProject(Path.GetFullPath(Path.Combine(Application.dataPath, "..")), folder));
+                Assert.That(scene.isDirty, Is.True); Assert.That(EditorUtility.IsDirty(excluded), Is.True);
+            }
+            finally
+            {
+                EditorSceneManager.CloseScene(scene, true);
+                if (savedInitial) EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+                AssetDatabase.DeleteAsset(folder);
+            }
         }
 
         /// <summary>Creates exact protocol request metadata and a source/version-matched receipt for the delivered case.</summary>

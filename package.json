@@ -1,8 +1,8 @@
 {
   "name": "com.geurts.gameforge.gitflow",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "displayName": "Geurts Game Forge GitFlow",
-  "description": "Editor-only, read-only queue, processor, lease and receipt inspection. Explicit bounded refresh; shared no-code UI and API. Submission, publishing and repair are planned. Requires separately acquired Odin Inspector and Quantum Console.",
+  "description": "Editor queue inspection, local Codex model selection and strict deterministic integration host. Candidate release under acceptance; no skip or validation bypass. Requires God, Odin Inspector and Quantum Console.",
   "unity": "6000.6",
   "unityRelease": "3f1",
   "dependencies": {

@@ -1,26 +1,28 @@
 # Geurts Game Forge GitFlow
 
-Version: 0.1.1. Editor-only read-only queue inspection with explicit remedies for missing failure details; submission, publishing, recovery and AI repair are planned, not available.
+Version 0.2.0 is an unreleased candidate for a reusable strict game integration queue.
 
-Use [Help and supported APIs](Documentation~/AIUsability.md). Start with **Tools > Geurts Game Forge > GitFlow**, choose an existing Git checkout and remote, and select **Refresh queue once**. God can embed the same tool. Opening/restoring a view performs no remote work. No consumer is installed or updated by source publication.
+In Unity, Queue local changes captures saved task-owned work into a recorded checkpoint and confirms its waiting-list entry while preserving the live branch, staging and working edits. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
-God 0.39.3 is the only mandatory Geurts brick. Import licensed Odin Inspector and Quantum Console separately. Newtonsoft JSON 3.2.2 supplies bounded metadata parsing. Unity 6000.6.3f1 is the minimum. See the authoritative Commandments catalogue for installation sources after publication; use exact Git candidate commits in disposable validation projects.
+One shared Git store and one reusable publisher workspace avoid per-request Unity caches. Optional explicitly authorized local Codex repair uses a discovered model and reasoning effort, retains its original three-hour budget, and stops on no meaningful progress. Owner observations distinguish recorded ownership from unknown process health.
 
-The first adapter reads codex/queue schema-1 control records, protocol-1 leases (180 or 1800 seconds), local integration_processor evidence, and matching publication receipts. It does not execute repository scripts. HTTPS without credentials and absolute local remotes are supported; private authentication, SSH and custom transports are unavailable. Maximum 128 requests, one MiB per JSON/command output, 45 seconds per refresh and two seconds between completed refreshes. Large queues require a future paged adapter.
+Forge package and documentation updates remain manual. Opening, refreshing and queue activity never install or update Forge. Dreadvault migration and the live game queue are outside this package change.
 
-All results are historical observations. PID presence is not proof of processor ownership. A missing PID can prove the recorded process is stopped, while another owner remains unknown. A stale report remains stale; no lease expires based on its wall-clock date. Released leases are displayed as released. Raw validation evidence is reported, not rerun. A receipt match does not prove current-main ancestry, check success or artifact availability.
+- [Human guide, rendered inside Unity](Documentation~/QueueLocalChanges.md)
+- [Supported AI and automation usage](Documentation~/AIUsability.md)
+- [Actual validation and remaining blockers](Documentation~/Validation.md)
 
-See [validation scope](Documentation~/Validation.md) for source/environment evidence and unverified native surfaces. Consumer installation remains manual. No player build is part of this release.
+Install only from the authoritative released catalogue after acceptance. The candidate branch is not a published release or consumer installation.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
 {
+  "packageId": "com.geurts.gameforge.gitflow",
+  "packageVersion": "0.2.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.39.3",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
-  },
-  "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2"
+  }
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

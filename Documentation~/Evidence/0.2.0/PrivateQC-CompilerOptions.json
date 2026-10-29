@@ -1,0 +1,116 @@
+{
+  "profile": "QC-2.6.7-private-Unity6000.6-compat03",
+  "warningAsErrorInputSha256": "708c11eb92057f950ee7f503d8b69c3b3c26043925d620017124a8d26af2e4ae",
+  "assemblies": [
+    {
+      "assembly": "QFSW.QC.Demo",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Demo.rsp",
+      "sha256": "320e5558c619810bb610bfb7b59602a0d938ab510658d6d60ade614cdd682e11",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.Editor",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Editor.rsp",
+      "sha256": "424cd78b1ffcd914263e055ee2bee8b592fc9cd55d9f2289ba4eb5c6c17cf38f",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.Editor.Tools",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Editor.Tools.rsp",
+      "sha256": "4fd8fda57310141077d6738efc3fe7701714d7a5aec5f100dd9f73e44f9e0f9f",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.Extras",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Extras.rsp",
+      "sha256": "8ef19ce75f173baceeba23f733a85e0145ed7f26b70265283bc0702b3e22ab15",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.Grammar",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Grammar.rsp",
+      "sha256": "40cb7a67fda29443f360617c62140223bacba393ec10549653987cd90b01abb4",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.Parsers",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Parsers.rsp",
+      "sha256": "04f127d324339db451e369c71a265459ddd953a8d6558db33c1215ceb62f059f",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.QGUI",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.QGUI.rsp",
+      "sha256": "c63e07ee54373e3c720548c82a5765d5a1507c36a906d0a8828b47b619ea6c66",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.rsp",
+      "sha256": "25a02e9abe7fb0cddfa87cf547ab79b8b50a1ca7ca21511de3f8361c80a26dc5",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.ScanRules",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.ScanRules.rsp",
+      "sha256": "ec944c4425f46e6f55ee814bf7dab606cf9774d4ccd80f9ee7ddf75bb9dc6d72",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.Serializers",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Serializers.rsp",
+      "sha256": "701554aafc4193457572547f6821a7789e1154581ea865ef533d1ee449ec9a01",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.Suggestors",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.Suggestors.rsp",
+      "sha256": "95b978afd4cb9d571b6ca72c736e3aa799dac240478398e1aab478e64fb5294f",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    },
+    {
+      "assembly": "QFSW.QC.UI",
+      "relativePath": "Library/Bee/artifacts/1900b0aEDbg.dag/QFSW.QC.UI.rsp",
+      "sha256": "53ba463fc2ed437395bbddb9c5d0bec795d46ec6fe8f85cad723f6592c070ca6",
+      "effectiveWarningFlags": [
+        "-warnaserror+"
+      ],
+      "disablingDefines": []
+    }
+  ],
+  "verifiedVendorAssemblyCount": 12,
+  "scope": "Effective Editor compiler options captured after clean compilation. No new vendor suppression or excluded source; existing vendor and Unity compiler defaults retained."
+}

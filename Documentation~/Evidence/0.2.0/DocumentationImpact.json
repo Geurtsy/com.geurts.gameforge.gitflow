@@ -1,0 +1,551 @@
+{
+  "schema": 1,
+  "scope": "All current declared guides plus release-document metadata for the twelve other released catalogue owners, at the exact 0.62.19 catalogue pins. Historical documents and newer unpublished peer work are outside this snapshot.",
+  "owners": [
+    {
+      "repository": "Geurtsy/GeurtsGameForgeBigBang",
+      "commit": "eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53",
+      "version": "0.8.9",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "e6e2892af293b213e2ab4eddef0fe498f9c963ed",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "d1a1d49677ef10e841f3b7309ac8d9717c9ac9b2",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "0e2a58be77df8e832c87dd7ed233cc0f895d7612",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/Architecture.md",
+          "blob": "00af76b57c6f61dba1ea781d3659e97ad4b07ffc",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/Documentation~/Architecture.md"
+        },
+        {
+          "path": "Documentation~/CommandmentsHandoff.md",
+          "blob": "79d6de2e76254863817aafc6da110cded4d8a0a5",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/Documentation~/CommandmentsHandoff.md"
+        },
+        {
+          "path": "Documentation~/GettingStarted.md",
+          "blob": "5c20ed5c11f3877bfed30e61defefbb339a32bb2",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/Documentation~/GettingStarted.md"
+        },
+        {
+          "path": "Documentation~/SteamPreparation.md",
+          "blob": "68382f950c63f873c30f1e36cacd9ee9d26ef572",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/Documentation~/SteamPreparation.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "bd690e30e44ffa3918171a96840bad688630fcbf",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/Documentation~/GameIntegration.md"
+        },
+        {
+          "path": "Documentation~/EditorLayout.md",
+          "blob": "79a999e8685994fc21e219924129eb80e90a2cc3",
+          "url": "https://github.com/Geurtsy/GeurtsGameForgeBigBang/blob/eb291ef5e6d2a1e9b16104d04f8b97f6dac9cc53/Documentation~/EditorLayout.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.commandments",
+      "commit": "c1e5d2aa1d03ff2e32d3959c94aa2f3e785bed33",
+      "version": "0.15.4",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "1c3c2ad7a64125fe2be9ccd0501c2dcd50a4ea0d",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.commandments/blob/c1e5d2aa1d03ff2e32d3959c94aa2f3e785bed33/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "fdbd99fc6fa59c634949a986769a6c81c5868d1b",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.commandments/blob/c1e5d2aa1d03ff2e32d3959c94aa2f3e785bed33/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "6e73dd8388d01ff0164d66c44bca7fa63cd419fc",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.commandments/blob/c1e5d2aa1d03ff2e32d3959c94aa2f3e785bed33/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/GodToolRequirements.md",
+          "blob": "b637faa0e0fb3471cd1842c3740fbaf4943dbe31",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.commandments/blob/c1e5d2aa1d03ff2e32d3959c94aa2f3e785bed33/Documentation~/GodToolRequirements.md"
+        },
+        {
+          "path": "Documentation~/README.md",
+          "blob": "dceee2314a51bac1ec0ef4abf7946e37fcfcb880",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.commandments/blob/c1e5d2aa1d03ff2e32d3959c94aa2f3e785bed33/Documentation~/README.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.god",
+      "commit": "b7a001234dd5b149cc767dd1ab305df4c6e876d7",
+      "version": "0.39.4",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "cdb5450a87812db92e190c50451b2cbf7e528f29",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "8108e88bb8d8e4d5b407e79ad7edc9a778650b20",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "401761d5a431315d551fe99fb0c865cf9b1e0fe7",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/AudioContracts.md",
+          "blob": "26bd6961c6d31caf33d51b20ed0c8ed6bae61826",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/AudioContracts.md"
+        },
+        {
+          "path": "Documentation~/BootstrapOwnership.md",
+          "blob": "4665eec7659f7b36ac7977d4a0279cb447072a6b",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/BootstrapOwnership.md"
+        },
+        {
+          "path": "Documentation~/CommandmentsEditorAPI.md",
+          "blob": "999a7c8a90a014a9e8f8494b5cfc3165f79aa759",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/CommandmentsEditorAPI.md"
+        },
+        {
+          "path": "Documentation~/ForgeArtwork.md",
+          "blob": "c9eb0514322fbc42d7b46100269bd95bc48e9202",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/ForgeArtwork.md"
+        },
+        {
+          "path": "Documentation~/GettingStarted.md",
+          "blob": "d9af8d37df2d63c50dce6910cbd082e0de517e91",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/GettingStarted.md"
+        },
+        {
+          "path": "Documentation~/ObjectPoolingContracts.md",
+          "blob": "0b5dc6ab77c7c7b6f619db4d4b1851fdce0ee32f",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/ObjectPoolingContracts.md"
+        },
+        {
+          "path": "Documentation~/SettingsAuthoring.md",
+          "blob": "a11ea8cb9695b5168b8d49719970929b8c98690f",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/SettingsAuthoring.md"
+        },
+        {
+          "path": "Documentation~/PlatformContracts.md",
+          "blob": "e2c68937c9482ff73911601fa4389f99abd2a3b6",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/PlatformContracts.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "23bd51e35dcc394c33035b09e864015f49855154",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/GameIntegration.md"
+        },
+        {
+          "path": "Documentation~/EditorLayout.md",
+          "blob": "77a2e9e1cee04fbebdfe34369690ac6783994c86",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.god/blob/b7a001234dd5b149cc767dd1ab305df4c6e876d7/Documentation~/EditorLayout.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "Shared settings/theme APIs remain compatible. Existing automatic-update documentation conflicts with the newly requested manual-update policy; separate owning task handles that change. Do not change this checkout."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.steam",
+      "commit": "44e5b61c6d9130682163d9536d91be67ed7d9a8d",
+      "version": "0.3.1",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "43591dc872aeb458660100acc0d40b998f6e5660",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "29c96c51878f9bd91dfc20ffbf58bda74df41206",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "14fb4f9132b4366d22a98d17ccc049a64184f8ff",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/GettingStarted.md",
+          "blob": "b9f82eb39ac00f428912daba94e4d6c2f7ce0490",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/GettingStarted.md"
+        },
+        {
+          "path": "Documentation~/Compatibility.md",
+          "blob": "170bf4e691c17a991bda9dbedb23174cec77870d",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/Compatibility.md"
+        },
+        {
+          "path": "Documentation~/Lifecycle.md",
+          "blob": "d8ec6cd48f1f6b11b0417fdcf0576eccf042e45e",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/Lifecycle.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "1d0519cb804886ba91c40a8d7e5bedfa7761856a",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/GameIntegration.md"
+        },
+        {
+          "path": "Documentation~/OptionalServices.md",
+          "blob": "34ed5eebf8764cd1dee52d731fcfc09e97407303",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/OptionalServices.md"
+        },
+        {
+          "path": "Documentation~/Distribution.md",
+          "blob": "6fadfa646c2060e6ebc49f2b1b58882ad3f5c53a",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/Distribution.md"
+        },
+        {
+          "path": "Documentation~/SteamworksOnboarding.md",
+          "blob": "fed8cf636fc0438a40359e34ba8e8b316ce5194c",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/SteamworksOnboarding.md"
+        },
+        {
+          "path": "Documentation~/SteamReadiness.md",
+          "blob": "6221815551734cc14d0b430973d54c53ee4c7ddb",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.steam/blob/44e5b61c6d9130682163d9536d91be67ed7d9a8d/Documentation~/SteamReadiness.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.diagnostics",
+      "commit": "a8d7a850654be6c438aebe0881ff95e1bbf23957",
+      "version": "0.11.3",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "4aadc4b756a547f9b10b5cc471b32b4dd8b5fce2",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics/blob/a8d7a850654be6c438aebe0881ff95e1bbf23957/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "67fecea599b9c541604644e063484bb92a12d0be",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics/blob/a8d7a850654be6c438aebe0881ff95e1bbf23957/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "240b14727d5150d83b0687629906c04124896c0d",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics/blob/a8d7a850654be6c438aebe0881ff95e1bbf23957/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/GeurtsDiagnostics_CommandReference.md",
+          "blob": "1ea3720b1a4d786bcb92f0c7d2dd8612279ebf40",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics/blob/a8d7a850654be6c438aebe0881ff95e1bbf23957/Documentation~/GeurtsDiagnostics_CommandReference.md"
+        },
+        {
+          "path": "Documentation~/GeurtsDiagnostics_SetupGuide.md",
+          "blob": "7816bd190a2d6802c7f42b3b9c9a15b3ba8b4ecd",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics/blob/a8d7a850654be6c438aebe0881ff95e1bbf23957/Documentation~/GeurtsDiagnostics_SetupGuide.md"
+        },
+        {
+          "path": "Documentation~/PackageSkeletonNotes.md",
+          "blob": "7b1037cc17638feefa9e14017f37d9374c269f37",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics/blob/a8d7a850654be6c438aebe0881ff95e1bbf23957/Documentation~/PackageSkeletonNotes.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "59bad732231ca86fe13a2c83c693474bf535808e",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics/blob/a8d7a850654be6c438aebe0881ff95e1bbf23957/Documentation~/GameIntegration.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.angels",
+      "commit": "67f76582819b48ea1091582d9e7ff2a4fdd93cb1",
+      "version": "0.9.7",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "a4d614742ee63b942e6bd507e1544497337f2db9",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.angels/blob/67f76582819b48ea1091582d9e7ff2a4fdd93cb1/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "430b97260c6fae3a3ef7c5bd2b783f832b2f0f06",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.angels/blob/67f76582819b48ea1091582d9e7ff2a4fdd93cb1/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "f3b3136af019cbe27c0dc13297bed22f032da5ba",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.angels/blob/67f76582819b48ea1091582d9e7ff2a4fdd93cb1/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "b78eca665a18db449bc7c206511d2ebcaffe84e2",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.angels/blob/67f76582819b48ea1091582d9e7ff2a4fdd93cb1/Documentation~/GameIntegration.md"
+        },
+        {
+          "path": "Documentation~/SteamReadiness.md",
+          "blob": "d33b575f1b6469801fd4b294b27c78f13f8dbbf0",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.angels/blob/67f76582819b48ea1091582d9e7ff2a4fdd93cb1/Documentation~/SteamReadiness.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.settings",
+      "commit": "9863219766d79e4eadd9be2122082616f2a974b8",
+      "version": "0.7.4",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "153fe2279bfe091e227fac66c9c1dd9a8f2097df",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.settings/blob/9863219766d79e4eadd9be2122082616f2a974b8/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "c29ab9603b8d76242c4a92b826dd6ad13933aac8",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.settings/blob/9863219766d79e4eadd9be2122082616f2a974b8/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "148351ebc327de32e8573d469e8b8460b9bec0c2",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.settings/blob/9863219766d79e4eadd9be2122082616f2a974b8/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/Authoring.md",
+          "blob": "2d8cb5510b60234ed12cfe26bb6d75eb587717c3",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.settings/blob/9863219766d79e4eadd9be2122082616f2a974b8/Documentation~/Authoring.md"
+        },
+        {
+          "path": "Documentation~/SoundIntegration.md",
+          "blob": "0dd169689a52dab6d5096e07a7318b410bb001fe",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.settings/blob/9863219766d79e4eadd9be2122082616f2a974b8/Documentation~/SoundIntegration.md"
+        },
+        {
+          "path": "Documentation~/StorageAndApi.md",
+          "blob": "aee5855ae2497ac509d5ed9cb65b2c7efb1b7305",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.settings/blob/9863219766d79e4eadd9be2122082616f2a974b8/Documentation~/StorageAndApi.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "14db8babf8a7695653422dc65cd27405677a7498",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.settings/blob/9863219766d79e4eadd9be2122082616f2a974b8/Documentation~/GameIntegration.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.sceneloading",
+      "commit": "771f4fdeddb7334af1f8a34721148016d402ad27",
+      "version": "0.7.3",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "6fe4760fc02b83e1e8288f5ef6fe1f6fcb2345ed",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading/blob/771f4fdeddb7334af1f8a34721148016d402ad27/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "991d60b4b723958b8a0fce14bd44a1085af0a37d",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading/blob/771f4fdeddb7334af1f8a34721148016d402ad27/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "12ff1da2ea8f60809a319611f1bb6b360e5cfc0f",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading/blob/771f4fdeddb7334af1f8a34721148016d402ad27/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/GettingStarted.md",
+          "blob": "d865c9b1c0353de7de64e341d4ee4ad847f4e2d3",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading/blob/771f4fdeddb7334af1f8a34721148016d402ad27/Documentation~/GettingStarted.md"
+        },
+        {
+          "path": "Documentation~/ObjectPoolingCooperation.md",
+          "blob": "8132e271b933435ca32c6336b93343c0e0d8f2bd",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading/blob/771f4fdeddb7334af1f8a34721148016d402ad27/Documentation~/ObjectPoolingCooperation.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "7009d8d52930abd9b330cba165e2f1492b8deab8",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading/blob/771f4fdeddb7334af1f8a34721148016d402ad27/Documentation~/GameIntegration.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.saveload",
+      "commit": "027437e3239cd0506b4abd8ce713b94a43b59b3b",
+      "version": "0.4.1",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "c873c9ff13953abd727bcde01895fe3fa68d4b41",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.saveload/blob/027437e3239cd0506b4abd8ce713b94a43b59b3b/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "a01f30c514ca6e555c7ab5919a29bd3f85817cc1",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.saveload/blob/027437e3239cd0506b4abd8ce713b94a43b59b3b/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "658d5673143278a5f5cdf865ad001353ac6f5731",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.saveload/blob/027437e3239cd0506b4abd8ce713b94a43b59b3b/ReleaseDocumentation.json"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.audio",
+      "commit": "199666d1fcb7ce688d111da07b40e6ae72f52b8d",
+      "version": "0.9.5",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "d97964069f85455af43c787e25800f9ead9fbb4e",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.audio/blob/199666d1fcb7ce688d111da07b40e6ae72f52b8d/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "d5823861838847b5a5d63c86387a342f0f8a3bc1",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.audio/blob/199666d1fcb7ce688d111da07b40e6ae72f52b8d/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "51c48e948f2017dd269c6207dcf2cef1870d28e8",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.audio/blob/199666d1fcb7ce688d111da07b40e6ae72f52b8d/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/RuntimeAPI.md",
+          "blob": "b7b061584cf743ca7a9f8723e686a3186370a0a0",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.audio/blob/199666d1fcb7ce688d111da07b40e6ae72f52b8d/Documentation~/RuntimeAPI.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "6318c98fa5b1c2833ced730a5c8248eac2072fb7",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.audio/blob/199666d1fcb7ce688d111da07b40e6ae72f52b8d/Documentation~/GameIntegration.md"
+        },
+        {
+          "path": "Documentation~/SteamReadiness.md",
+          "blob": "0df919f1baddb2f8e559a28cf20a1c015e971801",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.audio/blob/199666d1fcb7ce688d111da07b40e6ae72f52b8d/Documentation~/SteamReadiness.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.userinterface",
+      "commit": "317867819006339b502d4abbbe19a9d3042915b5",
+      "version": "0.13.3",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "d4df282e0e9d4b5094b677a8f853aa44106adcec",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface/blob/317867819006339b502d4abbbe19a9d3042915b5/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "47d390c457309a45963145abbf4c192b77dacbb6",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface/blob/317867819006339b502d4abbbe19a9d3042915b5/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "bb7f3891cf65dbc28fbd65119e6bfd779a4cbc75",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface/blob/317867819006339b502d4abbbe19a9d3042915b5/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/Authoring.md",
+          "blob": "a8540b9165fe6021ea20b609cb09a8c797df71ef",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface/blob/317867819006339b502d4abbbe19a9d3042915b5/Documentation~/Authoring.md"
+        },
+        {
+          "path": "Documentation~/AutoSettingsMenu.md",
+          "blob": "4486f614115b9ff1d43a0475861244b4ba4bcbd1",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface/blob/317867819006339b502d4abbbe19a9d3042915b5/Documentation~/AutoSettingsMenu.md"
+        },
+        {
+          "path": "Documentation~/Integration.md",
+          "blob": "5b241c2256c0f57167bc56a5ffe8aad7ed49eec7",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface/blob/317867819006339b502d4abbbe19a9d3042915b5/Documentation~/Integration.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "851fa939fab21b790f07d1ce1061e73db9854d9b",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface/blob/317867819006339b502d4abbbe19a9d3042915b5/Documentation~/GameIntegration.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    },
+    {
+      "repository": "Geurtsy/com.geurts.gameforge.objectpooling",
+      "commit": "605dcfd5909032f667032ec5e2d4c2a243faac67",
+      "version": "0.8.3",
+      "files": [
+        {
+          "path": "README.md",
+          "blob": "3adeb0709a6d8c3bb85be691e5fc7150f2796e1f",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/README.md"
+        },
+        {
+          "path": "Documentation~/AIUsability.md",
+          "blob": "f03a21feee2ddde9bcb496df22a08eb2bbc53413",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/Documentation~/AIUsability.md"
+        },
+        {
+          "path": "ReleaseDocumentation.json",
+          "blob": "46d340b868e7b8733d1c39c47cf046bc0fe62c64",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/ReleaseDocumentation.json"
+        },
+        {
+          "path": "Documentation~/GettingStarted.md",
+          "blob": "56deac5b031b43eb7bac3afe11b809e71b84ee7c",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/Documentation~/GettingStarted.md"
+        },
+        {
+          "path": "Documentation~/LifecycleAndReset.md",
+          "blob": "c044c29eddf8587024e4b8da41e7ac7c5ccd1446",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/Documentation~/LifecycleAndReset.md"
+        },
+        {
+          "path": "Documentation~/ObjectPoolObjectReference.md",
+          "blob": "2e238ef573672bf55994908d555031f6e24c4da0",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/Documentation~/ObjectPoolObjectReference.md"
+        },
+        {
+          "path": "Documentation~/SceneAndAdapterIntegration.md",
+          "blob": "60fe83e85486801312ba5a7931ec940d010470cc",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/Documentation~/SceneAndAdapterIntegration.md"
+        },
+        {
+          "path": "Documentation~/GameIntegration.md",
+          "blob": "b2ac623a07589eb1a13a88a9a45012dfb7dba013",
+          "url": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling/blob/605dcfd5909032f667032ec5e2d4c2a243faac67/Documentation~/GameIntegration.md"
+        }
+      ],
+      "queueReferencesFound": false,
+      "impact": "No GitFlow-specific contract claim in the current declared guides. No peer API or mandatory dependency is introduced by this candidate; no peer edit required for queue behavior."
+    }
+  ],
+  "gitflow": "Thirteenth owner: this candidate changes its own README, AI contract, human in-Unity tutorial, validation, capabilities and release metadata.",
+  "centralDocumentation": "Catalogue remains at released GitFlow 0.1.2 until candidate acceptance and immutable release; central documentation changes belong to the coordinating task."
+}
