@@ -249,6 +249,9 @@ class QueueAcceptance(unittest.TestCase):
 
     def test_repair_stops_when_changed_source_has_same_independent_failure(self):
         import GitFlowRepair as repair
+        (self.repository / '.gitattributes').write_bytes(b'*.cs text eol=crlf\n')
+        queue.git(self.repository, 'add', '.gitattributes')
+        queue.git(self.repository, 'commit', '-m', 'Declare native source line endings')
         (self.repository / 'Assets').mkdir()
         value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
         policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))

@@ -21,8 +21,9 @@ def execute(arguments):
         command.extend(['-quit', '-executeMethod', 'Geurts.GameForge.GitFlow.Editor.GitFlowNativeGate.SynchronizeVersion',
                         '-gitFlowVersion', arguments.version, '-gitFlowEvidence', str(evidence), '-gitFlowVersionProofProtocol', '1'])
     elif arguments.action == 'compile-project':
-        command.extend(['-quit', '-executeMethod', 'Geurts.GameForge.GitFlow.Editor.GitFlowNativeGate.CompilationCompleted',
-                        '-gitFlowEvidence', str(evidence), '-gitFlowRun', arguments.run, '-gitFlowCandidate', arguments.candidate])
+        command.extend(['-executeMethod', 'Geurts.GameForge.GitFlow.Editor.GitFlowNativeGate.BeginCompilation',
+                        '-gitFlowEvidence', str(evidence), '-gitFlowRun', arguments.run, '-gitFlowCandidate', arguments.candidate,
+                        '-gitFlowCompilationProtocol', '1'])
     else:
         if not arguments.test_filter:
             raise QueueError('Select the project-owned required test filter before configuring publication.')
@@ -35,7 +36,8 @@ def execute(arguments):
     text = log.read_text(encoding='utf-8-sig', errors='replace')
     diagnostics = [line for line in text.splitlines() if re.search(r'\b(?:warning|error)\s+(?:CS|BC|IL|NU|UAC)\d+|scripts have compiler errors|compilation failed', line, re.I)]
     if diagnostics:
-        durable(evidence / 'diagnostics.json', dict(complete_matching_diagnostics=diagnostics, full_log_sha256=file_digest(log)))
+        if not (evidence / 'diagnostics.json').exists():
+            durable(evidence / 'diagnostics.json', dict(complete_matching_diagnostics=diagnostics, full_log_sha256=file_digest(log)))
         raise QueueError('Compiler warning/error in the complete Unity log; required gate failed.')
     if result.returncode:
         raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')
@@ -50,8 +52,10 @@ def execute(arguments):
             raise QueueError('Required native tests did not all pass, or no tests ran.')
         durable(evidence / 'result.json', dict(run=arguments.run, candidate=arguments.candidate, status='passed',
                 warnings=0, errors=0, skipped=0, tests=int(report.attrib['passed'])))
-    elif arguments.action == 'compile-project' and not (evidence / 'result.json').is_file():
-        raise QueueError('Native compilation callback did not produce its exact-run report.')
+    elif arguments.action == 'compile-project':
+        report = json.loads((evidence / 'result.json').read_text())
+        if report.get('full_script_rebuild') is not True or report.get('compiled_assemblies', 0) < 1:
+            raise QueueError('Native compilation callback did not prove a full script rebuild.')
 
 
 if __name__ == '__main__':
