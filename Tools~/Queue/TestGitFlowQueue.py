@@ -221,6 +221,8 @@ class QueueAcceptance(unittest.TestCase):
         self.assertRaisesRegex(queue.QueueError, 'No meaningful progress', repair.repair, queue, self.repository, value,
             policy, queue.QueueError('compile failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
         self.assertEqual((self.repository / 'Assets/Game.cs').read_bytes(), before)
+        self.assertEqual(len(value['repair']['attempts']), 3)
+        self.assertEqual(value['repair']['consecutive_no_progress'], 3)
         started = value['repair']['first_started_utc']
         policy['repair']['model'] = 'different-model'
         self.assertRaisesRegex(queue.QueueError, 'No meaningful progress', repair.repair, queue, self.repository, value,
@@ -228,6 +230,37 @@ class QueueAcceptance(unittest.TestCase):
         self.assertEqual(value['repair']['first_started_utc'], started)
         start = datetime.datetime.fromisoformat(started)
         self.assertEqual(repair.remaining(value['repair'], start + datetime.timedelta(hours=3)), 0)
+
+    def test_repair_retries_empty_proposals_and_resets_stall_counter_after_validation_progress(self):
+        import GitFlowRepair as repair
+        (self.repository / '.gitattributes').write_bytes(b'*.cs text eol=crlf\n')
+        queue.git(self.repository, 'add', '.gitattributes')
+        queue.git(self.repository, 'commit', '-m', 'Declare native source line endings')
+        (self.repository / 'Assets').mkdir()
+        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
+        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
+        contexts = []
+        def transport(executable, model, effort, context, **kwargs):
+            content = json.loads(context)
+            contexts.append(content)
+            if len(contexts) <= 2:
+                return dict(model_invoked=True, proposal=dict(edits=[]))
+            item = content['allowed_files']['Assets/Game.cs']
+            speed = len(contexts)
+            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'],
+                old_text='speed = ' + str(speed), new_text='speed = ' + str(speed + 1))]))
+        lease = mock.Mock()
+        repair.repair(queue, self.repository, value, policy, queue.QueueError('first failure'),
+            self.workspace_root / 'Evidence', lambda: None, lease, transport)
+        self.assertEqual(len(contexts), 3)
+        self.assertEqual(value['repair']['consecutive_no_progress'], 2)
+        self.assertEqual(len(contexts[-1]['recent_attempts']), 2)
+        started = value['repair']['first_started_utc']
+        repair.repair(queue, self.repository, value, policy, queue.QueueError('different independent failure'),
+            self.workspace_root / 'Evidence', lambda: None, lease, transport)
+        self.assertEqual(value['repair']['consecutive_no_progress'], 0)
+        self.assertEqual(value['repair']['first_started_utc'], started)
+        self.assertIn('speed = 5', (self.repository / 'Assets/Game.cs').read_text())
 
     def test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner(self):
         self.source()
@@ -259,14 +292,25 @@ class QueueAcceptance(unittest.TestCase):
         def transport(executable, model, effort, context, **kwargs):
             calls.append(1)
             item = json.loads(context)['allowed_files']['Assets/Game.cs']
-            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'], old_text='speed = 3', new_text='speed = 4')]))
+            old = 'speed = ' + str(2 + len(calls))
+            new = 'speed = ' + str(3 + len(calls))
+            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'], old_text=old, new_text=new)]))
         lease = mock.Mock()
         repair.repair(queue, self.repository, value, policy, queue.QueueError('same independent compiler failure'),
             self.workspace_root / 'Evidence', lambda: None, lease, transport)
         self.assertIn('speed = 4', (self.repository / 'Assets/Game.cs').read_text())
+        started = value['repair']['first_started_utc']
+        value = json.loads(json.dumps(value))  # Rehydrate the durable request as a restart would.
+        policy['repair']['model'] = 'another-selected-model'
+        for expected_speed in [5, 6]:
+            repair.repair(queue, self.repository, value, policy, queue.QueueError('same independent compiler failure'),
+                self.workspace_root / 'Evidence', lambda: None, lease, transport)
+            self.assertIn('speed = ' + str(expected_speed), (self.repository / 'Assets/Game.cs').read_text())
+            self.assertEqual(value['repair']['first_started_utc'], started)
         self.assertRaisesRegex(queue.QueueError, 'same failure', repair.repair, queue, self.repository, value, policy,
             queue.QueueError('same independent compiler failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
-        self.assertEqual(len(calls), 1)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(value['repair']['consecutive_no_progress'], 3)
         self.assertEqual(value['repair']['attempts'][-1]['state'], 'no_progress_after_validation')
 
     def test_concurrent_claims_have_one_winner_and_renewal_resets_observation(self):

@@ -4,6 +4,21 @@ from pathlib import Path
 import re
 
 WINDOW_SECONDS = 10800
+NO_PROGRESS_LIMIT = 3
+
+
+class RetryableNoProgress(Exception):
+    """An unchanged outcome permits another bounded proposal within the original window."""
+
+
+def no_progress(q, record, attempt, checkpoint, reason):
+    """Persist consecutive failures before retrying; restarts cannot erase stalled attempts."""
+    record['consecutive_no_progress'] = record.get('consecutive_no_progress', 0) + 1
+    attempt['no_progress_reason'] = reason
+    checkpoint()
+    if record['consecutive_no_progress'] >= NO_PROGRESS_LIMIT:
+        raise q.QueueError('No meaningful progress after three consecutive repair attempts: ' + reason)
+    raise RetryableNoProgress(reason)
 
 
 def remaining(record, now):
@@ -29,6 +44,15 @@ def fingerprint(files):
 
 
 def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, lease, transport=None):
+    """Try again after an unproductive proposal; stop at the durable deadline or repeated stalled attempts."""
+    while True:
+        try:
+            return repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoint, lease, transport)
+        except RetryableNoProgress:
+            lease.guard()
+
+
+def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoint, lease, transport=None):
     """Persist intent/proposal before applying guarded source edits; never relax validation or publish main."""
     settings = policy.get('repair', {})
     if settings.get('enabled') is not True:
@@ -40,6 +64,8 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
     budget = remaining(record, now)
     if budget <= 0:
         raise q.QueueError('The original three-hour repair window is exhausted.')
+    if record.get('consecutive_no_progress', 0) >= NO_PROGRESS_LIMIT:
+        raise q.QueueError('No meaningful progress after three consecutive repair attempts; preserve the recorded attempts for review.')
     if record['attempts'] and record['attempts'][-1]['state'] in {'requesting', 'applying'}:
         raise q.QueueError('Interrupted repair has an uncertain outcome. Preserve its exact proposal/candidate and reconcile before continuation.')
     failure_content = str(failure)
@@ -52,11 +78,15 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
         elif (folder / 'output.log').is_file():
             failure_content = (folder / 'output.log').read_text(encoding='utf-8-sig', errors='replace')
     failure_identity = q.digest(failure_content.replace(str(workspace), '{workspace}').encode())
-    if (record['attempts'] and record['attempts'][-1]['state'] == 'applied_pending_validation'
-            and record['attempts'][-1].get('failure_evidence') == failure_identity):
-        record['attempts'][-1]['state'] = 'no_progress_after_validation'
-        checkpoint()
-        raise q.QueueError('No meaningful progress: independently repeated validation produced the same failure after the source repair.')
+    if record['attempts'] and record['attempts'][-1]['state'] == 'applied_pending_validation':
+        previous = record['attempts'][-1]
+        if previous.get('failure_evidence') == failure_identity:
+            previous['state'] = 'no_progress_after_validation'
+            no_progress(q, record, previous, checkpoint, 'Independent validation produced the same failure after the source repair.')
+        else:
+            previous['state'] = 'changed_failure_after_validation'
+            record['consecutive_no_progress'] = 0
+            checkpoint()
     protected = set(policy.get('protected_paths', [])) | {policy['version_file']} | set(policy.get('native_version_outputs', []))
     for check in policy['checks']:
         protected.update(arg for arg in check['command'] if not arg.startswith(('-', '{')))
@@ -80,8 +110,6 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
     if not files or conflicts - set(files):
         raise q.QueueError('No complete supported repair scope, or conflicts include protected/native files: ' + ', '.join(sorted(conflicts - set(files))))
     before = fingerprint(files)
-    if before in record['seen']:
-        raise q.QueueError('No meaningful progress: this source candidate was already attempted in the original repair window.')
     diagnostics = {}
     if getattr(failure, 'folder', None):
         folder = q.plain(failure.folder)
@@ -94,10 +122,13 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
             diagnostics[selected.name] = selected.read_text(encoding='utf-8-sig')
     context = q.encoded(dict(request=value['id'], source=value['source'], candidate=q.git(workspace, 'rev-parse', 'HEAD'),
                             failure=str(failure), diagnostics=diagnostics, allowed_files=files,
-                            rule='Complete file text is provided. Change only a unique necessary fragment; no whole-file replacement, test edits or policy edits.'))
+                            recent_attempts=[{key: attempt.get(key) for key in ('state', 'failure_evidence', 'no_progress_reason', 'paths')}
+                                             for attempt in record['attempts'][-NO_PROGRESS_LIMIT:]],
+                            rule='Complete file text is provided. Learn from the recorded unsuccessful attempts and try a different supported correction. Change only a unique necessary fragment; no whole-file replacement, test edits or policy edits.'))
     if len(context.encode()) > 65536:
         raise q.QueueError('Complete repair context exceeds 65536 bytes; no partial conflict context was sent.')
-    record['seen'].append(before)
+    if before not in record['seen']:
+        record['seen'].append(before)
     attempt = dict(started_utc=now.isoformat(), before=before, failure=q.digest(str(failure).encode()),
                    failure_evidence=failure_identity, model=settings['model'], effort=settings['effort'], state='requesting', remaining_seconds=budget)
     record['attempts'].append(attempt)
@@ -121,8 +152,7 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
     edits = reply.get('proposal', {}).get('edits')
     if not isinstance(edits, list) or not 1 <= len(edits) <= 16:
         attempt['state'] = 'no_progress'
-        checkpoint()
-        raise q.QueueError('No meaningful progress: model supplied no bounded exact edits.')
+        no_progress(q, record, attempt, checkpoint, 'Model supplied no bounded exact edits.')
     replacements = {}
     for edit in edits:
         if set(edit) != {'path', 'expected_sha256', 'old_text', 'new_text'} or not all(isinstance(item, str) for item in edit.values()):
@@ -141,8 +171,7 @@ def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, leas
     after = fingerprint(after_files)
     if after == before or after in record['seen']:
         attempt['state'] = 'no_progress'
-        checkpoint()
-        raise q.QueueError('No meaningful progress: whitespace-only or repeated source proposal; source unchanged.')
+        no_progress(q, record, attempt, checkpoint, 'Whitespace-only or repeated source proposal; source unchanged.')
     for relative in replacements:
         if q.digest(q.plain(workspace / relative).read_bytes()) != files[relative]['sha256']:
             raise q.QueueError('Candidate changed during model inference; source unchanged.')

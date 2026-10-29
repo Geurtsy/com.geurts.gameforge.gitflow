@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-29T17:15:04.920638+00:00",
+  "unity": "6000.6.3f1",
+  "quantum_console": "2.6.7",
+  "odin": "4.0.2.4",
+  "profile": "Complete locally licensed QFSW source tree, including Suggestors, Extras, UI and Demo assemblies; no vendor source edits or warning suppression.",
+  "local_source": "C:/Users/david_3oqzree/Documents/GitHub/GeurtsGameForge/UNITY_TEST_GeurtsGameForge/Assets/Plugins/QFSW",
+  "fixture": "C:/gqv",
+  "warning_count": 11,
+  "error_count": 0,
+  "group_counts": {
+    "QFSW.QC": 6,
+    "QFSW.QC.Extras": 1,
+    "QFSW.QC.Suggestors": 4
+  },
+  "classification": "Six diagnostics belong to mandatory QFSW.QC. Four additional diagnostics belong to QFSW.QC.Suggestors and one to QFSW.QC.Extras. No Demo diagnostic was observed.",
+  "enforcement": "The compiler emitted warnings. The strict host returned failure on all eleven; compiler warn-as-error flags were not introduced. This is distinct from a profile that promotes six core warnings to errors.",
+  "changelog_sha256": "09a542bd393ac72f662fb9287b80ca813ebfad1b3c4be16b00e53d7da01d740c",
+  "full_log_local_path": "C:/gqv/Evidence/FullCompilationFinal/Unity.log",
+  "full_log_sha256": "6f5146d29a8be3dee730e651da59f29413ac121deffc2ca54439898a1070f3f2",
+  "diagnostics": [
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Extras\\KeyBinderModule.cs(34,36): warning CS0618: 'Object.FindFirstObjectByType<T>()' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Extras/KeyBinderModule.cs",
+      "source_sha256": "2211fb8eb605577c3b9a70425a1b18d4aa36ab32a41e035e2936aba5ea9bf95f",
+      "assembly": "QFSW.QC.Extras",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Extras/QFSW.QC.Extras.asmdef",
+      "assembly_definition_sha256": "d17b0c06d161c72b79ff829822893e986e5d61bedfb0320cc24d8ce232e2ff13",
+      "profile": "additional_vendor_assembly"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\InvocationTargetFactory.cs(31,37): warning CS0618: 'Object.FindFirstObjectByType(Type)' is obsolete: 'FindFirstObjectByType has been deprecated because it relies on instance ID ordering. Use FindAnyObjectByType instead, which does not depend on ordering.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/InvocationTargetFactory.cs",
+      "source_sha256": "8be210234e6e98af360c3d9085b6c1ebe33263582fe44efcea25b133eb3a9010",
+      "assembly": "QFSW.QC",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QFSW.QC.asmdef",
+      "assembly_definition_sha256": "913b23533e7cf58578ef57251f9cc159f498816d241f83d11a0be8a617f1a68e",
+      "profile": "mandatory_core"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\InvocationTargetFactory.cs(48,28): warning CS0618: 'Object.FindObjectsByType(Type, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType(Type) or FindObjectsByType(Type, FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/InvocationTargetFactory.cs",
+      "source_sha256": "8be210234e6e98af360c3d9085b6c1ebe33263582fe44efcea25b133eb3a9010",
+      "assembly": "QFSW.QC",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QFSW.QC.asmdef",
+      "assembly_definition_sha256": "913b23533e7cf58578ef57251f9cc159f498816d241f83d11a0be8a617f1a68e",
+      "profile": "mandatory_core"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\InvocationTargetFactory.cs(48,64): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/InvocationTargetFactory.cs",
+      "source_sha256": "8be210234e6e98af360c3d9085b6c1ebe33263582fe44efcea25b133eb3a9010",
+      "assembly": "QFSW.QC",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QFSW.QC.asmdef",
+      "assembly_definition_sha256": "913b23533e7cf58578ef57251f9cc159f498816d241f83d11a0be8a617f1a68e",
+      "profile": "mandatory_core"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\Parsing\\QuantumParser.cs(173,64): warning UAC0005: AppDomain.GetAssemblies() in Unity may return already unloaded assemblies and result in errors or leaks. Use Unity APIs instead, such as 'CurrentAssemblies.GetLoadedAssemblies()' or 'TypeCache.GetTypesDerivedFrom()'.",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Parsing/QuantumParser.cs",
+      "source_sha256": "b339ab4198f32ce2b01b6da1c9f17247f3f783f2ad6618228ddcbf3eec3334dc",
+      "assembly": "QFSW.QC",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QFSW.QC.asmdef",
+      "assembly_definition_sha256": "913b23533e7cf58578ef57251f9cc159f498816d241f83d11a0be8a617f1a68e",
+      "profile": "mandatory_core"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\QuantumConsole.cs(1079,5): warning UAC0009: DEVELOPMENT_BUILD preprocessor directive has been deprecated. Please use one of the managed code variant directives (such as DEBUG, UNITY_ENABLE_CHECKS or UNITY_INCLUDE_INSTRUMENTATION) if different code paths are desired for different managed code variants. Checking for development build is possible at runtime using Debug.isDebugBuild. See the Conditional Compilation manual page for more details.",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QuantumConsole.cs",
+      "source_sha256": "7bffb3987abc0fd3eb914d499a98f135514657b8fc95c8700df89cc435132227",
+      "assembly": "QFSW.QC",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QFSW.QC.asmdef",
+      "assembly_definition_sha256": "913b23533e7cf58578ef57251f9cc159f498816d241f83d11a0be8a617f1a68e",
+      "profile": "mandatory_core"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\QuantumConsoleProcessor.cs(49,64): warning UAC0005: AppDomain.GetAssemblies() in Unity may return already unloaded assemblies and result in errors or leaks. Use Unity APIs instead, such as 'CurrentAssemblies.GetLoadedAssemblies()' or 'TypeCache.GetTypesDerivedFrom()'.",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QuantumConsoleProcessor.cs",
+      "source_sha256": "70b4322018f789da53027046722bfddbb422f00e927f6475e8b9b9340bc13b76",
+      "assembly": "QFSW.QC",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QFSW.QC.asmdef",
+      "assembly_definition_sha256": "913b23533e7cf58578ef57251f9cc159f498816d241f83d11a0be8a617f1a68e",
+      "profile": "mandatory_core"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\Suggestions\\Suggestors\\ComponentSuggestor.cs(28,20): warning CS0618: 'Object.FindObjectsByType(Type, FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType(Type) or FindObjectsByType(Type, FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/ComponentSuggestor.cs",
+      "source_sha256": "9bccf9e331042a4dcc89293ca61d01d7fdb3428130274eefa7ea2db22a8767da",
+      "assembly": "QFSW.QC.Suggestors",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/QFSW.QC.Suggestors.asmdef",
+      "assembly_definition_sha256": "a70f988d53c49b83a3ea148cae35d4810d038d79eb1d7913b533c73c25e46ec2",
+      "profile": "additional_vendor_assembly"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\Suggestions\\Suggestors\\ComponentSuggestor.cs(28,65): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/ComponentSuggestor.cs",
+      "source_sha256": "9bccf9e331042a4dcc89293ca61d01d7fdb3428130274eefa7ea2db22a8767da",
+      "assembly": "QFSW.QC.Suggestors",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/QFSW.QC.Suggestors.asmdef",
+      "assembly_definition_sha256": "a70f988d53c49b83a3ea148cae35d4810d038d79eb1d7913b533c73c25e46ec2",
+      "profile": "additional_vendor_assembly"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\Suggestions\\Suggestors\\GameObjectSuggestor.cs(22,20): warning CS0618: 'Object.FindObjectsByType<T>(FindObjectsSortMode)' is obsolete: 'FindObjectsByType with FindObjectsSortMode parameter has been deprecated. Use FindObjectsByType<T>() or FindObjectsByType<T>(FindObjectsInactive) instead. InstanceID will be replaced in the future with EntityId and previous sort order cannot be maintained.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/GameObjectSuggestor.cs",
+      "source_sha256": "bdb8937d79d8fc3495cd316c726b6fdee08b706ee65270dda29edf8f4047d7c6",
+      "assembly": "QFSW.QC.Suggestors",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/QFSW.QC.Suggestors.asmdef",
+      "assembly_definition_sha256": "a70f988d53c49b83a3ea148cae35d4810d038d79eb1d7913b533c73c25e46ec2",
+      "profile": "additional_vendor_assembly"
+    },
+    {
+      "diagnostic": "Assets\\Plugins\\QFSW\\Quantum Console\\Source\\Scripts\\Suggestions\\Suggestors\\GameObjectSuggestor.cs(22,57): warning CS0618: 'FindObjectsSortMode' is obsolete: 'FindObjectsSortMode has been deprecated. Use the FindObjectsByType overloads that do not take a FindObjectsSortMode parameter.'",
+      "relative_file": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/GameObjectSuggestor.cs",
+      "source_sha256": "bdb8937d79d8fc3495cd316c726b6fdee08b706ee65270dda29edf8f4047d7c6",
+      "assembly": "QFSW.QC.Suggestors",
+      "assembly_definition": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/QFSW.QC.Suggestors.asmdef",
+      "assembly_definition_sha256": "a70f988d53c49b83a3ea148cae35d4810d038d79eb1d7913b533c73c25e46ec2",
+      "profile": "additional_vendor_assembly"
+    }
+  ]
+}

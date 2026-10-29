@@ -42,7 +42,7 @@ The processor is the background program that checks, combines and publishes chan
 
 Forge packages and documentation never update automatically through GitFlow. After you deliberately install an update and stop the publisher, the operator can explicitly adopt the already installed runner; that action installs nothing and retains existing work.
 
-Automatic repair is optional and separately authorized. It uses the selected local Codex model, keeps its attempt history, and has up to three hours from its original start. It stops sooner if it makes no meaningful progress. Required checks still apply.
+Automatic repair is disabled until the operator enables its separate authorization control. Selecting a model does not enable repair. When authorized, it uses that local Codex model, keeps all attempt history, and has up to three hours from its original start. Restarts and model changes never reset that clock. It stops sooner after three consecutive attempts without meaningful progress. It can make bounded corrections to eligible source files; it cannot edit protected tests, validation rules, native settings or vendor files. Required checks still apply.
 
 OPTIONAL EXISTING-COMMIT ROUTE
 If you already use a Git client, Submit committed work accepts a clean recorded checkpoint: save Unity, select only task-owned changes and necessary metadata, record a meaningful commit, then fill Title, Implementation summary and Version increment and click Submit exact source once. This is optional; basic Queue local changes creates its own checkpoint.

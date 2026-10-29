@@ -37,7 +37,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             [Tooltip("Reasoning effort supported by the selected model. No fallback is selected automatically.")]
             public string ReasoningEffort;
             [FoldoutGroup("Repository", Expanded = true), BoxGroup("Repository/Target", ShowLabel = false), FolderPath]
-            [Tooltip("Existing project checkout. Source must be clean and committed before submission.")]
+            [Tooltip("Existing project checkout. Queue local changes preserves its branch and staging. The optional committed-work route requires a clean commit.")]
             public string Repository;
             [FoldoutGroup("Repository"), BoxGroup("Repository/Target")]
             [Tooltip("Existing Git remote name; this control does not change remotes.")]
@@ -125,7 +125,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             var workspace = new TextField("New short workspace root"); var unity = new TextField("Installed Unity executable");
             var tests = new TextField("Required project test filter"); var repair = new Toggle("Authorize automatic source repair for up to three hours");
             publisher.Add(workspace); publisher.Add(unity); publisher.Add(tests); publisher.Add(repair);
-            publisher.Add(new HelpBox("Configure one new short root per repository. Failed checks stop the queue. Automatic repair is optional, uses the selected local Codex model and account allowance, preserves all attempts, and stops on no meaningful progress. It cannot alter protected validation/native files or skip checks. No player build is created.", HelpBoxMessageType.Info));
+            publisher.Add(new HelpBox("Configure one new short root per repository. Failed checks stop publication. Automatic repair is disabled until authorized here. It uses the selected local Codex model and account allowance for up to three hours from its original start, stopping after three consecutive attempts without progress. It retains all attempts and cannot alter protected validation/native files or skip checks. No player build is created.", HelpBoxMessageType.Info));
             Button(publisher, "Create initial project version record", () =>
             {
                 string active = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
@@ -139,7 +139,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             Button(publisher, "Configure this new publisher", async () =>
             {
                 if (!EditorUtility.DisplayDialog("Configure GitFlow publisher", "Reserve " + workspace.value + " for one reusable publisher of " + _configuration.Repository + "?\nRequired test filter: " + tests.value +
-                    (repair.value ? "\n\nAutomatic local Codex repair is authorized for up to three hours from its original first attempt, stopping earlier on no meaningful source progress. Model: " + _configuration.Model + "; effort: " + _configuration.ReasoningEffort + ". Source context is sent using account allowance." : "\nAutomatic repair remains disabled.") +
+                    (repair.value ? "\n\nAutomatic local Codex repair is authorized for up to three hours from its original first attempt, stopping after three consecutive attempts without progress. Restarts and model changes do not reset the clock. Model: " + _configuration.Model + "; effort: " + _configuration.ReasoningEffort + ". Source context is sent using account allowance." : "\nAutomatic repair remains disabled.") +
                     "\n\nNo skip or validation bypass exists. Configuration does not start the publisher.", "Configure", "Cancel")) return new JObject { ["state"] = "cancelled" };
                 return await Host().ConfigureUnityAsync(_configuration.Preferences(), workspace.value, unity.value, tests.value, repair.value, _cancellation.Token);
             });
