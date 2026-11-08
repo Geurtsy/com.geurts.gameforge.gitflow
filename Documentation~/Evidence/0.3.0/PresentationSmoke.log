@@ -1,0 +1,1 @@
+PASS: six C# 9 syntax trees; actual presentation source compiled warnings-as-errors; 3 focused projection/coverage/preservation smoke checks. This is not Unity compilation or native UI acceptance.

@@ -1,4 +1,15 @@
-# 0.2.0 — Unreleased candidate
+# Changelog
+
+## 0.3.0 - unreleased source-only candidate
+
+- Add an embedded bounded queue console with explicit pages, scope/time/coverage, recorded owner/setup/lease/processor and request validation/publication/sync fields.
+- Isolate modern inspection in a temporary bare store; report malformed/legacy/partial evidence without adopting records or probing live ownership.
+- Freeze action scope, expose per-panel cancellation uncertainty and preserve dated observations; withhold unrestricted raw diagnostics and JSON from panel output.
+- Add a reviewed existing-policy setup route for selected repositories, retaining all existing required gates and explicit publisher start.
+- Native Unity/visual acceptance and publication remain pending; historical 0.2.0 tests are not rebound to these sources.
+
+
+## 0.2.0 — Unreleased candidate
 
 Strict reusable integration host with one shared worktree, exact-source idempotent submission, ownership-fenced publication and retained evidence. Failed checks block later requests; no skip or validation bypass exists.
 
@@ -8,7 +19,6 @@ Add local Codex model/effort discovery and separately authorized repair, disable
 
 Add explicit stopped-runner adoption of already installed code, recorded owner/machine/request/stage observations, measured storage accounting and strict source-bound release evidence. Forge never installs or updates automatically through GitFlow. Native assertions pass; the stock vendor compiler gate remains blocked. A separately approved private compatibility experiment passes full compilation and ten native checks, with original inputs, patch identity, effective compiler flags and the initial test-configuration failure retained as evidence. No consumer installation or release publication is performed.
 
-# Changelog
 
 ## 0.1.2 - 2026-10-23
 

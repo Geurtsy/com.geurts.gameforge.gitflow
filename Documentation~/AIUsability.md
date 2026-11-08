@@ -1,12 +1,16 @@
 # GitFlow supported automation contract
 
-Version 0.2.0 is an unreleased candidate. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
+Version 0.3.0 is an unreleased source-only candidate. Changed native sources have not been compiled or exercised in Unity. Historical 0.2.0 evidence is not acceptance of this update. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
 
 ## Choose the relevant surface
 
 - Human workflow: open Tools > Geurts Game Forge > GitFlow. The Help button and GitFlow Help menu render the installed QueueLocalChanges.md guide inside Unity. Opening help performs no queue or model action.
 - New reusable queue: GitFlowBrick.Host owns local preferences and explicit host operations. UI controls use this same service. Opening the window, model selection and module enable start no queue job, inference or package update.
 - Legacy observation: GitFlowBrick.Service remains the bounded read-only GitFlowInspection. The lower legacy viewer uses refs/heads/codex/queue; it is separate from the new gameforge queue protocol. Its God operation is inspect_queue. It cannot submit or operate a legacy processor.
+
+## Queue console and selected repository
+
+Read [QueueConsole.md](QueueConsole.md) for explicit modern pages, selected-repository setup, coverage/freshness, safe evidence and legacy non-adoption. Modern inspect now defaults to 16 requests in a temporary bare store, with explicit partial/unavailable results. Opening and repainting remain offline; no native or live queue action was taken by this implementation task.
 
 ## Prerequisites and lifecycle
 
@@ -96,7 +100,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.2.0",
+  "packageVersion": "0.3.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.39.3",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

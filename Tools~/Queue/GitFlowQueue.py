@@ -110,6 +110,18 @@ def read_json(path):
     return json.loads(path.read_text(encoding='utf-8-sig'))
 
 
+def reviewed_policy(path, expected):
+    """Bind a selected policy to one bounded raw read; changed review bytes never reach setup."""
+    path = plain(path)
+    with path.open('rb') as source:
+        content = source.read(MAXIMUM_BYTES + 1)
+    if len(content) > MAXIMUM_BYTES:
+        raise QueueError('Policy exceeds one MiB; review a bounded required policy.')
+    if expected and (not re.fullmatch('[0-9a-f]{64}', expected) or digest(content) != expected):
+        raise QueueError('Reviewed policy bytes changed. Preserve existing state and review the policy again.')
+    return json.loads(content.decode('utf-8-sig'))
+
+
 def common(root):
     return plain(Path(root) / git(root, 'rev-parse', '--git-common-dir'))
 
@@ -785,12 +797,15 @@ def main():
     setup = subcommands.add_parser('configure')
     setup.add_argument('--workspace-root', required=True)
     setup.add_argument('--policy', required=True)
+    setup.add_argument('--policy-sha256')
     setup.add_argument('--operator', action='store_true', required=True)
     processing = subcommands.add_parser('process')
     processing.add_argument('--operator', action='store_true', required=True)
     processing.add_argument('--expected-request')
     processing.add_argument('--expected-candidate')
-    subcommands.add_parser('inspect')
+    observation = subcommands.add_parser('inspect')
+    observation.add_argument('--offset', type=int, default=0)
+    observation.add_argument('--limit', type=int, default=16)
     subcommands.add_parser('storage')
     for name in ('serve', 'request-stop', 'resume-service'):
         command = subcommands.add_parser(name)
@@ -808,7 +823,7 @@ def main():
         from GitFlowCapture import inventory
         result = dict(state='preview', **inventory(sys.modules[__name__], root, arguments.scope))
     elif arguments.command == 'configure':
-        result = configure(root, arguments.remote, arguments.workspace_root, read_json(arguments.policy))
+        result = configure(root, arguments.remote, arguments.workspace_root, reviewed_policy(arguments.policy, arguments.policy_sha256))
     elif arguments.command == 'process':
         result = process_once(root, arguments.expected_request, arguments.expected_candidate)
     elif arguments.command == 'serve':
@@ -826,16 +841,8 @@ def main():
         config = configuration(root)
         result = inspect_storage([config['workspace_root'], common(root)])
     else:
-        result = {'requests': [dict(value, control_commit=identity) for identity, _, value in entries(root, arguments.remote)]}
-        result['owner'] = inspect_owner(root, arguments.remote)
-        result['owner_summary'] = result['owner']['summary']
-        if state_file(root).exists():
-            result['recorded_processor'] = read_json(state_file(root))
-        config_path = common(root) / 'gameforge_queue/configuration.json'
-        if config_path.exists():
-            config = read_json(config_path)
-            result['configuration_identity'] = digest(config)
-            result['recorded_runner'] = dict(path=config.get('runner'), hash=config.get('runner_hash'))
+        from GitFlowObserve import observe
+        result = observe(sys.modules[__name__], root, arguments.remote, arguments.offset, arguments.limit)
     print(encoded(result))
 
 

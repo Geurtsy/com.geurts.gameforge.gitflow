@@ -1,9 +1,10 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,7 +47,19 @@ namespace Geurts.GameForge.GitFlow.Editor
 
         /// <summary>Executes an explicit supported host command; callers retain the operation's authorization boundary.</summary>
         public Task<JObject> ExecuteQueueAsync(GitFlowPreferences preferences, IEnumerable<string> arguments, int timeoutSeconds = 60, CancellationToken cancellation = default)
-            => RunAsync(preferences.PythonExecutable, "GitFlowQueue.py", new[] { "--repository", preferences.Repository, "--remote", preferences.Remote }.Concat(arguments), timeoutSeconds, cancellation);
+        {
+            ValidateTarget(preferences);
+            return RunAsync(preferences.PythonExecutable, "GitFlowQueue.py", new[] { "--repository", preferences.Repository, "--remote", preferences.Remote }.Concat(arguments), timeoutSeconds, cancellation);
+        }
+
+        /// <summary>Refuses empty or missing explicit action targets instead of resolving them against the package working directory.</summary>
+        private static void ValidateTarget(GitFlowPreferences preferences)
+        {
+            if (preferences == null || string.IsNullOrWhiteSpace(preferences.Repository) || !Path.IsPathRooted(preferences.Repository) || !Directory.Exists(preferences.Repository))
+                throw new ArgumentException("Select an existing absolute repository path before a queue action.");
+            if (!System.Text.RegularExpressions.Regex.IsMatch(preferences.Remote ?? "", "^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,63}$"))
+                throw new ArgumentException("Select an existing remote name before a queue action.");
+        }
 
         /// <summary>Runs one authorized proposal request without applying it; supplied context must be separately reviewed.</summary>
         public Task<JObject> DiagnoseAsync(GitFlowPreferences preferences, string contextPath, CancellationToken cancellation = default)
@@ -83,9 +96,31 @@ namespace Geurts.GameForge.GitFlow.Editor
             finally { if (File.Exists(temporary)) File.Delete(temporary); }
         }
 
+        /// <summary>Returns the exact raw identity of an explicitly selected regular policy without executing it.</summary>
+        public static string PolicyFingerprint(string policyPath)
+        {
+            string path = Path.GetFullPath(policyPath);
+            if (path.Length >= 260 || !File.Exists(path) || new FileInfo(path).Length > GitFlowInspection.MaximumJsonBytes)
+                throw new ArgumentException("Select an existing regular policy file no larger than one MiB at a short path.");
+            for (string current = path; !string.IsNullOrEmpty(current); current = Path.GetDirectoryName(current))
+                if ((File.Exists(current) || Directory.Exists(current)) && (File.GetAttributes(current) & FileAttributes.ReparsePoint) != 0)
+                    throw new ArgumentException("Select an ordinary policy path, not a link or reparse point.");
+            using (var hash = SHA256.Create()) return BitConverter.ToString(hash.ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant();
+        }
+
+        /// <summary>Configures a selected repository only from the exact reviewed policy; no publisher is started.</summary>
+        public Task<JObject> ConfigurePolicyAsync(GitFlowPreferences preferences, string workspace, string policyPath, string expectedPolicyFingerprint, CancellationToken cancellation = default)
+        {
+            if (string.IsNullOrEmpty(expectedPolicyFingerprint) || PolicyFingerprint(policyPath) != expectedPolicyFingerprint)
+                throw new InvalidOperationException("The reviewed policy changed. Select and review it again before configuring.");
+            return ExecuteQueueAsync(preferences, new[] { "configure", "--operator", "--workspace-root", workspace, "--policy", policyPath,
+                "--policy-sha256", expectedPolicyFingerprint }, 60, cancellation);
+        }
+
         /// <summary>Starts an independent windowless Python host; the host's OS locks reject duplicate service ownership.</summary>
         public void StartPublisher(GitFlowPreferences preferences)
         {
+            ValidateTarget(preferences);
             string tool = Path.Combine(_package, "Tools~", "Queue", "GitFlowQueue.py");
             if (!File.Exists(preferences.PythonExecutable) || !File.Exists(tool)) throw new FileNotFoundException("The selected Python executable or queue runner is missing.");
             var start = new ProcessStartInfo(preferences.PythonExecutable) { WorkingDirectory = _package, UseShellExecute = false, CreateNoWindow = true,

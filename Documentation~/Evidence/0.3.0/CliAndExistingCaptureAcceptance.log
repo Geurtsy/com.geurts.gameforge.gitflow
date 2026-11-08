@@ -1,0 +1,8 @@
+test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup (TestGitFlowObserve.ObservationAcceptance.test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup) ... ok
+test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work (TestGitFlowQueue.QueueAcceptance.test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work) ... ok
+test_capture_exclusions_and_changed_bytes_stop_without_submission (TestGitFlowQueue.QueueAcceptance.test_capture_exclusions_and_changed_bytes_stop_without_submission) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 27.399s
+
+OK

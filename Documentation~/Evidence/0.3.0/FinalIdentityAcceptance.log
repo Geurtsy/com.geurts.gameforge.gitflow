@@ -1,0 +1,6 @@
+test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup (TestGitFlowObserve.ObservationAcceptance.test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.062s
+
+OK

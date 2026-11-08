@@ -1,50 +1,39 @@
-# GitFlow 0.2.0 candidate validation
+# GitFlow 0.3.0 source-only validation
 
-This candidate is not published. Required zero-warning compilation is blocked with stock Quantum Console 2.6.7 on Unity 6000.6.3f1. Passing assertions do not waive that release gate. The separately approved private profile `QC-2.6.7-private-Unity6000.6-compat03` passes a clean rebuild and all ten native checks, but its authorization is limited to disposable testing. No Dreadvault queue or consumer installation is changed.
+This update is unpublished and not installed. No Unity Editor, production queue, publisher, model request or consumer was launched or observed. Native compilation, licensed dependency verification and rendered/physical interaction remain unverified for these changed sources. The 0.2.0 stock compiler failure remains historical evidence, not a test of 0.3.0.
 
-## Tested source and environment
+## Source and authority
 
-The current code candidate is `bea6d4ec343450989da40bf352f6d0ef0f11ee2f`. The executable-source fingerprint is `a88cb8be1790c5bc2f75b09aeedd806ca6af31ce50d79e8d00a5d098a88231fb`; later documentation-only commits do not change it. Tests use the Git-resolved package in the disposable project `C:/gqv`, Unity `6000.6.3f1` revision `45d8eee7de74`, God `0.39.4` at `b7a001234dd5b149cc767dd1ab305df4c6e876d7`, Odin `4.0.2.4`, Quantum Console `2.6.7`, Newtonsoft JSON `3.2.2`, Input System `1.20.0`, UGUI `2.6.0` and the actually resolved Test Framework `1.8.0`. Separately licensed vendor sources remain private.
+- Base: 60b4384ea699203b5e9d6d5653c1092452cc109d, existing candidate branch codex/reliable-integration-queue.
+- Local branch: codex/verbose-queue-console, isolated task source checkout.
+- Commandments: authoritative Geurtsy/GeurtsGameForge_Commandments at 3ba7b00c888c13a1d8c54c7e748a210f3c15a1d5, package 0.67.5, ForgeDevelopment reading. Publication state of that documentation revision was not checked.
+- Public baseline remains Catalogue GitFlow 0.1.2. No catalogue or other owner source was changed. The generic shared contracts are unchanged. Catalogue/usage-index synchronization belongs to later accepted publication, not a false current pin.
 
-## Acceptance evidence
+## Actual focused checks
 
-| Check | Result and limits |
-| --- | --- |
-| Native Unity acceptance | 10 passed, zero failed/skipped. [Raw XML](Evidence/0.2.0/UnityAcceptance.xml) includes an actual serialized Inspector change from 3 to 4, native saving, isolated capture/submission, original branch/index/working-file preservation, excluded dirty assets, and refusal to save a selected scene when that could clear unrelated dirty asset state. The supported inspection example compiled in the fixture. |
-| Real-Git queue acceptance | 17 passed in 472.952 seconds. [Raw report](Evidence/0.2.0/QueueAcceptance.log) covers idempotence/ancestry, no early publication or skipping, dirty checkout preservation, no duplicate version or retest during publication recovery, workspace/cache reuse, capture exclusions and concurrent-change refusal, three-hour repair and durable stall counting, evidence provenance, owner fencing and explicit stopped-runner adoption. |
-| GitHub arbitration | [Remote report](Evidence/0.2.0/RemoteLeaseAcceptance.json): two independent clones contend for temporary refs, exactly one wins, renewal resets abandonment observation, a successor takes over after the simulated interval, and a stale owner's atomic write changes no target ref. Successor publication and release succeed. Main remains unchanged and all task-created temporary refs were removed. This tests actual GitHub writes with a simulated elapsed clock, not a 30-minute soak or separate physical machines. |
-| Stock full compiler gate | Failed: 11 warnings, zero errors, from the complete log of a requested full script rebuild. [Exact diagnostics and vendor identity](Evidence/0.2.0/VendorCompatibilityAssessment.json): six mandatory core, four Suggestors, one Extras, zero Demo warnings. No suppression or vendor modification was used. Zero per-assembly diagnostic callbacks did not override the complete-log failure. |
-| Private compatibility experiment | [Profile-bound acceptance](Evidence/0.2.0/PrivateQC-GitFlowAcceptance.json): full rebuild passes with zero warnings/errors and 10 native checks pass, zero failed/skipped, in 52.313 seconds. All 12 effective Quantum Console assembly response files contain `-warnaserror+`; all 227 original vendor inputs were verified, eight private changes match the frozen patch, 219 inputs remain unchanged and eight original backups match. The first run passed 9 checks and failed the required Python-path precondition; its XML and configuration-only correction are retained. This is a private derivative result, not stock compatibility or release approval. |
-| Native visual interaction | [Scoped report and screenshots](Evidence/0.2.0/NativeVisualAcceptance.json): physical clicks open, scroll, close and reopen Help inside Unity; queue, capture scope, model, operator and optional repair controls render. Narrow-window resizing is not verified. No publisher, model inference or update was started. The report binds both the earlier interaction screenshots and the final candidate menu, controls and updated-text recheck. |
-| Local Codex metadata | [Recorded discovery](Evidence/0.2.0/LocalCodexDiscovery.json): installed CLI `0.149.1` returned signed-in account state and supported model/effort metadata through its app-server API. No credential store was read and no paid inference was run. This does not establish live repair quality or model availability on another account. |
-| Disk use | [Measured synthetic benchmark](Evidence/0.2.0/StorageBenchmark.json): after three submissions, retained full clones total 67,422,945 unique logical bytes; one shared worktree totals 23,293,896. Library fixtures total 50,331,648 versus 16,777,216 bytes. The fixture uses a 2 MiB source, 16 MiB cache and 64 KiB evidence per request. This is not allocated-cluster usage, a production forecast or achieved Dreadvault savings. Queue tests also verify worktree/cache identity reuse. |
-| Documentation impact | [Cross-repository review](Evidence/0.2.0/DocumentationImpact.json) records 87 declared documentation/metadata files across 12 other released owners at the reviewed catalogue pins. GitFlow guides are updated here. The separately owned God automatic-update guidance is recorded as an external owner action. |
+- Modern observation: five focused disposable real-Git regressions passed, 0 failed, in 94.948 seconds. They cover a 140-request queue, explicit page boundaries, byte-for-byte selected checkout/remote preservation on repeat reads, legacy/future/malformed records, withheld unsafe/raw fields, malformed configuration/state object shapes, interrupted remote reads, and exact reviewed-policy bytes. [Raw report](Evidence/0.3.0/ObservationAcceptance.log).
+- CLI and existing capture: three regressions passed, 0 failed, in 27.399 seconds. One exercises the actual GitFlowQueue.py inspect CLI and changed-policy configure refusal before any reservation. Two existing queue regressions cover idempotent saved-change capture with original branch/index/working edits preserved, vendor exclusion and changed-input refusal. [Raw report](Evidence/0.3.0/CliAndExistingCaptureAcceptance.log).
+- C# lightweight check: actual GitFlowPresentation.cs compiled with C# 9 and warnings-as-errors using the installed .NET 10 SDK and its Newtonsoft assembly. Three smoke assertions verify bounded safe projection, preserved input and truthful coverage. Six changed C# files were parsed under C# 9. [Raw report](Evidence/0.3.0/PresentationSmoke.log). This is not Unity type resolution, package dependency compilation or native UI acceptance.
+- Python source compilation and the static release/documentation gate are recorded in the final source report. Publisher/lease/repair execution tests were not run: those bodies were unchanged, the prior full 17-case evidence is historical, and this source-only task excludes processor/ownership/native invocation. No full-suite pass is claimed.
 
-## Repair authority
+The final affected subset passed again (3 checks in 11.337 seconds). The final CLI identity fixture passed again (1 check in 5.062 seconds), asserting numeric-only recorded PID and SHA-only verified-main/evidence-candidate fields. Reports: [affected subset](Evidence/0.3.0/FinalAffectedAcceptance.log), [identity fixture](Evidence/0.3.0/FinalIdentityAcceptance.log). These are reruns of existing cases, not additional unique tests.
 
-Automatic repair defaults to disabled. The operator must deliberately enable its separate authorization control when configuring a publisher; choosing a model or saving preferences does not authorize source changes. The implementation allows up to 10,800 seconds from the first durable attempt and never restarts that clock after a restart, candidate correction or model/runner change.
+The narrow new regressions address material correctness/privacy risks that inspection alone cannot establish: real Git preservation, a >128-record queue, malformed/partial metadata, review-byte drift and unrestricted diagnostic leakage. No coverage-count target or test framework was added.
 
-Three consecutive unsuccessful proposals or unchanged independent validation outcomes stop the repair early. A changed independent failure resets only that stall counter. Every attempt and raw proposal is preserved; later proposals receive recent failure feedback. Tests cover empty proposals, whitespace-only changes, actual source edits with the same failure, durable restart/model changes, and progress followed by further attempts. Individual process timeouts and uncertain interrupted outcomes remain bounded and fail closed.
+## Remaining acceptance and publication blockers
 
-Repair may apply exact source fragments to complete eligible task-owned C#/Python files. It cannot change validation/tests, queue authority, protected native settings, package policy, generated or vendor files. It cannot skip checks, publish independently, take over a live owner, or reset its budget. No live repository has been configured to use automatic repair by this task.
+1. Commit/push a permitted candidate and create a separate short Git-resolved disposable Unity fixture only after an authorized safe validation boundary. Do not use a live project or local file installation.
+2. Compile minimum Unity 6000.6.3f1 and the chosen newer consumer Editor, with actual resolved God/Odin/Quantum Console/Newtonsoft dependencies. Require complete zero-warning/zero-error logs and compile the supported example. Historical stock Quantum Console 2.6.7 emitted 11 warnings; a private test-only derivative cannot authorize a public release.
+3. Run the relevant GitFlowPresentationTests plus existing affected native tests. Exercise actual normal/narrow standalone and God-embedded panels, focus/select/copy/scroll, long errors, collapsed warnings, repeated actions, cancel/timeouts, target changes, close/reopen, module stop/reload and explicit configuration failure preservation. Source syntax and lightweight projection checks do not establish any of these native outcomes. Interactive desktop checks need explicit authorization.
+4. Review generic project-policy commands and native derived-identity needs separately. No Dreadvault migration, legacy schema extension, owner takeover or automatic setup adoption is implemented. Large fetched-pack/memory behavior is not quota bounded by this adapter; displayed output is bounded and its process deadline is finite.
+5. Run Tools~/Validate-Release.ps1 and its RequireUnityEvidence gate against the final accepted source fingerprint, then follow the authorized publication/release/catalogue sequence. This task does not push, merge, tag, publish or install.
 
-## Release boundary
+## Historical evidence
 
-The mandatory static and native-evidence release checks must both pass before main, tag or catalogue publication. The stock vendor compiler failure is preserved as evidence. The manual-update task supplied the frozen eight-file private compatibility profile. GitFlow verified and applied it only to `C:/gqv` with Unity closed, retained original backups and independently ran the clean compiler gate and its ten native acceptance checks. [Profile identity and hashes](Evidence/0.2.0/PrivateQCProfile.json) bind the exact derivative, receipt and effective compiler options. No licensed source or patch content is included in this repository.
-
-The 17 real-Git queue checks remain valid for the identical GitFlow executable fingerprint; only Unity vendor inputs changed, so native acceptance was rerun. Stock and private reports remain separate. The primary release evidence still selects the failing stock profile and `publicationReady` remains false. A supported dependency profile that satisfies zero-warning validation is required before release; private test approval cannot supply that release authorization.
-
-Remaining scope limits include narrow-window native interaction, live paid-model repair quality, a real elapsed 30-minute ownership soak, multiple physical machines and project-specific native identity adapters. The historical 0.1.2 reports remain separate and do not establish this candidate.
+The previous candidate report is preserved at [Validation-0.2.0.md](History/Validation-0.2.0.md). Its exact AI validation record is [HistoricalAIUsabilityValidation.json](Evidence/0.2.0/HistoricalAIUsabilityValidation.json). No historical result is rebound to 0.3.0.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{
-  "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
-    "com.unity.nuget.newtonsoft-json": "3.2.2"
-  },
-  "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.2.0"
-}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.3.0","dependencies":{"com.geurts.gameforge.god":"0.39.3","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

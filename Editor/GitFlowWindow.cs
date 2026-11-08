@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.IO;
 using System.Linq;
@@ -49,7 +49,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             _status.style.whiteSpace = WhiteSpace.Normal; root.Add(_status);
             _results = new VisualElement(); scroll.Add(_results);
             var help = Section(scroll, "Help", false);
-            help.Add(new HelpBox("Select a local Git checkout and its existing remote, then Refresh queue once. Opening this window and expanding sections stay offline. Refresh is limited to 45 seconds and 128 requests, with a two-second cooldown. Values remain a dated snapshot until you refresh again.\n\nThis release reads protocol-1 codex/queue control refs, protocol-1 leases, recorded receipts and local integration_processor state. HTTPS without credentials and absolute local remotes are supported. No submission, processor startup, lock acquisition, retry, configuration save or consumer installation is available.\n\nA recorded PID does not prove ownership. Lease timestamps never prove expiry. Validation JSON contains the owner's claims; the viewer does not rerun those checks. For unavailable/malformed evidence, preserve it and consult the named queue operator.\n\nCode extensions use GitFlowBrick.Service.RefreshAsync(new GitFlowTarget(repository, remote)); the same snapshot feeds this view. See the package's local Documentation~/AIUsability.md for lifetime and adapter limits.", HelpBoxMessageType.Info));
+            help.Add(new HelpBox("Select a local Git checkout and its existing remote, then Refresh queue once. Opening this window and expanding sections stay offline. Refresh is limited to 45 seconds and 128 requests, with a two-second cooldown. Values remain a dated snapshot until you refresh again.\n\nThis release reads protocol-1 codex/queue control refs, protocol-1 leases, recorded receipts and local integration_processor state. HTTPS without credentials and absolute local remotes are supported. These limits apply only to this legacy viewer. Modern gameforge protocol setup, saved-change submission and explicit publisher controls are in Queue host above; they do not migrate or operate this legacy queue. Package installation remains manual.\n\nA recorded PID does not prove ownership. Lease timestamps never prove expiry. Validation JSON contains the owner's claims; the viewer does not rerun those checks. For unavailable/malformed evidence, preserve it and consult the named queue operator.\n\nCode extensions use GitFlowBrick.Service.RefreshAsync(new GitFlowTarget(repository, remote)); the same snapshot feeds this view. See the package's local Documentation~/AIUsability.md for lifetime and adapter limits.", HelpBoxMessageType.Info));
             StyleRows(scope); StyleRows(help);
         }
 
@@ -65,7 +65,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                 GitFlowSnapshot snapshot = await service.RefreshAsync(new GitFlowTarget(_repository.value, _remote.value));
                 if (!_closed) Present(snapshot);
             }
-            catch (Exception error) { if (!_closed) _status.text = "Refresh failed: " + error.GetType().Name + ": " + error.Message + " Previous results are unchanged."; }
+            catch (Exception error) { if (!_closed) _status.text = "Refresh failed: " + error.GetType().Name + ". Raw diagnostics withheld. Previous results are unchanged; check selected target/access and owner evidence."; }
             finally { _refreshing = false; if (!_closed) { await Task.Delay(2000); if (!_closed) _refresh.SetEnabled(true); } }
         }
 
@@ -78,11 +78,11 @@ namespace Geurts.GameForge.GitFlow.Editor
                 " (UTC " + snapshot.RefreshedUtc.ToString("O") + "). Queue: " + snapshot.QueueState + ". Refresh again to observe changes.";
             var health = Section(_results, "Processor: " + snapshot.ProcessorState + " | Lease: " + snapshot.LeaseState, true);
             Value(health, "Repository", snapshot.Repository); Value(health, "Remote", snapshot.Remote);
-            Value(health, "Processor observation", snapshot.ProcessorDetail); Value(health, "Lease observation", snapshot.LeaseDetail);
+            Value(health, "Processor observation", snapshot.ProcessorState + ". Recorded evidence only; process health and current ownership are unverified."); Value(health, "Lease observation", snapshot.LeaseState + ". Lease timestamps do not prove expiry or permit takeover.");
             if (snapshot.Issues.Count > 0)
             {
                 var failures = Section(_results, "⚠ Warning — inspection findings (" + snapshot.Issues.Count + ")", true);
-                foreach (string issue in snapshot.Issues) failures.Add(new HelpBox(issue, HelpBoxMessageType.Warning));
+                foreach (string issue in snapshot.Issues) failures.Add(new HelpBox("Inspection finding: " + (issue.Contains("128-request") ? "Legacy queue exceeds its 128-request bound. Use an owning paged legacy adapter; this is not an empty queue." : "Evidence is partial or unavailable. Consult the owning operator with this dated snapshot; raw diagnostics are withheld."), HelpBoxMessageType.Warning));
                 StyleRows(failures);
             }
             foreach (string state in new[] { "Queued", "Processing", "Validating", "Delivered", "Failed", "Unknown" })
@@ -92,14 +92,14 @@ namespace Geurts.GameForge.GitFlow.Editor
                 if (requests.Length == 0) group.Add(new Label("No " + state.ToLowerInvariant() + " records observed in this snapshot."));
                 foreach (var request in requests)
                 {
-                    var card = Section(group, request.Id + " — " + request.Title, false);
+                    var card = Section(group, GitFlowPresentation.Text(request.Id) + " - " + GitFlowPresentation.Text(request.Title), false);
                     Value(card, "Submitted source", request.Source); Value(card, "Change size", request.Size);
                     Value(card, "Assigned version", request.Version); Value(card, "Published commit (recorded)", request.PublishedCommit);
                     Value(card, "Control commit", request.ControlCommit);
-                    if (!string.IsNullOrWhiteSpace(request.Failure)) card.Add(new HelpBox("Error — " + request.Failure + "\nAsk the owning operator to address this failure; GitFlow cannot retry it.", HelpBoxMessageType.Error));
-                    Value(card, "Receipt verification", request.ReceiptDetail);
-                    Value(Section(card, "Request and validation evidence (reported)", false), "Original control JSON", request.EvidenceJson);
-                    if (!string.IsNullOrEmpty(request.ReceiptJson)) Value(Section(card, "Publication receipt", false), "Original receipt JSON", request.ReceiptJson);
+                    if (!string.IsNullOrWhiteSpace(request.Failure)) card.Add(new HelpBox("Error - recorded legacy failure. Raw diagnostics withheld.\nPreserve this request ID/control commit and ask its owning operator to review retained evidence. This viewer cannot retry it.", HelpBoxMessageType.Error));
+                    Value(card, "Receipt verification", request.ReceiptDetail?.StartsWith("Unavailable:", StringComparison.Ordinal) == true ? "Unavailable: receipt inspection failed. Raw diagnostics withheld; consult the owning operator." : request.ReceiptDetail);
+                    Value(Section(card, "Request and validation evidence (reported)", false), "Bounded control projection (raw/unknown fields withheld)", request.EvidenceJson);
+                    if (!string.IsNullOrEmpty(request.ReceiptJson)) Value(Section(card, "Publication receipt", false), "Bounded receipt projection (reported only)", request.ReceiptJson);
                     StyleRows(card);
                 }
                 StyleRows(group);
@@ -120,7 +120,10 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Shows a complete selectable, wrapping value with absent evidence clearly marked.</summary>
         private static void Value(VisualElement parent, string title, string value)
         {
-            var field = new TextField(title) { value = string.IsNullOrEmpty(value) ? "Unknown / not supplied" : value, multiline = true, isReadOnly = true };
+            string projected;
+            try { projected = !string.IsNullOrWhiteSpace(value) && value.TrimStart().StartsWith("{", StringComparison.Ordinal) ? GitFlowPresentation.Format(Newtonsoft.Json.Linq.JObject.Parse(value)) : GitFlowPresentation.Text(value); }
+            catch (Newtonsoft.Json.JsonException) { projected = "Unavailable: malformed evidence. Original data is preserved; raw content withheld."; }
+            var field = new TextField(title) { value = projected, multiline = true, isReadOnly = true };
             field.style.whiteSpace = WhiteSpace.Normal; field.style.marginTop = 8; parent.Add(field);
         }
 
