@@ -131,7 +131,7 @@
     "scope": "Unreleased source-only 0.3.0 machinery candidate. Focused real-Git batching, selective reads, ownership/recovery and safe failure diagnostics checked; no Unity, production queue/publisher, model request or consumer installation. Current native release gate remains blocked.",
     "unverified": [
       "All changed 0.3.0 Unity source compilation, supported minimum dependency graph, rendered standalone/embedded layouts and native repeated/cancel/close flows.",
-      "Stock Quantum Console 2.6.7 emits eleven compiler warnings on Unity 6000.6.3f1; mandatory zero-warning release gate fails.",
+      "Historical 0.2.0 stock Quantum Console 2.6.7 validation reported eleven warnings on Unity 6000.6.3f1. No 0.3.0 compilation result or current compiler failure cause is established.",
       "Narrow-window resizing; scoped visual checks are listed in the native report.",
       "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
       "Real elapsed 30-minute lease soak and multiple physical machines.",

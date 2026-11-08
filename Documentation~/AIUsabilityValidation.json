@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.3.0",
-  "sourceCandidate": "local source-only codex/queue-reference-batching; extends 2e5ab9a; remote publication denied",
+  "sourceCandidate": "published source-only candidate codex/queue-reference-batching at 48a7e07fb363c60510110886565f8a39183ecff0; unreleased",
   "sourceFingerprint": "636593a86b1c8b46489cd457e83a84cfd84ce27a5571691782220ba9d8da45cc",
   "unityVersion": "6000.6.3f1",
   "passed": 0,
@@ -58,8 +58,16 @@
     "pythonSyntax": "passed"
   },
   "publicationBlockers": [
-    "Automatic approval review denied candidate push; explicit approval for the official repository/candidate-branch destination is needed.",
     "Current-source Unity compilation/examples/tests and rendered standalone/embedded acceptance remain unverified.",
-    "Supported zero-warning licensed dependency profile required; historical stock QC warnings and private test-only profile are not release approval."
-  ]
+    "Current-source zero-warning/zero-error licensed dependency validation is required; no 0.3.0 compiler cause has been established. Historical 0.2.0 QC diagnostics/private tests are not current release evidence."
+  ],
+  "candidatePublication": {
+    "status": "pushed_and_remote_verified",
+    "commit": "48a7e07fb363c60510110886565f8a39183ecff0",
+    "reference": "refs/heads/codex/queue-reference-batching",
+    "url": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow/commit/48a7e07fb363c60510110886565f8a39183ecff0",
+    "merged": false,
+    "released": false,
+    "installed": false
+  }
 }

@@ -8,7 +8,7 @@
 - Add a reviewed existing-policy setup route for selected repositories, retaining all existing required gates and explicit publisher start.
 - Batch publisher request-ref reads, fetch missing exact commits in one transport and reuse cached objects while retaining fresh remote-ref/lease checks. Preflight control sizes and read blobs in batches of sixteen.
 - Remove redundant dependency-free scans and query exact dependency refs only. Add assistant-readable safe failure stage/cause/evidence/action records without a new collector or supervisor; retain raw owner evidence and uncertain-outcome protections.
-- Native Unity/visual acceptance and publication remain pending; historical 0.2.0 tests are not rebound to these sources.
+- Candidate source was pushed and verified at 48a7e07 on codex/queue-reference-batching. Native Unity/visual acceptance, main merge and release remain pending; historical 0.2.0 diagnostics are not a demonstrated 0.3.0 failure cause.
 
 
 ## 0.2.0 — Unreleased candidate
