@@ -1,0 +1,1 @@
+PASS: wrapped timeout/root cause, Git exit code, JSON location and unknown error remain structured without raw secret-bearing messages.

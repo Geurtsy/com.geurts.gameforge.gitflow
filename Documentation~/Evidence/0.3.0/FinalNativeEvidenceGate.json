@@ -1,0 +1,6 @@
+{
+  "status": "blocked",
+  "reason": "Unity validation/examples did not pass.",
+  "raw_utf8": "Exception: C:\\Users\\david_3oqzree\\Documents\\Codex\\2026-11-09\\task\\source\\Tools~\\Validate-Release.ps1:6\r\nLine |\r\n   6 |  … dition, [string]$Message) { if (-not $Condition) { throw $Message } }\r\n     |                                                       ~~~~~~~~~~~~~~\r\n     | Unity validation/examples did not pass.\r\n\r\n\r\n",
+  "raw_sha256": "5738fd7ca3d10c4243fd5903b13b12af3678a06ecb212feb670ab56b7ad285cb"
+}

@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "records": 314,
+  "transport": "absolute local bare Git repository; no GitHub or LFS",
+  "baseline_commit": "2e5ab9ab08cc6a3bcd505f7dc16e71a2cded494c",
+  "identical_results": true,
+  "baseline": {
+    "seconds": 108.364195,
+    "git_processes": 629,
+    "fetch_commands": 314,
+    "ls_remote_commands": 1,
+    "blob_batch_commands": 0
+  },
+  "candidate_cold": {
+    "seconds": 3.048719,
+    "git_processes": 44,
+    "fetch_commands": 1,
+    "ls_remote_commands": 1,
+    "blob_batch_commands": 20
+  },
+  "candidate_warm": {
+    "seconds": 2.555486,
+    "git_processes": 42,
+    "fetch_commands": 0,
+    "ls_remote_commands": 1,
+    "blob_batch_commands": 20
+  },
+  "scope": "Synthetic local fixture; not a production duration, network-byte or LFS savings forecast."
+}

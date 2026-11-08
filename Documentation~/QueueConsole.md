@@ -31,6 +31,8 @@ The lower legacy viewer and GitFlowBrick.Service retain their separate 45-second
 
 ## Bounds and truthful evidence
 
+Publisher queue reads advertise the request refs once, verify cached commit identities/types, fetch all absent exact commits in one transport and read control blobs in batches of sixteen after checking each size. Ref names and request identities still must agree; malformed or unavailable records remain blockers. Individual sensitive ref/lease observations still query the remote freshly. This reuses immutable objects, never cached ref values, and leaves FETCH_HEAD, local refs, HEAD, index and working edits unchanged. It does not change a live configured runner: stopped-owner adoption remains explicit. Modern viewer reads already batch their page fetch into an isolated temporary store; this publisher improvement neither adopts nor accelerates an existing legacy processor automatically.
+
 Modern inspect defaults to 16 requests; the direct CLI accepts --offset and --limit 1 through 64. Coverage reports advertised modern refs, returned records, failed records, records outside this page and a next offset. A nonzero omission, unsupported record or independent finding produces Partial. An interrupted remote read produces Unavailable, retaining independent setup findings. Empty readable results are not proof that an unsupported/failed queue is empty.
 
 The adapter uses a temporary bare object store and fixed Git reads, with hooks, credential helpers, external/SSH transports and caller GIT_* overrides disabled. It supports public HTTPS without embedded credentials and absolute local remotes. Selected checkout HEAD, index, working files, FETCH_HEAD and object store are not changed by observation. It performs no PID probe, ownership lock acquisition, lease renewal or takeover. Process health and lease expiry remain unknown. A single lease object does not prove continued ownership.
@@ -42,6 +44,12 @@ Commands, credentials, unknown fields and raw diagnostics/proposals are not dump
 Cancel current panel request cancels only that view's owned host request and descendants. Timeouts/cancellation retain prior dated observations. A dispatched configuration/submission write may already have completed: inspect the original identity/configuration before retrying. Cancellation does not undo writes or stop the independent publisher. Closing the view cancels its bridge request; disabling the brick cancels lifecycle-owned requests. Repeated clicks are serialized and no automatic retry or refresh is introduced.
 
 ## Validation and extension boundary
+
+### Assistant-readable failure records
+
+For a failed modern request, read its structured diagnostic first: schema, actual failed stage, stable cause code/plain cause, outer/root exception types, check name/exit code or JSON location when known, UTC, relative owner evidence paths and safe next action. Unknown causes stay explicit; the record never guesses success or turns a timeout into stopped-owner proof. It is copied into the request/local state and shown through the existing bounded console projection. No diagnostic collector or repeated scan is started. Resolved synchronization diagnostics are marked resolved after the original receipt/pulls complete.
+
+The owner also retains `Evidence/<request-id>/diagnostic.json` in the configured workspace and the named unique failure record. Read those exact paths and the listed check evidence only as needed. Relative gate paths start from that request evidence directory. Raw exception text/output remains in owner-local evidence and can contain private data; it is not copied into new request failure summaries or default CLI failure output. Historical records are preserved rather than rewritten. Preserve the exact request/candidate/version; uncertain publication or ownership requires reconciliation, never a duplicate request or bypass. Preflight failures may have no retained artifact; their cause remains unknown when the safe record cannot establish it.
 
 Observe.py is called by the existing GitFlowQueue.py inspect command through GitFlowHost.ExecuteQueueAsync. GitFlowQueueConsole is presentation only; GitFlowPresentation applies the same safe output policy to modern and legacy UI. Supported God operation inspect_queue remains the legacy read-only operation; no new generic operation ID is invented.
 

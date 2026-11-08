@@ -18,7 +18,8 @@ namespace Geurts.GameForge.GitFlow.Editor
             "owner host request stage process_id pid lease_protocol lease_seconds control_commit process_health recorded_processor setup " +
             "repository remote coverage offset limit advertised returned failed omitted next_offset ordering legacy requests locks migration " +
             "runner_current workspace_root policy_hash automatic_repair timeout_seconds configuration_identity evidence_scope observation findings reason failure_summary failure_phase next_action " +
-            "account_state models model display_name efforts window_started_utc consecutive_stalled attempt_count").Split(' '), StringComparer.Ordinal);
+            "account_state models model display_name efforts window_started_utc consecutive_stalled attempt_count " +
+            "diagnostic cause_code cause exception_type root_exception_type evidence observed_utc owner_failure_file check_name exit_code line column").Split(' '), StringComparer.Ordinal);
 
         /// <summary>Redacts credential-like text and remote URLs, removes control characters and visibly bounds a display value.</summary>
         internal static string Text(string value)
@@ -45,7 +46,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             {
                 var safe = new JObject();
                 foreach (JProperty property in record.Properties())
-                    if (Fields.Contains(property.Name) && (!(property.Name == "errors" || property.Name == "warnings" || property.Name == "skipped" || property.Name == "pid" || property.Name == "process_id") || property.Value.Type == JTokenType.Integer) && (!(property.Name == "verified_main" || property.Name == "evidence_candidate") || property.Value.Type == JTokenType.String && Regex.IsMatch((string)property.Value, "^[0-9a-f]{40}$")))
+                    if (Fields.Contains(property.Name) && (!(property.Name == "errors" || property.Name == "warnings" || property.Name == "skipped" || property.Name == "pid" || property.Name == "process_id" || property.Name == "exit_code" || property.Name == "line" || property.Name == "column") || property.Value.Type == JTokenType.Integer) && (!(property.Name == "verified_main" || property.Name == "evidence_candidate") || property.Value.Type == JTokenType.String && Regex.IsMatch((string)property.Value, "^[0-9a-f]{40}$")))
                         safe[property.Name] = Project(property.Value, depth + 1);
                 if (record["failure"] != null || record["error"] != null || record["blocker"] != null)
                     safe["failure"] = "Recorded failure. Raw diagnostics withheld; consult the owning retained evidence.";

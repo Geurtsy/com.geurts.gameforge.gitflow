@@ -66,7 +66,9 @@ class QueueAcceptance(unittest.TestCase):
         again = queue.submit(self.repository, 'origin', 'Other label', 'minor', 'Does not create a duplicate')
         self.assertEqual(value['id'], again['id'])
         self.assertEqual(len(queue.entries(self.repository, 'origin')), 1)
-        result = queue.process_once(self.repository)
+        with mock.patch.object(queue, 'entries', wraps=queue.entries) as reads:
+            result = queue.process_once(self.repository)
+        self.assertEqual(reads.call_count, 1, 'No second queue scan is needed without dependencies')
         self.assertEqual(result['state'], 'integrated')
         self.assertEqual(result['version'], '1.0.1')
         self.assertTrue(queue.ancestor(self.repository, value['source'], result['main_commit']))
@@ -85,6 +87,18 @@ class QueueAcceptance(unittest.TestCase):
         rows = {row[2]['id']: row[2] for row in queue.entries(self.repository, 'origin')}
         self.assertEqual(rows[second['id']]['state'], 'queued')
         self.assertEqual(len(rows[value['id']]['attempts']), 1)
+        diagnostic = rows[value['id']]['diagnostic']
+        self.assertEqual(diagnostic['stage'], 'required_check')
+        self.assertEqual(diagnostic['cause_code'], 'required_check_exit')
+        self.assertEqual(diagnostic['check_name'], 'compile_project')
+        self.assertEqual(diagnostic['exit_code'], 1)
+        self.assertFalse(diagnostic['automatic_repair'])
+        owner = self.workspace_root / 'Evidence' / value['id']
+        retained = queue.read_json(owner / 'diagnostic.json')
+        self.assertEqual(retained['diagnostic'], diagnostic)
+        self.assertTrue((owner / diagnostic['owner_failure_file']).is_file())
+        for relative in diagnostic['evidence']:
+            self.assertTrue((owner / relative).is_file())
 
     def test_published_pull_failure_resumes_without_retest_or_second_version(self):
         value = self.source()
@@ -92,12 +106,15 @@ class QueueAcceptance(unittest.TestCase):
             self.assertRaises(queue.QueueError, queue.process_once, self.repository)
         published = queue.entries(self.repository, 'origin')[0][2]
         self.assertEqual(published['state'], 'published')
+        self.assertEqual(published['diagnostic']['stage'], 'synchronization')
+        self.assertEqual(published['diagnostic']['cause_code'], 'synchronization_pending')
         self.assertTrue(queue.ancestor(self.repository, value['source'], queue.remote_ref(self.repository, 'origin', 'refs/heads/main')))
         with mock.patch.object(queue, 'execute_gate', side_effect=AssertionError('Must not revalidate already published source')):
             result = queue.process_once(self.repository)
         self.assertEqual(result['state'], 'integrated')
         self.assertEqual(result['version'], published['version'])
         self.assertEqual(result['main_commit'], published['main_commit'])
+        self.assertEqual(result['diagnostic']['state'], 'resolved')
 
     def test_dirty_user_checkout_preserved_and_record_stays_published(self):
         value = self.source()
@@ -386,6 +403,118 @@ class QueueAcceptance(unittest.TestCase):
         third = queue.execute_gate(self.repository, evidence, check, head, 'fixture-policy', cache)
         self.assertFalse(third['reused'])
         self.assertNotEqual(third['key'], first['key'])
+
+
+class ReferenceReadAcceptance(unittest.TestCase):
+    """Real Git batching, fresh-ref and preservation risks need observable integration checks."""
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(prefix='gqr_')
+        self.root = Path(self.temporary.name)
+        self.remote = self.root / 'Remote.git'
+        self.writer = self.root / 'Writer'
+        self.reader = self.root / 'Reader'
+        self.addCleanup(self.temporary.cleanup)
+        # Some Windows sandboxes inherit Administrator-owned directories. Trust
+        # only these three disposable paths, through this test's environment.
+        environment = {'GIT_CONFIG_COUNT': '3'}
+        for index, path in enumerate((self.writer, self.reader, self.remote)):
+            environment['GIT_CONFIG_KEY_' + str(index)] = 'safe.directory'
+            environment['GIT_CONFIG_VALUE_' + str(index)] = path.as_posix()
+        settings = mock.patch.dict(os.environ, environment)
+        settings.start()
+        self.addCleanup(settings.stop)
+        queue.git(self.root, 'init', '--bare', str(self.remote))
+        queue.git(self.root, 'init', '-b', 'main', str(self.writer))
+        queue.git(self.writer, 'config', 'user.name', 'Reference read fixture')
+        queue.git(self.writer, 'config', 'user.email', 'fixture@example.invalid')
+        (self.writer / 'tracked.txt').write_bytes(b'base\r\n')
+        queue.git(self.writer, 'add', '.')
+        queue.git(self.writer, 'commit', '-m', 'Fixture base')
+        queue.git(self.writer, 'remote', 'add', 'origin', str(self.remote))
+        queue.git(self.writer, 'push', 'origin', 'main')
+        queue.git(self.root, 'clone', '--branch', 'main', str(self.remote), str(self.reader))
+        self.base = queue.git(self.writer, 'rev-parse', 'HEAD')
+
+    def tearDown(self):
+        self.temporary.cleanup()
+
+    def records(self, count):
+        values = []
+        tree = queue.git(self.writer, 'rev-parse', 'HEAD^{tree}')
+        for index in range(count):
+            source = queue.git(self.writer, 'commit-tree', tree, '-p', self.base, '-m', 'Source ' + str(index))
+            value = dict(schema=1, id='request_' + source, source=source, state='queued', submitted_utc=str(count - index).zfill(3))
+            identity = queue.object_commit(self.writer, source, value, 'Request ' + str(index))
+            queue.git(self.writer, 'update-ref', queue.PREFIX + value['id'], identity)
+            values.append((identity, value))
+        queue.git(self.writer, 'push', 'origin', 'refs/heads/gameforge/queue/*:refs/heads/gameforge/queue/*')
+        return values
+
+    def test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs(self):
+        records = self.records(18)  # Cross a native blob-batch boundary.
+        (self.reader / 'tracked.txt').write_bytes(b'staged\r\n')
+        queue.git(self.reader, 'add', 'tracked.txt')
+        (self.reader / 'tracked.txt').write_bytes(b'working\r\n')
+        fetch_head = self.reader / '.git/FETCH_HEAD'
+        fetch_head.write_bytes(b'original FETCH_HEAD\n')
+        index = (self.reader / '.git/index').read_bytes()
+        references = queue.git(self.reader, 'show-ref')
+        with mock.patch.object(queue, 'run', wraps=queue.run) as calls:
+            values = queue.entries(self.reader, 'origin')
+        commands = [call.args[0] for call in calls.call_args_list]
+        self.assertEqual(sum(command[1] == 'fetch' for command in commands), 1)
+        self.assertEqual(sum(command[1] == 'ls-remote' for command in commands), 1)
+        self.assertEqual(sum(command[1:] == ['cat-file', '--batch'] for command in commands), 2)
+        self.assertEqual([row[2]['submitted_utc'] for row in values], sorted(value['submitted_utc'] for _, value in records))
+        with mock.patch.object(queue, 'run', wraps=queue.run) as calls:
+            self.assertEqual(queue.entries(self.reader, 'origin'), values)
+            self.assertEqual(queue.remote_ref(self.reader, 'origin', 'refs/heads/main'), self.base)
+        self.assertFalse(any(call.args[0][1] == 'fetch' for call in calls.call_args_list))
+        self.assertEqual(sum(call.args[0][1] == 'ls-remote' for call in calls.call_args_list), 2)
+        selected_ids = [records[0][1]['id'], records[1][1]['id']]
+        with mock.patch.object(queue, 'run', wraps=queue.run) as calls:
+            selected = queue.entries(self.reader, 'origin', selected_ids)
+            self.assertEqual(queue.entries(self.reader, 'origin', []), [])
+        self.assertEqual({row[2]['id'] for row in selected}, set(selected_ids))
+        commands = [call.args[0] for call in calls.call_args_list]
+        self.assertEqual(sum(command[1] == 'ls-remote' for command in commands), 1)
+        self.assertFalse(any(command[1] == 'fetch' for command in commands))
+        self.assertFalse(any(queue.PREFIX + '*' in command for command in commands))
+        original, value = records[0]
+        changed = dict(value, state='blocked')
+        successor = queue.object_commit(self.writer, original, changed, 'Changed request')
+        queue.git(self.writer, 'push', 'origin', successor + ':' + queue.PREFIX + value['id'])
+        with mock.patch.object(queue, 'run', wraps=queue.run) as calls:
+            current = {row[2]['id']: row for row in queue.entries(self.reader, 'origin')}
+        self.assertEqual(sum(call.args[0][1] == 'fetch' for call in calls.call_args_list), 1)
+        self.assertEqual(current[value['id']][0], successor)
+        self.assertEqual(current[value['id']][2]['state'], 'blocked')
+        self.assertEqual(fetch_head.read_bytes(), b'original FETCH_HEAD\n')
+        self.assertEqual((self.reader / '.git/index').read_bytes(), index)
+        self.assertEqual((self.reader / 'tracked.txt').read_bytes(), b'working\r\n')
+        self.assertEqual(queue.git(self.reader, 'rev-parse', 'HEAD'), self.base)
+        self.assertEqual(queue.git(self.reader, 'show-ref'), references)
+
+    def test_batch_refuses_invalid_objects_and_preflights_blob_sizes(self):
+        identity, _ = self.records(1)[0]
+        queue.commit_objects(self.reader, 'origin', [identity])
+        with mock.patch.object(queue, 'MAXIMUM_BYTES', 8), mock.patch.object(queue, 'run', wraps=queue.run) as calls:
+            self.assertRaisesRegex(queue.QueueError, 'exceeds one MiB', queue.entries, self.reader, 'origin')
+        self.assertFalse(any(call.args[0][1:] == ['cat-file', '--batch'] for call in calls.call_args_list))
+        blob = queue.git(self.reader, 'rev-parse', 'HEAD:tracked.txt')
+        with mock.patch.object(queue, 'run', wraps=queue.run) as calls:
+            self.assertRaisesRegex(queue.QueueError, 'not a commit', queue.commit_objects, self.reader, 'origin', [blob])
+            self.assertRaisesRegex(queue.QueueError, 'exact SHA-1', queue.commit_objects, self.reader, 'origin', ['unknown'])
+        self.assertFalse(any(call.args[0][1] == 'fetch' for call in calls.call_args_list))
+        diagnostic = queue.failure_diagnostic(queue.QueueError('token=DO_NOT_DISPLAY arbitrary-private-output'), 'password=DO_NOT_DISPLAY')
+        self.assertNotIn('DO_NOT_DISPLAY', queue.encoded(diagnostic))
+        self.assertNotIn('arbitrary-private-output', queue.encoded(diagnostic))
+        self.assertEqual(diagnostic['stage'], 'unknown')
+        from GitFlowObserve import projection
+        visible = projection(dict(diagnostic=diagnostic, failure='token=DO_NOT_DISPLAY'))
+        self.assertEqual(visible['diagnostic']['cause_code'], 'operation_failed')
+        self.assertNotIn('DO_NOT_DISPLAY', queue.encoded(visible))
 
 
 if __name__ == '__main__':

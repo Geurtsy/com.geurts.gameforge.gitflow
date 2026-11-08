@@ -15,10 +15,12 @@ namespace Geurts.GameForge.GitFlow.Tests
         public void ProjectionWithholdsRawDiagnosticsAndCredentialLikeValues()
         {
             var value = new JObject { ["id"] = "request_fixture", ["title"] = "token=DO_NOT_DISPLAY", ["command"] = "DO_NOT_DISPLAY",
-                ["error"] = "DO_NOT_DISPLAY", ["warnings"] = new JArray("DO_NOT_DISPLAY"), ["errors"] = 2, ["environment"] = "DO_NOT_DISPLAY" };
+                ["error"] = "DO_NOT_DISPLAY", ["warnings"] = new JArray("DO_NOT_DISPLAY"), ["errors"] = 2, ["environment"] = "DO_NOT_DISPLAY",
+                ["diagnostic"] = new JObject { ["cause_code"] = "required_check_exit", ["cause"] = "Required check failed", ["error"] = "DO_NOT_DISPLAY" } };
             string text = GitFlowPresentation.Format(value);
             Assert.That(text, Does.Not.Contain("DO_NOT_DISPLAY"));
             Assert.That(text, Does.Contain("Raw diagnostics withheld"));
+            Assert.That(text, Does.Contain("required_check_exit"));
             Assert.That(text, Does.Contain("\"errors\": 2"));
             Assert.That(value["error"].ToString(), Is.EqualTo("DO_NOT_DISPLAY"));
         }

@@ -18,7 +18,7 @@
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Focused real-Git batching/selective-read/delivery/failure/recovery checks passed; see Validation.md. Current-source full native acceptance remains unverified."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -59,13 +59,13 @@
     },
     {
       "id": "queue_console",
-      "description": "Explicit paged modern-queue observations, selected-repository setup and a bounded embedded operational console. Legacy queues are detected but not adopted.",
+      "description": "Explicit paged modern-queue observations, selected-repository setup and a bounded embedded operational console. Legacy queues are detected but not adopted. Assistant-readable safe failure stage/cause/evidence/action records reuse this projection.",
       "implemented": true,
       "maturity": "source_only_candidate",
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Focused disposable real-Git and C# presentation smoke checks; see current Validation.md. Unity compilation and rendered interaction remain unverified."
+        "Focused real-Git and enhanced C# presentation smoke checks passed; see Validation.md. Unity type resolution, rendering and interaction remain unverified."
       ]
     }
   ],
@@ -128,7 +128,7 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Unreleased source-only 0.3.0 candidate. No Unity launch, live queue observation, processor invocation, model request or consumer installation performed. Historical stock compilation had eleven vendor warnings; final-source native release gate is unverified.",
+    "scope": "Unreleased source-only 0.3.0 machinery candidate. Focused real-Git batching, selective reads, ownership/recovery and safe failure diagnostics checked; no Unity, production queue/publisher, model request or consumer installation. Current native release gate remains blocked.",
     "unverified": [
       "All changed 0.3.0 Unity source compilation, supported minimum dependency graph, rendered standalone/embedded layouts and native repeated/cancel/close flows.",
       "Stock Quantum Console 2.6.7 emits eleven compiler warnings on Unity 6000.6.3f1; mandatory zero-warning release gate fails.",

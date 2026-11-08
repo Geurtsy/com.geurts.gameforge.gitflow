@@ -46,6 +46,8 @@ Start configured background publisher starts one deterministic native program. I
 
 After a manual Forge update, Adopt this installed runner after stopping requires stopped local owners, a released shared owner and the exact reviewed configuration identity. It preserves requests, candidates, repair history and evidence, journals both configurations and updates only the configured runner/owned adapter paths. An interrupted ownership/configuration mismatch fails closed for operator reconciliation. This action installs nothing and does not restart the processor.
 
+Publisher ref reads batch missing exact Git objects and bounded request blobs, while sensitive ref/lease checks still query the remote freshly. See [reference-read behavior and limits](QueueConsole.md#bounds-and-truthful-evidence). The source-only benchmark is `python Tools~/Queue/BenchmarkGitFlowReferences.py --output <new-task-owned-report.json>` from a Git source checkout retaining commit 2e5ab9a. It creates only disposable local repositories and requires an existing output directory; results are synthetic local evidence, not production or LFS savings forecasts.
+
 ## Local Codex and bounded repair
 
 DiscoverModelsAsync uses local codex app-server initialize, account/read without token refresh, and paged model/list. It returns provider model IDs and supported reasoning efforts; it does not infer catalogue values from desktop labels. Discovery is not an inference request or entitlement proof. DiagnoseAsync requires explicitly reviewed bounded context and account usage consent; it returns one proposal without applying it.

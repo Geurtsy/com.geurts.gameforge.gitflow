@@ -56,6 +56,62 @@ def utc():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
 
+def failure_diagnostic(error, stage, folder=None, check_name=None):
+    """Record actionable fixed causes and owner evidence without copying raw error text."""
+    recorded = getattr(error, 'diagnostic', None)
+    if isinstance(recorded, dict):
+        return dict(recorded)
+    if stage not in {'command', 'processor', 'dependencies', 'workspace_preparation', 'merge', 'version_assignment', 'required_check',
+                     'prepublication_verification', 'publication', 'synchronization', 'published_evidence_verification', 'receipt_publication'}:
+        stage = 'unknown'
+    message = str(error)
+    underlying = error
+    for _ in range(4):
+        if underlying.__cause__ is None:
+            break
+        underlying = underlying.__cause__
+    code, cause = 'operation_failed', 'The operation failed; inspect the retained owner evidence for the specific cause.'
+    match = re.match(r'^Required gate ([a-z]+(?:_[a-z]+)*) failed with exit (-?[0-9]+);', message)
+    git_failure = re.match(r'^git failed \((-?[0-9]+)\):', message)
+    if match:
+        code, cause = 'required_check_exit', 'A required validation command returned a failing exit code.'
+    elif isinstance(underlying, subprocess.TimeoutExpired):
+        code, cause = 'command_timeout', 'The command exceeded its configured deadline; its outcome needs reconciliation.'
+    elif isinstance(underlying, FileNotFoundError):
+        code, cause = 'required_file_missing', 'A required executable or evidence file was not found.'
+    elif isinstance(error, json.JSONDecodeError):
+        code, cause = 'invalid_evidence_json', 'The evidence could not be parsed as JSON.'
+    elif message == 'Gate lacks a successful exact-candidate report with zero warnings/errors/skips.':
+        code, cause = 'report_rejected', 'The required report has a wrong run/candidate/status or nonzero warnings, errors or skips.'
+    elif message.startswith(('Gate changed candidate HEAD.', 'Checkout contains uncommitted/untracked work')):
+        code, cause = 'candidate_changed', 'Validation changed the candidate or left uncommitted work; preserve it before continuation.'
+    elif message.startswith('Main moved during validation.'):
+        code, cause = 'main_changed', 'Remote main changed during validation; the retained candidate needs one reviewed continuation.'
+    elif isinstance(error, leases.LeaseError):
+        code, cause = 'ownership_uncertain', 'Shared ownership was lost or could not be verified; this owner must perform no further writes.'
+    elif message.startswith('Automatic repair is disabled;'):
+        code, cause = 'repair_disabled', 'Automatic source repair is disabled; the retained candidate needs owner review.'
+    elif git_failure:
+        code, cause = 'git_command_failed', 'Git returned a failure; inspect owner evidence and reconcile any uncertain write before retrying.'
+    elif message.startswith(('Advertised control object is not a commit:', 'Missing or malformed control blob', 'Remote control record exceeds', 'Malformed or duplicate advertised queue')):
+        code, cause = 'control_record_rejected', 'A queue control object has an invalid type, identity, shape or size; preserve the exact record for owner review.'
+    value = dict(schema=1, state='failed', stage=stage, cause_code=code, cause=cause,
+                 exception_type=type(error).__name__, root_exception_type=type(underlying).__name__, observed_utc=utc(),
+                 next_action='Preserve the exact request/candidate and evidence. Review the cause and required gate; do not resubmit, bypass checks or restart an uncertain owner.')
+    if match:
+        value.update(check_name=match[1], exit_code=int(match[2]))
+    elif git_failure:
+        value['exit_code'] = int(git_failure[1])
+    if check_name and re.fullmatch('[a-z]+(?:_[a-z]+)*', check_name):
+        value['check_name'] = check_name
+    if isinstance(error, json.JSONDecodeError):
+        value.update(line=error.lineno, column=error.colno)
+    if folder and re.fullmatch(r'[a-z]+(?:_[a-z]+)*_[0-9a-f]{32}', Path(folder).name):
+        value.update(evidence=[Path(folder).name + '/' + name for name in ('failure.json', 'invocation.json', 'output.log')],
+                     evidence_scope='Relative to the configured workspace Evidence/request directory; local owner files, not independently verified remote artifacts.')
+    return value
+
+
 def console_options():
     return {'creationflags': subprocess.CREATE_NO_WINDOW} if os.name == 'nt' else {}
 
@@ -180,6 +236,66 @@ def read_request(root, identity):
     return json.loads(data)
 
 
+def commit_objects(root, remote, identities):
+    """Reuse exact local commits; fetch all absent advertised objects in one transport."""
+    identities = list(dict.fromkeys(identities))
+    if not identities:
+        return
+    if any(not re.fullmatch('[0-9a-f]{40}', identity) for identity in identities):
+        raise QueueError('Only exact SHA-1 control commits are supported by protocol 1.')
+    supplied = ('\n'.join(identities) + '\n').encode('ascii')
+
+    def missing_objects():
+        rows = run(['git', 'cat-file', '--batch-check'], root, data=supplied).decode('ascii').splitlines()
+        if len(rows) != len(identities):
+            raise QueueError('Incomplete local control-object verification.')
+        missing = []
+        for identity, row in zip(identities, rows):
+            if row == identity + ' missing':
+                missing.append(identity)
+            elif not re.fullmatch(re.escape(identity) + r' commit [0-9]+', row):
+                raise QueueError('Advertised control object is not a commit: ' + identity)
+        return missing
+
+    missing = missing_objects()
+    if missing:
+        # stdin avoids Windows command-line limits without one transport per ref.
+        run(['git', 'fetch', '--no-tags', '--no-write-fetch-head', '--stdin', remote], root,
+            data=('\n'.join(missing) + '\n').encode('ascii'))
+        if missing_objects():
+            raise QueueError('Advertised control commits remain unavailable after fetch.')
+
+
+def read_requests(root, identities):
+    """Read exact control blobs in small native batches with preflighted record bounds."""
+    values = []
+    for offset in range(0, len(identities), 16):
+        selected = identities[offset:offset + 16]
+        supplied = ''.join(identity + ':' + REQUEST + '\n' for identity in selected).encode('ascii')
+        rows = run(['git', 'cat-file', '--batch-check'], root, data=supplied).decode('ascii').splitlines()
+        if len(rows) != len(selected) or any(not re.fullmatch(r'[0-9a-f]{40} blob [0-9]+', row) for row in rows):
+            raise QueueError('Missing or malformed control blob in request batch.')
+        if any(int(row.rsplit(' ', 1)[1]) > MAXIMUM_BYTES for row in rows):
+            raise QueueError('Remote control record exceeds one MiB.')
+        output = run(['git', 'cat-file', '--batch'], root, data=supplied)
+        position = 0
+        for expected in rows:
+            end = output.find(b'\n', position)
+            if end < 0 or output[position:end] != expected.encode('ascii'):
+                raise QueueError('Control blob changed during batch verification.')
+            position = end + 1
+            size = int(expected.rsplit(' ', 1)[1])
+            content = output[position:position + size]
+            position += size
+            if len(content) != size or output[position:position + 1] != b'\n':
+                raise QueueError('Truncated control blob batch.')
+            position += 1
+            values.append(json.loads(content))
+        if position != len(output):
+            raise QueueError('Unexpected trailing control blob output.')
+    return values
+
+
 def remote_ref(root, remote, reference):
     rows = git(root, 'ls-remote', '--refs', remote, reference).splitlines()
     if not rows:
@@ -189,8 +305,7 @@ def remote_ref(root, remote, reference):
     identity = rows[0].split()[0]
     if not re.fullmatch('[0-9a-f]{40}', identity):
         raise QueueError('Only SHA-1 Git repositories are supported by protocol 1.')
-    git(root, 'fetch', '--no-write-fetch-head', remote, identity)
-    git(root, 'cat-file', '-e', identity + '^{commit}')
+    commit_objects(root, remote, [identity])
     return identity
 
 
@@ -205,13 +320,27 @@ def clean(root):
         raise QueueError('An unresolved merge remains in the owned workspace.')
 
 
-def entries(root, remote):
+def entries(root, remote, request_ids=None):
+    """Observe refs once, fetch missing commits once and batch-read exact request objects."""
+    if request_ids is not None and (not isinstance(request_ids, (list, tuple)) or any(not isinstance(value, str) or not re.fullmatch('request_[0-9a-f]{40}', value) for value in request_ids)):
+        raise QueueError('Dependency reads require exact request identities.')
+    patterns = list(dict.fromkeys(PREFIX + value for value in request_ids)) if request_ids is not None else [PREFIX + '*']
+    if not patterns:
+        return []
+    advertised = []
+    references = set()
+    for row in git(root, 'ls-remote', '--refs', remote, *patterns).splitlines():
+        fields = row.split()
+        if len(fields) != 2 or not fields[1].startswith(PREFIX) or fields[1] in references or request_ids is not None and fields[1] not in patterns:
+            raise QueueError('Malformed or duplicate advertised queue reference.')
+        identity, reference = fields
+        references.add(reference)
+        advertised.append((identity, reference))
+    identities = [identity for identity, _ in advertised]
+    commit_objects(root, remote, identities)
     values = []
-    for row in git(root, 'ls-remote', '--refs', remote, PREFIX + '*').splitlines():
-        identity, reference = row.split()
-        git(root, 'fetch', '--no-write-fetch-head', remote, identity)
-        value = read_request(root, identity)
-        if value.get('schema') != SCHEMA or reference != PREFIX + value.get('id', ''):
+    for (identity, reference), value in zip(advertised, read_requests(root, identities)):
+        if not isinstance(value, dict) or value.get('schema') != SCHEMA or reference != PREFIX + value.get('id', ''):
             raise QueueError('Unknown/malformed queue request: ' + reference)
         values.append((identity, reference, value))
     return sorted(values, key=lambda row: (row[2]['submitted_utc'], row[2]['id']))
@@ -446,8 +575,11 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
         cache[key] = value
         return value
     except Exception as error:
-        durable(folder / 'failure.json', dict(run=identity, candidate=candidate, error=type(error).__name__ + ': ' + str(error)))
-        raise GateFailure(str(error), folder) from error
+        diagnostic = failure_diagnostic(error, 'required_check', folder, check['name'])
+        durable(folder / 'failure.json', dict(run=identity, candidate=candidate, diagnostic=diagnostic, error=type(error).__name__ + ': ' + str(error)))
+        failure = GateFailure(str(error), folder)
+        failure.diagnostic = diagnostic
+        raise failure from error
 
 
 def next_version(current, size):
@@ -587,19 +719,26 @@ def process_once(root, expected_request=None, expected_candidate=None):
         workspace = plain(Path(config['workspace_root']) / 'Workspace')
         evidence_root = plain(Path(config['workspace_root']) / 'Evidence' / value['id'])
         artifacts = {}
+        stage = 'dependencies'
         try:
             if value['state'] == 'published':
+                stage = 'published_evidence_verification'
                 verify_published_evidence(root, previous, value)
+                stage = 'synchronization'
                 value['pulls'] = synchronize(root, config, workspace, value)
                 value['state'] = 'integrated'
+                if isinstance(value.get('diagnostic'), dict):
+                    value['diagnostic'] = dict(value['diagnostic'], state='resolved')
+                stage = 'receipt_publication'
                 publish_record(root, remote, lease, previous, reference, value)
                 update_state(root, state='integrated', request=value['id'])
                 return value
-            all_rows = {row[2]['id']: row[2] for row in entries(root, remote)}
+            all_rows = {row[2]['id']: row[2] for row in entries(root, remote, value['dependencies'])} if value['dependencies'] else {}
             for dependency in value['dependencies']:
                 dependency_value = all_rows.get(dependency)
                 if not dependency_value or dependency_value['state'] != 'integrated' or not ancestor(root, dependency_value['source'], main):
                     raise QueueError('Dependency is not verifiably integrated: ' + dependency)
+            stage = 'workspace_preparation'
             if expected_request:
                 clean(workspace)
                 head = git(workspace, 'rev-parse', 'HEAD')
@@ -621,15 +760,19 @@ def process_once(root, expected_request=None, expected_candidate=None):
 
             def repair_failure(failure):
                 from GitFlowRepair import repair
-                update_state(root, state='repairing', request=value['id'], detail=str(failure))
+                value['diagnostic'] = failure_diagnostic(failure, stage)
+                value['diagnostic']['automatic_repair'] = config['policy'].get('repair', {}).get('enabled') is True
+                update_state(root, state='repairing', request=value['id'], diagnostic=value['diagnostic'], detail=str(failure))
                 return repair(sys.modules[__name__], workspace, value, config['policy'], failure, evidence_root, checkpoint, lease)
 
             if not expected_request:
+                stage = 'merge'
                 try:
                     git(workspace, 'merge', '--no-ff', '--no-edit', value['source'])
                 except QueueError as error:
                     repair_failure(error)
             policy = config['policy']
+            stage = 'version_assignment'
             main_version = git(root, 'show', main + ':' + policy['version_file']).strip()
             version = next_version(main_version, value['size'])
             while True:
@@ -648,6 +791,7 @@ def process_once(root, expected_request=None, expected_candidate=None):
             cache = read_json(cache_path) if cache_path.exists() else {}
             while True:
                 checks = []
+                stage = 'required_check'
                 try:
                     for check in policy['checks']:
                         lease.guard()
@@ -656,7 +800,8 @@ def process_once(root, expected_request=None, expected_candidate=None):
                         durable(cache_path, cache)
                     break
                 except QueueError as error:
-                    attempt.update(failure=str(error), finished_utc=utc())
+                    diagnostic = failure_diagnostic(error, 'required_check')
+                    attempt.update(failure=diagnostic['cause_code'] + ': ' + diagnostic['cause'], diagnostic=diagnostic, finished_utc=utc())
                     checkpoint()
                     candidate = repair_failure(error)
                     value['candidate'] = candidate
@@ -664,6 +809,7 @@ def process_once(root, expected_request=None, expected_candidate=None):
                     value['attempts'].append(attempt)
                     checkpoint()
                     update_state(root, state='validating', request=value['id'], candidate=candidate)
+            stage = 'prepublication_verification'
             clean(workspace)
             if git(workspace, 'rev-parse', 'HEAD') != candidate:
                 raise QueueError('Candidate changed while validation was running.')
@@ -681,28 +827,52 @@ def process_once(root, expected_request=None, expected_candidate=None):
             artifacts['receipt.json'] = encoded(receipt).encode()
             value.update(state='published', main_commit=candidate, receipt=receipt)
             update_state(root, state='publishing', request=value['id'], candidate=candidate)
+            stage = 'publication'
             previous = publish_record(root, remote, lease, previous, reference, value, artifacts,
                                       [candidate + ':refs/heads/main'])
+            stage = 'synchronization'
             value['pulls'] = synchronize(root, config, workspace, value)
             value['state'] = 'integrated'
+            if isinstance(value.get('diagnostic'), dict):
+                value['diagnostic'] = dict(value['diagnostic'], state='resolved')
+            stage = 'receipt_publication'
             publish_record(root, remote, lease, previous, reference, value, artifacts)
             update_state(root, state='integrated', request=value['id'])
             return value
         except Exception as error:
             detail = type(error).__name__ + ': ' + (str(error) or 'No error details supplied')
+            diagnostic = failure_diagnostic(error, stage)
+            if diagnostic['cause_code'] == 'repair_disabled' and isinstance(value.get('diagnostic'), dict):
+                diagnostic = dict(value['diagnostic'], automatic_repair=False)
+            if stage in {'synchronization', 'published_evidence_verification'}:
+                diagnostic.update(stage='synchronization', cause_code='synchronization_pending',
+                                  cause='The request reports publication, but required receipt/ancestry/pull verification did not complete.',
+                                  next_action='Reconcile this original request, published commit, receipt and version; do not publish or assign a second version.')
+            if lease.failure:
+                diagnostic.update(state='uncertain', cause_code='ownership_uncertain',
+                                  cause='Ownership or publication verification is uncertain; the current owner is fenced from further writes.')
+            value['diagnostic'] = diagnostic
             evidence_root.mkdir(parents=True, exist_ok=True)
-            durable(evidence_root / ('failure_' + uuid.uuid4().hex + '.json'), dict(request=value['id'], state=value['state'], error=detail, utc=utc()))
+            failure_name = 'failure_' + uuid.uuid4().hex + '.json'
+            diagnostic['owner_failure_file'] = failure_name
+            durable(evidence_root / failure_name, dict(request=value['id'], state=value['state'], diagnostic=diagnostic, error=detail, utc=utc()))
             # An uncertain write must never be followed by another write from that owner.
             if not lease.failure:
                 if value['state'] != 'published':
                     value['state'] = 'validation_failed' if value['state'] == 'validating' else 'blocked'
-                value['failure'] = detail
+                value['failure'] = diagnostic['cause_code'] + ': ' + diagnostic['cause']
                 try:
                     publish_record(root, remote, lease, previous, reference, value)
                 except Exception as failure:
                     detail += '; result publication: ' + str(failure)
-            update_state(root, state='blocked', request=value['id'], detail=detail)
-            raise QueueError(detail) from error
+            if lease.failure:
+                diagnostic.update(state='uncertain', cause_code='ownership_uncertain',
+                                  cause='Ownership or publication verification is uncertain; the current owner is fenced from further writes.')
+            durable(evidence_root / 'diagnostic.json', dict(request=value['id'], source=value['source'], candidate=value.get('candidate'), diagnostic=diagnostic))
+            update_state(root, state='blocked', request=value['id'], diagnostic=diagnostic, detail=detail)
+            failure = QueueError(detail)
+            failure.diagnostic = diagnostic
+            raise failure from error
         finally:
             if lease.failure:
                 durable(control / 'lease_failure.json', dict(owner=lease.owner, held=lease.oid,
@@ -755,7 +925,7 @@ def serve(root):
             except leases.Contended:
                 update_state(root, state='waiting_for_owner', detail='Another owner holds the renewable lease; observing with bounded backoff.')
             except Exception as error:
-                update_state(root, state='blocked', detail=type(error).__name__ + ': ' + str(error))
+                update_state(root, state='blocked', diagnostic=failure_diagnostic(error, 'processor'), detail=type(error).__name__ + ': ' + str(error))
                 return
             for _ in range(60):
                 if (control / 'stop.json').exists():
@@ -850,5 +1020,6 @@ if __name__ == '__main__':
     try:
         main()
     except (QueueError, leases.LeaseError, OSError, ValueError) as failure:
-        print(encoded({'state': 'blocked', 'error': type(failure).__name__ + ': ' + str(failure)}))
+        print(encoded({'state': 'blocked', 'diagnostic': failure_diagnostic(failure, 'command'),
+                       'error': 'Operation blocked. Raw diagnostics are withheld; inspect the owning retained evidence.'}))
         sys.exit(1)

@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 MAXIMUM_RECORDS = 64
 MAXIMUM_OUTPUT = 768 * 1024
 FIELDS = {
+    'diagnostic', 'cause_code', 'cause', 'exception_type', 'root_exception_type', 'evidence', 'observed_utc', 'owner_failure_file', 'check_name', 'exit_code', 'line', 'column', 'evidence_scope', 'next_action', 'automatic_repair',
     'schema', 'id', 'state', 'status', 'title', 'source', 'base', 'size', 'version', 'candidate', 'main_commit',
     'submitted_utc', 'started_utc', 'finished_utc', 'completed_utc', 'updated_utc', 'policy', 'base_main',
     'dependencies', 'attempts', 'failure', 'receipt', 'checks', 'name', 'kind', 'folder', 'run', 'warnings', 'errors',
@@ -23,7 +24,7 @@ def projection(value, depth=0):
     if depth > 7:
         return '[deeper evidence omitted]'
     if isinstance(value, dict):
-        result = {key: projection(item, depth + 1) for key, item in value.items() if key in FIELDS and key != 'failure' and (key not in {'errors', 'warnings', 'skipped', 'pid', 'process_id'} or type(item) is int) and (key not in {'verified_main', 'evidence_candidate'} or isinstance(item, str) and re.fullmatch('[0-9a-f]{40}', item))}
+        result = {key: projection(item, depth + 1) for key, item in value.items() if key in FIELDS and key != 'failure' and (key not in {'errors', 'warnings', 'skipped', 'pid', 'process_id', 'exit_code', 'line', 'column'} or type(item) is int) and (key not in {'verified_main', 'evidence_candidate'} or isinstance(item, str) and re.fullmatch('[0-9a-f]{40}', item))}
         if value.get('failure'):
             phase = value.get('state') if value.get('state') in {'queued', 'preparing', 'validating', 'repairing', 'publishing', 'published', 'integrated', 'blocked', 'validation_failed'} else 'unknown'
             result['failure_phase'] = phase
