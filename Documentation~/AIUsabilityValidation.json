@@ -39,5 +39,11 @@
   "integrationRecipes": [],
   "publicationBlockers": [
     "Native Unity compilation/examples/tests and actual user visual acceptance remain pending for the changed fingerprint; no package release is claimed."
-  ]
+  ],
+  "defaultDiagnosticEditorComponent": {
+    "passed": true,
+    "report": "Documentation~/Evidence/0.4.0/DefaultDiagnosticComponent.json",
+    "diagnostics": 0,
+    "scope": "Original installed native recipe with explicit owning Editor inventory, not fresh native/test/fullclosure acceptance."
+  }
 }

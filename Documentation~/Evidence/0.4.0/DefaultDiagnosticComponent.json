@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "diagnosticPolicyVersion": "native-default-diagnostics-v1",
+  "coreToolCommit": "2622695d7f6384de3c9593b273088deea2721f19",
+  "coreToolSha256": "02c453fa02de1ecb71df2bde0ab262fb1b6a041c4f60e4ca7f688c8a8d16439d",
+  "owningImplementationCommit": "b2c9be84e227cb3ecd8316551e53320e66ba1c90",
+  "assemblyName": "Geurts.GameForge.GitFlow.Editor",
+  "owningEditorSourceFiles": 14,
+  "originalPackageVersion": "0.1.2",
+  "originalPackageCommit": "a74071830b7aab17c47a10dbdb8eddc482625ddd",
+  "originalNativeResponseSha256": "b84d2dc9bd2b5a8904311da1c59e93f0dcb2b7a88ab5c500a4c3e8aebaa52fa6",
+  "originalNativeSecondaryResponseSha256": "d11b0859170d20d0c5da11cc07fa249298551d61ae708b4ea11b38ad881ce882",
+  "unityVersion": "6000.6.3f1",
+  "referenceCohort": {
+    "godVersion": "0.44.0",
+    "apiProfile": "coherent Framework4.8",
+    "godSource": "ed03bb8",
+    "compatibilitySource": "559",
+    "liveOrMinimumGodCompatibilityProven": false
+  },
+  "originalSdkDefinesReferencesAnalyzersAndAdditionalFilesPreserved": true,
+  "additionalDeclaredReferences": [
+    {
+      "declaration": "Sirenix.OdinInspector.Editor.dll",
+      "native": "C:\\dvqc\\Assets\\Plugins\\Sirenix\\Assemblies\\Sirenix.OdinInspector.Editor.dll",
+      "copy": "C:\\gfgp2\\Inputs\\C\\dvqc\\Assets\\Plugins\\Sirenix\\Assemblies\\Sirenix.OdinInspector.Editor.dll",
+      "sha256": "b83ac4fcc721f20ef82a057b009e6b3b1330da349719f93721667a68de770eb9"
+    },
+    {
+      "declaration": "Sirenix.Utilities.dll",
+      "native": "C:\\dvqc\\Assets\\Plugins\\Sirenix\\Assemblies\\Sirenix.Utilities.dll",
+      "copy": "C:\\gfgp2\\Inputs\\C\\dvqc\\Assets\\Plugins\\Sirenix\\Assemblies\\Sirenix.Utilities.dll",
+      "sha256": "919e90f830a21f2c56832bc73923b2e9460428ef68deff90be055941ed18bfe7"
+    },
+    {
+      "declaration": "Sirenix.Utilities.Editor.dll",
+      "native": "C:\\dvqc\\Assets\\Plugins\\Sirenix\\Assemblies\\Sirenix.Utilities.Editor.dll",
+      "copy": "C:\\gfgp2\\Inputs\\C\\dvqc\\Assets\\Plugins\\Sirenix\\Assemblies\\Sirenix.Utilities.Editor.dll",
+      "sha256": "d39b3164ec4db43113718d2100096824486e193eb014bbae1d15f4e6522b205e"
+    }
+  ],
+  "originalDiagnosticPolicyOverrides": [],
+  "removedWarningArguments": [
+    "-warn:0"
+  ],
+  "copiedFinalWarningArguments": [
+    "-warn:4",
+    "-warnaserror+"
+  ],
+  "exitCode": 0,
+  "diagnostics": 0,
+  "combinedFrozenAndOwningInputCount": 674,
+  "combinedInputsUnchanged": true,
+  "privateEvidence": "C:/gfgp2/qualification.json",
+  "privateEvidenceSha256": "a90f128b8cfd13b3815f5cc1583196017f40f247fd921fdc66f3a661ec29e0a8",
+  "scope": "Exact original installed-production native recipe with explicit complete owning Editor-source replacement; forward-port adds its3declared precompiled Odin references from the same immutable licensed cohort. Component compiler/analyzer evidence only. No new native graph, test execution, minimumGod, whole game, runtime, appearance, installation or release acceptance.",
+  "priorDiscovery": "C:/gfgp preserves first forward-port attempt missing3newdeclared Odin references; no warning filter or native input edit was used to resolve it."
+}
