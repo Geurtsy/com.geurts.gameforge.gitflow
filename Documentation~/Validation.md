@@ -15,7 +15,7 @@ No rendered UI, physical input, layout/skin/DPI, native Steam, player build or g
 Agent launches were rejected twice with only `blocked by policy`, including after renewed authorization for isolated batch tests. No alternate launch was attempted. If the user elects to run the pending tests themselves, the single prepared action on this machine is:
 
 ```powershell
-pwsh -NoProfile -File C:/ggf-gitflow-authfix/Tools~/Validate-InspectionBatch.ps1 -FixturePath C:/gfe68
+powershell.exe -NoProfile -File C:/ggf-gitflow-authfix/Tools~/Validate-InspectionBatch.ps1 -FixturePath C:/gfe68
 ```
 
 The source-owned script selects exact immutable maintenance candidate `9f26671983dfc3cd240d6a4088041bc64736663c` in the existing marked disposable fixture only. God remains minimum0.39.3 and Unity minimum6000.6.3f1; no live project, processor, credentials, desktop input or display settings are changed. It refuses a running fixture Editor, retains raw manifest/lock backups, runs the13 owning tests with hidden batch/nographics/noaudio flags, and restores those files only after its process exits and unrelated dependency/concurrent-edit checks pass. A timeout leaves the process and backups intact for inspection, never kills another Editor, and cannot claim restoration.
