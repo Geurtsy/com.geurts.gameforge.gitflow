@@ -30,7 +30,12 @@ namespace Geurts.GameForge.GitFlow.Editor
 
         /// <summary>Creates no console, assigns the still-suspended process to a kill-on-close job and reads bounded pipes.</summary>
         internal static string Run(ProcessStartInfo start, CancellationToken cancellation)
+            => Run(start, cancellation, null, GitFlowInspection.MaximumJsonBytes);
+
+        /// <summary>Feeds a bounded object-query batch through owned stdin while retaining suspended launch and descendant cleanup.</summary>
+        internal static string Run(ProcessStartInfo start, CancellationToken cancellation, string standardInput, int maximumOutputBytes)
         {
+            if (maximumOutputBytes < 1 || maximumOutputBytes > 16 * 1024 * 1024 || standardInput != null && Encoding.UTF8.GetByteCount(standardInput) > 128 * 1024) throw new InvalidDataException("Inspection input/output budget exceeded.");
             if (Environment.OSVersion.Platform != PlatformID.Win32NT) throw new PlatformNotSupportedException("GitFlow inspection supports Windows only.");
             IntPtr job = IntPtr.Zero, outputRead = IntPtr.Zero, outputWrite = IntPtr.Zero, errorRead = IntPtr.Zero, errorWrite = IntPtr.Zero;
             IntPtr inputRead = IntPtr.Zero, inputWrite = IntPtr.Zero, environment = IntPtr.Zero; Child child = default;
@@ -39,7 +44,8 @@ namespace Geurts.GameForge.GitFlow.Editor
                 var security = new Security { length = Marshal.SizeOf<Security>(), inherit = true };
                 Require(CreatePipe(out outputRead, out outputWrite, ref security, 0)); Require(SetHandleInformation(outputRead, 1, 0));
                 Require(CreatePipe(out errorRead, out errorWrite, ref security, 0)); Require(SetHandleInformation(errorRead, 1, 0));
-                Require(CreatePipe(out inputRead, out inputWrite, ref security, 0)); Close(ref inputWrite);
+                Require(CreatePipe(out inputRead, out inputWrite, ref security, 0)); Require(SetHandleInformation(inputWrite, 1, 0));
+                if (standardInput == null) Close(ref inputWrite);
                 job = CreateJobObject(IntPtr.Zero, null); Require(job != IntPtr.Zero);
                 var limits = new ExtendedLimit { basic = new BasicLimit { flags = 0x2000 } }; // KILL_ON_JOB_CLOSE owns all Git/helper descendants.
                 Require(SetInformationJobObject(job, 9, ref limits, Marshal.SizeOf<ExtendedLimit>()));
@@ -56,17 +62,25 @@ namespace Geurts.GameForge.GitFlow.Editor
                 using (var error = new StreamReader(new FileStream(new SafeFileHandle(errorRead, true), FileAccess.Read), new UTF8Encoding(false, true)))
                 {
                     outputRead = errorRead = IntPtr.Zero;
-                    Task<string> stdout = ReadBounded(output, cancellation), stderr = ReadBounded(error, cancellation);
+                    Task<string> stdout = ReadBounded(output, cancellation, maximumOutputBytes), stderr = ReadBounded(error, cancellation, GitFlowInspection.MaximumJsonBytes);
+                    Task writer = Task.CompletedTask;
+                    if (standardInput != null)
+                    {
+                        var writerHandle = new SafeFileHandle(inputWrite, true); inputWrite = IntPtr.Zero;
+                        // The parent-only writer closes after the fixed query batch, delivering EOF without a console or shell.
+                        writer = Task.Run(() => { using (var stream = new StreamWriter(new FileStream(writerHandle, FileAccess.Write), new UTF8Encoding(false, true))) { stream.Write(standardInput); } });
+                    }
                     try
                     {
                         Require(ResumeThread(child.thread) != uint.MaxValue);
                         while (WaitForSingleObject(child.process, 25) == 0x102)
                         {
                             cancellation.ThrowIfCancellationRequested();
-                            if (stdout.IsFaulted || stderr.IsFaulted) throw new InvalidDataException("Git output failed decoding or exceeded one MiB.");
+                            if (stdout.IsFaulted || stderr.IsFaulted || writer.IsFaulted) throw new InvalidDataException("Git output failed decoding or exceeded one MiB.");
                         }
                         Require(GetExitCodeProcess(child.process, out uint code));
                         Close(ref job); // Kill surviving helpers before EOF; a pipe cannot outlive the refresh budget.
+                        writer.GetAwaiter().GetResult();
                         string text = stdout.GetAwaiter().GetResult(), failure = stderr.GetAwaiter().GetResult();
                         if (code != 0) throw new IOException("Git failed (exit " + code + "). " + failure.Substring(0, Math.Min(failure.Length, 2000)));
                         return text;
@@ -74,7 +88,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                     finally
                     {
                         Close(ref job); // Terminate descendants before disposing pipes during cancellation/failure.
-                        try { Task.WhenAll(stdout, stderr).GetAwaiter().GetResult(); } catch { /* The owning operation retains the original failure. */ }
+                        try { Task.WhenAll(stdout, stderr, writer).GetAwaiter().GetResult(); } catch { /* The owning operation retains the original failure. */ }
                     }
                 }
             }
@@ -91,21 +105,21 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Resolves only a native Git executable, without shell/PATHEXT script dispatch.</summary>
         private static string ResolveGit()
         {
-            foreach (string directory in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(';'))
+            foreach (string directory in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(new[] { ';' }))
             {
                 if (string.IsNullOrWhiteSpace(directory)) continue;
-                string path = Path.Combine(directory.Trim('"'), "git.exe");
+                string path = Path.Combine(directory.Trim(new[] { '"' }), "git.exe");
                 if (File.Exists(path)) return Path.GetFullPath(path);
             }
             throw new FileNotFoundException("Git for Windows is unavailable on PATH. Install it through its supported distribution.");
         }
 
         /// <summary>Reads redirected bytes with strict UTF-8 and a one-MiB bound.</summary>
-        private static async Task<string> ReadBounded(StreamReader reader, CancellationToken cancellation)
+        private static async Task<string> ReadBounded(StreamReader reader, CancellationToken cancellation, int maximumBytes)
         {
             var value = new StringBuilder(); var buffer = new char[4096]; long bytes = 0; int count;
             while ((count = await reader.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
-            { cancellation.ThrowIfCancellationRequested(); bytes += Encoding.UTF8.GetByteCount(buffer, 0, count); if (bytes > GitFlowInspection.MaximumJsonBytes) throw new InvalidDataException("Git output exceeds one MiB."); value.Append(buffer, 0, count); }
+            { cancellation.ThrowIfCancellationRequested(); bytes += Encoding.UTF8.GetByteCount(buffer, 0, count); if (bytes > maximumBytes) throw new InvalidDataException("Git output exceeds the explicit inspection byte budget."); value.Append(buffer, 0, count); }
             return value.ToString();
         }
 

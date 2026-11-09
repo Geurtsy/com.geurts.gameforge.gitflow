@@ -2,7 +2,7 @@
 
 ## Read only for the task
 
-After the current Commandments entry and manifest, select the row matching the task. Follow additional links only when that work needs them. Release evidence and history are optional during game integration.
+After the current Commandments AGENTS.md entry, select the row matching the task. Follow additional links only when that work needs them. Release evidence and history are optional during game integration.
 
 | Task | Minimum package reading |
 |---|---|
@@ -54,7 +54,7 @@ namespace Geurts.GameForge.GitFlow.Examples
 
 ## Observation contract and common problems
 
-The adapter reads IntegrationRequest.json at immutable objects advertised by refs/heads/codex/queue/* and refs/heads/codex/integration-lock. Request schema is integer 1, ref and ID must agree, and source is an exact SHA-1 commit. Supported statuses are queued, processing, validating, integrated/delivered and blocked/failed. Other statuses stay Unknown with a finding, including superseded records whose delivery ancestry is outside this adapter. Original JSON preserves validation inputs/results/unverified claims and additional fields.
+The adapter reads IntegrationRequest.json at immutable objects advertised by refs/heads/codex/queue/* and refs/heads/codex/integration-lock. Request schema is integer 1, ref and ID must agree, and source is an exact SHA-1 commit. Supported statuses are queued, processing, validating, integrated/delivered, blocked/failed and the existing processor's terminal superseded state. Superseded is a recorded state, not independently verified main ancestry. Other statuses stay Unknown with a finding. Original JSON preserves validation inputs/results/unverified claims and additional fields.
 
 Delivered records require an exact main_commit and a schema-1 receipt at Tools/IntegrationQueue/Receipts/<original-id>.json. Receipt ID/source/version must match. Inspection reports the recorded state separately from receipt availability. It never reruns checks, opens evidence links, imports source, executes downloaded code or infers current remote-main ancestry from a receipt.
 
@@ -62,7 +62,9 @@ Local state is read from the common Git directory's integration_processor/proces
 
 Protocol-1 leases accept only recorded 180/1800-second policies, known owner fields and owned/released states. A released ref is Released, not Busy. One inspection cannot establish monotonic renewal/abandonment evidence. Legacy/future/malformed records require their owner; timestamps never authorize takeover.
 
-Unavailable HTTPS access: this release deliberately disables credential helpers and interactive prompts. Use a public HTTPS remote or a trusted absolute local remote for inspection; private/SSH transport needs a later supported read-only adapter. It does not change stored remotes. Unknown processor ownership: consult the configured owner through its supported operator surface. Malformed records: preserve evidence and ask that owner to repair them. Timeout: the current observation failed; no automatic retry is scheduled. Cleanup failures expose the exact owned temporary path.
+HTTPS access uses the selected remote's existing configured native manager, manager-core or wincred helper with prompts disabled. Only nonsecret helper/username/path-routing options are read from normal Git config; unrelated global/system config stays isolated for all object/network operations. Git and the helper retain credential ownership; inspection never captures a token. A shell/custom helper is refused. If the native helper needs sign-in, use its ordinary authorized sign-in workflow, then refresh explicitly; the inspector opens no sign-in dialog and changes no stored remote.
+
+The finite bounds are 512 requests, 90 seconds, one MiB per JSON object, 16 MiB per object batch and 128 KiB per batch query. Refs are advertised once; exact local commits/blobs/receipts are batched first with lazy fetch and replacement objects disabled. Only missing commits are fetched together into an owned temporary object store. Counts above the limit and genuine unavailable evidence remain incomplete. SSH/custom transports are unsupported. Unknown processor ownership requires the configured operator; malformed records must be preserved for that owner. Timeout never schedules automatic retry. Cleanup failures expose the exact owned temporary path.
 
 Git fetches use only a unique temporary bare object store and no FETCH_HEAD. Target branches, index, uncommitted files, settings and remote refs are never written. Configuration commands only read the existing remote URL. No repository Python, PowerShell, validation, publisher or runner is launched. Temporary object stores are removed after completion/failure. API use and UI callbacks must be awaited/observed; do not block Unity's main thread.
 
@@ -78,7 +80,7 @@ Idempotent submission and independent publishing; queue-owned versions, fenced l
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2"
+  "packageVersion": "0.1.3"
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

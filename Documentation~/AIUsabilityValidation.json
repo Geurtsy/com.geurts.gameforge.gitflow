@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2",
+  "packageVersion": "0.1.3",
   "sourceFingerprint": "ff0fbeab6f786d1c158fe4da8cae8b53e8163c5293fd2fa2cbdd4f4c86019947",
   "sourceFingerprintAlgorithm": "Owning Tools~/Validate-Release.ps1 normalized C# hashes",
   "unityVersion": "6000.6.3f1",
@@ -42,9 +42,9 @@
     "Tools~/Examples/InspectionExample.cs"
   ],
   "integrationRecipes": [],
-  "publicationReady": true,
+  "publicationReady": false,
   "historicalEvidence": "Documentation~/History/AIUsabilityValidation-0.1.1.json",
-  "scope": "AI reading-efficiency maintenance: all supported examples compiled; ten practical recipes, selected owner lifecycle/preservation checks and all-owner operation parity executed. Package runtime behavior is unchanged apart from version metadata.",
+  "scope": "Authentication/batch maintenance candidate: fresh native acceptance pending. Historical native evidence is not acceptance of changed source.",
   "runs": [
     {
       "file": "recipes-results.xml",
