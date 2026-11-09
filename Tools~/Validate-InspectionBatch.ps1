@@ -60,6 +60,9 @@ try {
     $receipt.exitCode = $unity.ExitCode
     [IO.File]::WriteAllBytes((Join-Path $output 'manifest.tested.json'), [IO.File]::ReadAllBytes($manifestPath))
     [IO.File]::WriteAllBytes((Join-Path $output 'packages-lock.tested.json'), [IO.File]::ReadAllBytes($lockPath))
+    $testedLock = [IO.File]::ReadAllText($lockPath) | ConvertFrom-Json
+    if ($id -notin $testedLock.dependencies.PSObject.Properties.Name -or $testedLock.dependencies.($id).source -ne 'git' -or $testedLock.dependencies.($id).hash -cne $TestedCommit) { throw 'The actual resolved GitFlow candidate does not match the exact selected commit.' }
+    $receipt.resolvedCommit = $testedLock.dependencies.($id).hash
     $reportPath = Join-Path $output 'Results.xml'
     if (-not (Test-Path -LiteralPath $reportPath -PathType Leaf)) { throw 'Native runner did not produce its expected report. Inspect Editor.log.' }
     [xml]$report = [IO.File]::ReadAllText($reportPath)
