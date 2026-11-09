@@ -1,0 +1,19 @@
+{
+  "abandoned_owner_takeover": "passed",
+  "cleanup_verified": true,
+  "concurrent_claims": "passed",
+  "elapsed_seconds": 148.0031170000002,
+  "first_owner": "511422205ad042b18872a3029993cd52",
+  "healthy_renewals": "passed",
+  "main_unchanged": true,
+  "namespace": "refs/heads/codex/gitflow-acceptance-ffd9758eb8bd49a2aefdb531eaba5765",
+  "observation_clock": "Simulated full abandoned-owner interval; real remote Git arbitration.",
+  "original_main": "a74071830b7aab17c47a10dbdb8eddc482625ddd",
+  "released_owner": "passed",
+  "remote": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow.git",
+  "schema": 1,
+  "scope": "Disposable GitHub refs only; no main update or game queue action.",
+  "stale_all_target_fencing": "passed",
+  "status": "passed",
+  "successor_atomic_publication": "passed"
+}

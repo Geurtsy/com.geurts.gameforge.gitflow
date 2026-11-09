@@ -1,0 +1,43 @@
+test_batch_refuses_invalid_objects_and_preflights_blob_sizes (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_refuses_invalid_objects_and_preflights_blob_sizes) ... ok
+test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs) ... ok
+test_published_pull_failure_resumes_without_retest_or_second_version (TestGitFlowQueue.QueueAcceptance.test_published_pull_failure_resumes_without_retest_or_second_version) ... ERROR
+test_stale_owner_atomic_publication_is_rejected (TestGitFlowQueue.QueueAcceptance.test_stale_owner_atomic_publication_is_rejected) ... ERROR
+test_concurrent_claims_have_one_winner_and_renewal_resets_observation (TestGitFlowQueue.QueueAcceptance.test_concurrent_claims_have_one_winner_and_renewal_resets_observation) ... ERROR
+
+======================================================================
+ERROR: test_published_pull_failure_resumes_without_retest_or_second_version (TestGitFlowQueue.QueueAcceptance.test_published_pull_failure_resumes_without_retest_or_second_version)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\TestGitFlowQueue.py", line 49, in setUp
+    queue.configure(self.repository, 'origin', self.workspace_root, self.policy)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\GitFlowQueue.py", line 382, in configure
+    raise QueueError('Choose a shorter processor root; 220 characters are reserved for Unity descendants.')
+GitFlowQueue.QueueError: Choose a shorter processor root; 220 characters are reserved for Unity descendants.
+
+======================================================================
+ERROR: test_stale_owner_atomic_publication_is_rejected (TestGitFlowQueue.QueueAcceptance.test_stale_owner_atomic_publication_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\TestGitFlowQueue.py", line 49, in setUp
+    queue.configure(self.repository, 'origin', self.workspace_root, self.policy)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\GitFlowQueue.py", line 382, in configure
+    raise QueueError('Choose a shorter processor root; 220 characters are reserved for Unity descendants.')
+GitFlowQueue.QueueError: Choose a shorter processor root; 220 characters are reserved for Unity descendants.
+
+======================================================================
+ERROR: test_concurrent_claims_have_one_winner_and_renewal_resets_observation (TestGitFlowQueue.QueueAcceptance.test_concurrent_claims_have_one_winner_and_renewal_resets_observation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\TestGitFlowQueue.py", line 49, in setUp
+    queue.configure(self.repository, 'origin', self.workspace_root, self.policy)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\GitFlowQueue.py", line 382, in configure
+    raise QueueError('Choose a shorter processor root; 220 characters are reserved for Unity descendants.')
+GitFlowQueue.QueueError: Choose a shorter processor root; 220 characters are reserved for Unity descendants.
+
+----------------------------------------------------------------------
+Ran 5 tests in 15.747s
+
+FAILED (errors=3)

@@ -1,0 +1,47 @@
+test_batch_refuses_invalid_objects_and_preflights_blob_sizes (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_refuses_invalid_objects_and_preflights_blob_sizes) ... ERROR
+test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs) ... ERROR
+
+======================================================================
+ERROR: test_batch_refuses_invalid_objects_and_preflights_blob_sizes (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_refuses_invalid_objects_and_preflights_blob_sizes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\TestGitFlowQueue.py", line 418, in setUp
+    queue.git(self.writer, 'push', 'origin', 'main')
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\GitFlowQueue.py", line 80, in git
+    return run(['git', *arguments], root, environment=env).decode('utf-8').rstrip('\r\n')
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\GitFlowQueue.py", line 74, in run
+    raise QueueError(str(arguments[0]) + ' failed (' + str(result.returncode) + '): ' +
+                     (result.stderr + result.stdout).decode('utf-8', 'replace')[-4000:])
+GitFlowQueue.QueueError: git failed (128):       1 [main] sh (44024) C:\Program Files\Git\usr\bin\sh.exe: *** fatal error - NtCreateDirectoryObject(\BaseNamedObjects\msys-2.0S5-1888ae32e00d56aa): 0xC0000022
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+
+
+======================================================================
+ERROR: test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\TestGitFlowQueue.py", line 418, in setUp
+    queue.git(self.writer, 'push', 'origin', 'main')
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\GitFlowQueue.py", line 80, in git
+    return run(['git', *arguments], root, environment=env).decode('utf-8').rstrip('\r\n')
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\david_3oqzree\Documents\Codex\2026-11-09\task\source\Tools~\Queue\GitFlowQueue.py", line 74, in run
+    raise QueueError(str(arguments[0]) + ' failed (' + str(result.returncode) + '): ' +
+                     (result.stderr + result.stdout).decode('utf-8', 'replace')[-4000:])
+GitFlowQueue.QueueError: git failed (128):       1 [main] sh (3680) C:\Program Files\Git\usr\bin\sh.exe: *** fatal error - NtCreateDirectoryObject(\BaseNamedObjects\msys-2.0S5-1888ae32e00d56aa): 0xC0000022
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 1.799s
+
+FAILED (errors=2)

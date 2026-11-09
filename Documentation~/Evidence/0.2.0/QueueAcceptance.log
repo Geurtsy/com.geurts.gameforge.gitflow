@@ -1,0 +1,22 @@
+test_capture_exclusions_and_changed_bytes_stop_without_submission (__main__.QueueAcceptance.test_capture_exclusions_and_changed_bytes_stop_without_submission) ... ok
+test_concurrent_claims_have_one_winner_and_renewal_resets_observation (__main__.QueueAcceptance.test_concurrent_claims_have_one_winner_and_renewal_resets_observation) ... ok
+test_dirty_user_checkout_preserved_and_record_stays_published (__main__.QueueAcceptance.test_dirty_user_checkout_preserved_and_record_stays_published) ... ok
+test_exact_source_is_idempotent_and_delivery_retains_ancestry (__main__.QueueAcceptance.test_exact_source_is_idempotent_and_delivery_retains_ancestry) ... ok
+test_failure_blocks_following_work_and_never_changes_main (__main__.QueueAcceptance.test_failure_blocks_following_work_and_never_changes_main) ... ok
+test_main_cannot_publish_while_gate_runs_or_overwrite_new_main (__main__.QueueAcceptance.test_main_cannot_publish_while_gate_runs_or_overwrite_new_main) ... ok
+test_published_pull_failure_resumes_without_retest_or_second_version (__main__.QueueAcceptance.test_published_pull_failure_resumes_without_retest_or_second_version) ... ok
+test_repair_no_progress_stops_and_original_three_hour_window_survives (__main__.QueueAcceptance.test_repair_no_progress_stops_and_original_three_hour_window_survives) ... ok
+test_repair_retries_empty_proposals_and_resets_stall_counter_after_validation_progress (__main__.QueueAcceptance.test_repair_retries_empty_proposals_and_resets_stall_counter_after_validation_progress) ... ok
+test_repair_stops_when_changed_source_has_same_independent_failure (__main__.QueueAcceptance.test_repair_stops_when_changed_source_has_same_independent_failure) ... ok
+test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work (__main__.QueueAcceptance.test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work) ... ok
+test_shared_workspace_and_library_are_reused (__main__.QueueAcceptance.test_shared_workspace_and_library_are_reused) ... ok
+test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance (__main__.QueueAcceptance.test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance) ... ok
+test_stale_owner_atomic_publication_is_rejected (__main__.QueueAcceptance.test_stale_owner_atomic_publication_is_rejected) ... ok
+test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner (__main__.QueueAcceptance.test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner) ... ok
+test_uncertain_ack_fences_owner_without_repeating_accepted_atomic_write (__main__.QueueAcceptance.test_uncertain_ack_fences_owner_without_repeating_accepted_atomic_write) ... ok
+test_unknown_and_legacy_owner_records_are_never_treated_as_available (__main__.QueueAcceptance.test_unknown_and_legacy_owner_records_are_never_treated_as_available) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 472.952s
+
+OK

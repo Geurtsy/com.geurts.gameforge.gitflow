@@ -1,0 +1,10 @@
+test_batch_refuses_invalid_objects_and_preflights_blob_sizes (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_refuses_invalid_objects_and_preflights_blob_sizes) ... ok
+test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs (TestGitFlowQueue.ReferenceReadAcceptance.test_batch_reuses_objects_preserves_checkout_and_observes_changed_refs) ... ok
+test_exact_source_is_idempotent_and_delivery_retains_ancestry (TestGitFlowQueue.QueueAcceptance.test_exact_source_is_idempotent_and_delivery_retains_ancestry) ... ok
+test_failure_blocks_following_work_and_never_changes_main (TestGitFlowQueue.QueueAcceptance.test_failure_blocks_following_work_and_never_changes_main) ... ok
+test_published_pull_failure_resumes_without_retest_or_second_version (TestGitFlowQueue.QueueAcceptance.test_published_pull_failure_resumes_without_retest_or_second_version) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 67.255s
+
+OK

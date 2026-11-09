@@ -1,0 +1,9 @@
+{
+  "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "errors": 0,
+  "run": "gitflow-private-qc-compat03-acceptance-configured",
+  "skipped": 0,
+  "status": "passed",
+  "tests": 10,
+  "warnings": 0
+}

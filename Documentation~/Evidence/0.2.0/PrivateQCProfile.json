@@ -1,0 +1,70 @@
+{
+  "profile": "QC-2.6.7-private-Unity6000.6-compat03",
+  "scope": "Private disposable test copies only; no redistribution or live-game use.",
+  "sourceCandidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "sourceFingerprint": "a88cb8be1790c5bc2f75b09aeedd806ca6af31ce50d79e8d00a5d098a88231fb",
+  "unity": "6000.6.3f1",
+  "originalArchiveSha256": "2ec88884c52c322cc1ec7c8475ff4baccf06135b7f1e0e9454d564d8f26b354b",
+  "frozenManifestSha256": "303abe5f98fc761b3f65c45cda49b4d4ffff58667e25723115ba37049b522fa1",
+  "patchSha256": "07def02a1ac6b703524d7657262bd83cf39b7928fac5a97c00d581c73f5b2025",
+  "originalInputsVerified": 227,
+  "unchangedInputsVerified": 219,
+  "changedFiles": [
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/InvocationTargetFactory.cs",
+      "bundlePath": "Scripts/InvocationTargetFactory.cs",
+      "originalSha256": "8be210234e6e98af360c3d9085b6c1ebe33263582fe44efcea25b133eb3a9010",
+      "patchedSha256": "10ff190c64d11a53aa941759969ecf54a490d339b94a0cd4fa79431162a01e47"
+    },
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Parsing/QuantumParser.cs",
+      "bundlePath": "Scripts/Parsing/QuantumParser.cs",
+      "originalSha256": "b339ab4198f32ce2b01b6da1c9f17247f3f783f2ad6618228ddcbf3eec3334dc",
+      "patchedSha256": "997f97a5644bfbc989068076060e3872bc430076277ee9fb57c7acf8ff434a61"
+    },
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QuantumConsoleProcessor.cs",
+      "bundlePath": "Scripts/QuantumConsoleProcessor.cs",
+      "originalSha256": "70b4322018f789da53027046722bfddbb422f00e927f6475e8b9b9340bc13b76",
+      "patchedSha256": "75fdab4fb9792a6c2bac3433b656ac667f7aeeccb40d7e30defdeebe21f94759"
+    },
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/QuantumConsole.cs",
+      "bundlePath": "Scripts/QuantumConsole.cs",
+      "originalSha256": "7bffb3987abc0fd3eb914d499a98f135514657b8fc95c8700df89cc435132227",
+      "patchedSha256": "0df3b4af89b61bc743842acebfc692389bd9bc8965a56a3ffb9b6cb66ec090a4"
+    },
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/GameObjectSuggestor.cs",
+      "bundlePath": "Scripts/Suggestions/Suggestors/GameObjectSuggestor.cs",
+      "originalSha256": "bdb8937d79d8fc3495cd316c726b6fdee08b706ee65270dda29edf8f4047d7c6",
+      "patchedSha256": "35979be70528c5cb7b2634f8c8b665971625d84d6d810536cb9290cdd4817a64"
+    },
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/Suggestions/Suggestors/ComponentSuggestor.cs",
+      "bundlePath": "Scripts/Suggestions/Suggestors/ComponentSuggestor.cs",
+      "originalSha256": "9bccf9e331042a4dcc89293ca61d01d7fdb3428130274eefa7ea2db22a8767da",
+      "patchedSha256": "6f3308dbd5ebe1c7b39374bf087e12b10dc052762404be84fd8a6dcea1225e35"
+    },
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Extras/KeyBinderModule.cs",
+      "bundlePath": "Extras/KeyBinderModule.cs",
+      "originalSha256": "2211fb8eb605577c3b9a70425a1b18d4aa36ab32a41e035e2936aba5ea9bf95f",
+      "patchedSha256": "50300d677d946d92fd394c34ef45dac6ce39688d7fb2f7f46172b6b59a92f606"
+    },
+    {
+      "assetPath": "Assets/Plugins/QFSW/Quantum Console/Source/Scripts/InjectionLoader.cs",
+      "bundlePath": "Scripts/InjectionLoader.cs",
+      "originalSha256": "1410fd1bd86f2b990053585d861665cb433d05d90fc862a71f3b169b5c187c6f",
+      "patchedSha256": "ae8eb10d069c21b58811bfb1b1736b9104a031d8ea614b7218b144f89ff0212d"
+    }
+  ],
+  "privateReceiptSha256": "dfa5948e1129c377b217697e424bf613f3e604f399f38d7bc0f55593cbc85793",
+  "privateReceiptLocalPath": "C:/gqv/Evidence/PrivateQC/AppliedProfile.json",
+  "originalBackupsVerified": true,
+  "compilerOptionsReport": "Documentation~/Evidence/0.2.0/PrivateQC-CompilerOptions.json",
+  "compilerOptionsSha256": "71e5ebe40c61e0e4870ec044018fd90f71f3f5215512f7214117f625e549476e",
+  "commercialSourceIncluded": false,
+  "publicationAuthorized": false,
+  "stockVendorCompatibility": false
+}

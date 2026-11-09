@@ -1,19 +1,23 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2",
+  "packageVersion": "0.3.0",
   "currentDocuments": [
     "README.md",
     "Documentation~/AIUsability.md",
-    "Documentation~/Validation.md"
+    "Documentation~/Validation.md",
+    "Documentation~/QueueLocalChanges.md",
+    "Documentation~/QueueConsole.md"
   ],
   "integrationRecipes": [],
   "schemaVersion": "1.0.0",
-  "historicalDocuments": [],
+  "historicalDocuments": [
+    "Documentation~/History/Validation-0.2.0.md"
+  ],
   "examples": [
     {
       "source": "Tools~/Examples/InspectionExample.cs",
       "symbol": "InspectionExample"
     }
   ],
-  "previousVersion": "0.1.1"
+  "previousVersion": "0.1.2"
 }

@@ -1,0 +1,8 @@
+test_published_pull_failure_resumes_without_retest_or_second_version (TestGitFlowQueue.QueueAcceptance.test_published_pull_failure_resumes_without_retest_or_second_version) ... ok
+test_stale_owner_atomic_publication_is_rejected (TestGitFlowQueue.QueueAcceptance.test_stale_owner_atomic_publication_is_rejected) ... ok
+test_concurrent_claims_have_one_winner_and_renewal_resets_observation (TestGitFlowQueue.QueueAcceptance.test_concurrent_claims_have_one_winner_and_renewal_resets_observation) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 45.823s
+
+OK

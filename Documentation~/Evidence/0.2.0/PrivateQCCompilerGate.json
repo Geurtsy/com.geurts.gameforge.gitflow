@@ -1,0 +1,11 @@
+{
+  "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "errors": 0,
+  "full_log_sha256": "be549e351169740c4d2dc80d45edf702932960e46159fee067d4efbfaefd2255",
+  "full_script_rebuild": true,
+  "native_report_sha256": "abade229163f0daaaa0e74105a8f3c283379b248e79133f34fb9f6d2bd8d7abc",
+  "run": "gitflow-private-qc-compat03-clean",
+  "skipped": 0,
+  "status": "passed",
+  "warnings": 0
+}

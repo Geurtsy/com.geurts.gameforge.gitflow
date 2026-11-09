@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "status": "verified_scoped",
+  "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+  "unity": "6000.6.3f1",
+  "fixture": "C:/gqv",
+  "authorization": "Human explicitly approved visible checking of this disposable Unity window only.",
+  "method": "Native Windows screenshots and physical clicks/scroll using the computer-use skill.",
+  "verified": [
+    "Help button opens a separate Unity Editor window containing the local tutorial.",
+    "Help text wraps at the observed 1002-pixel window width and scrolls to lower sections.",
+    "Help closes and reopens from the queue window, including when queue controls are scrolled.",
+    "Queued, Published, Integrated, preservation, scope, manual-only updates and optional existing-commit route are visible in the guide.",
+    "Odin executable paths, model/effort selectors and repository/capture scope render.",
+    "Queue local changes and Preview saved changes are present with optional title/summary.",
+    "Operator, committed-work and detailed evidence sections are folded separately.",
+    "Automatic repair authorization is a separate unchecked toggle.",
+    "No publisher/model inference/update was started during this visual check.",
+    "Final candidate native Help menu and operator control explain three consecutive stalled attempts, separate default-off authorization and the original three-hour deadline."
+  ],
+  "unverified": [
+    "Native resizing: attempted corner drags did not change window size; narrow-window rendering is not established.",
+    "Visual authoring of an enabled God host and click-to-remote publication. Native Inspector capture is covered separately by automated Editor acceptance."
+  ],
+  "screenshots": [
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Help-reopened.png",
+      "sha256": "a29a885dafba1871e2cafc722c45cb43b0d47897cc92c83b6f9ec0f430acbb6b"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Help-scrolled.png",
+      "sha256": "802669568eae55a815cb19645424bb8acac3df024d1b628f01ac30230f6e7c88"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Help-wide.png",
+      "sha256": "06e0af251eda413223a70d1d573ff6d72731233889eee0db226d2d3a03f783a8"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Queue-advanced-folded.png",
+      "sha256": "62d73e389878b1b94c2223bfbbe76afd2978a12a717afc062e09ae85c9db813a"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Queue-local-changes.png",
+      "sha256": "656669d7d084fc56fc9aebae5adda8ba8bec088faaff1b18e4f35939a5c952ef"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Queue-model-controls.png",
+      "sha256": "a3d8dba17029efcadfe96cfdb553fb630b7e51b78a70242d887954728e11a933"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Queue-operator-repair.png",
+      "sha256": "398b7f74b3a802d176da6920e00fd9aadecbc01c2c439cc85484c8e6c7a91ca9"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Final-help-menu.png",
+      "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+      "sha256": "7fc2d90e916484dcbaa85c1378dbc015e002f89731a49407b644d1cd8e735a83"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Final-help-repair.png",
+      "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+      "sha256": "2b173a63ada4b7cbdc07323497bc441ded926aeba1f0d28819499c5f958ff96c"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Final-model-controls.png",
+      "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+      "sha256": "2ce9bd077d64fe79ebe61cd455cb0d2397a5c5945aa5e8fcae07933eb54dc830"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Final-operator-authorization.png",
+      "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+      "sha256": "504e9c938f1e31c8431c91a9e20a9279b692f6b622b502c109db120ab8bcfbc5"
+    },
+    {
+      "file": "Documentation~/Evidence/0.2.0/Visual/Final-queue-local-changes.png",
+      "candidate": "bea6d4ec343450989da40bf352f6d0ef0f11ee2f",
+      "sha256": "fa09b1dfdf0d005299029189de88be0721f937e926662a04cbbcfc70efab29b7"
+    }
+  ],
+  "earlier_candidate": "cae7a63bc3e5a2c90ea776a9a9ae9751e2c9ed72",
+  "sourceFingerprint": "a88cb8be1790c5bc2f75b09aeedd806ca6af31ce50d79e8d00a5d098a88231fb"
+}

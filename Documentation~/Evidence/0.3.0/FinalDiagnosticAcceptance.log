@@ -1,0 +1,6 @@
+test_failure_blocks_following_work_and_never_changes_main (TestGitFlowQueue.QueueAcceptance.test_failure_blocks_following_work_and_never_changes_main) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 16.791s
+
+OK

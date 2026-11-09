@@ -5,5 +5,5 @@
   "includePlatforms": ["Editor"],
   "autoReferenced": true,
   "overrideReferences": true,
-  "precompiledReferences": ["Sirenix.OdinInspector.Attributes.dll", "Newtonsoft.Json.dll"]
+  "precompiledReferences": ["Sirenix.OdinInspector.Attributes.dll", "Sirenix.OdinInspector.Editor.dll", "Sirenix.Utilities.dll", "Sirenix.Utilities.Editor.dll", "Newtonsoft.Json.dll"]
 }

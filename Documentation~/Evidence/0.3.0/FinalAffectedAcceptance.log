@@ -1,0 +1,8 @@
+test_malformed_object_shapes_are_reported_without_replacing_original_bytes (TestGitFlowObserve.ObservationAcceptance.test_malformed_object_shapes_are_reported_without_replacing_original_bytes) ... ok
+test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup (TestGitFlowObserve.ObservationAcceptance.test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup) ... ok
+test_legacy_future_malformed_and_unsafe_payloads_remain_partial (TestGitFlowObserve.ObservationAcceptance.test_legacy_future_malformed_and_unsafe_payloads_remain_partial) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 11.337s
+
+OK

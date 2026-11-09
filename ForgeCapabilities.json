@@ -7,37 +7,70 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Unity 6000.6.3f1: 8 passed, 0 failed, 0 skipped; real Git preservation, fault fixtures, installed God dispatch and hidden UI/API identity."
+        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
       ],
       "maturity": "pre_release",
       "provider": "editor",
       "description": "Bounded read-only queue, local process observation, leases and receipts shared by UI/API."
     },
     {
-      "implemented": false,
+      "implemented": true,
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "not_implemented"
+        "Focused real-Git batching/selective-read/delivery/failure/recovery checks passed; see Validation.md. Current-source full native acceptance remains unverified."
       ],
-      "maturity": "planned",
-      "provider": "none",
+      "maturity": "candidate",
+      "provider": "editor",
       "description": "Idempotent submission and an independent deterministic publisher."
     },
     {
-      "implemented": false,
+      "implemented": true,
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "not_implemented"
+        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
       ],
-      "maturity": "planned",
-      "provider": "none",
-      "description": "Fenced recovery, native identities and optional authorized AI repair."
+      "maturity": "candidate",
+      "provider": "editor",
+      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported."
+    },
+    {
+      "id": "local_codex_selection",
+      "description": "Explicit local Codex model/effort discovery, persisted non-secret selection and bounded proposals.",
+      "implemented": true,
+      "maturity": "candidate",
+      "provider": "editor",
+      "operations": [],
+      "validation": [
+        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+      ]
+    },
+    {
+      "id": "saved_change_capture",
+      "description": "Preserved scoped saved-change capture, idempotent submission and a beginner guide rendered inside Unity.",
+      "implemented": true,
+      "maturity": "candidate",
+      "provider": "editor",
+      "operations": [],
+      "validation": [
+        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+      ]
+    },
+    {
+      "id": "queue_console",
+      "description": "Explicit paged modern-queue observations, selected-repository setup and a bounded embedded operational console. Legacy queues are detected but not adopted. Assistant-readable safe failure stage/cause/evidence/action records reuse this projection.",
+      "implemented": true,
+      "maturity": "source_only_candidate",
+      "provider": "editor",
+      "operations": [],
+      "validation": [
+        "Focused real-Git and enhanced C# presentation smoke checks passed; see Validation.md. Unity type resolution, rendering and interaction remain unverified."
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.1.2",
+  "packageVersion": "0.3.0",
   "prerequisites": [
     {
       "required": true,
@@ -72,10 +105,17 @@
       "kind": "external_tool",
       "minimumVersion": "",
       "id": "git_for_windows",
-      "detail": "Non-interactive Git reads; authentication helpers disabled."
+      "detail": "Non-interactive Git reads and explicitly authorized fenced queue writes; no unattended authentication prompts."
+    },
+    {
+      "id": "python",
+      "kind": "external_tool",
+      "required": true,
+      "minimumVersion": "3.10",
+      "detail": "Explicitly selected native Python; no automatic installation or update."
     }
   ],
-  "maturity": "pre_release",
+  "maturity": "candidate",
   "operations": [
     {
       "confirmationRequired": false,
@@ -88,14 +128,14 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
+    "scope": "Unreleased source-only 0.3.0 machinery candidate. Focused real-Git batching, selective reads, ownership/recovery and safe failure diagnostics checked; no Unity, production queue/publisher, model request or consumer installation. Current native release gate remains blocked.",
     "unverified": [
-      "Native rendered Editor normal/narrow layout, docking, light/dark skins, hover/focus and high DPI. Hidden UI Toolkit tree/presentation checks do not certify pixels or physical input.",
-      "Actual processor lock ownership, remote-host liveness and lease expiry. The read-only adapter explicitly preserves unknown observations.",
-      "Current remote-main ancestry, validation artifact contents and execution. Receipt identity/source/version is checked; underlying claims are not rerun.",
-      "Private HTTPS authentication and SSH/custom transports are unsupported in 0.1.1.",
-      "End-to-end transient OS window visibility and focus across vendor launchers. Native Git process flags, contained helper cancellation and no input/focus APIs are source-verified; no interactive desktop test was performed.",
-      "Steam/bootstrap prerequisites and player/native gameplay are outside this Editor-only fixture. No player build was created."
-    ],
-    "scope": "Editor-only read-only observation. Eight owning acceptance fixtures passed on exact Git candidate; supported example compiled. Native rendered UI remains unverified."
+      "All changed 0.3.0 Unity source compilation, supported minimum dependency graph, rendered standalone/embedded layouts and native repeated/cancel/close flows.",
+      "Historical 0.2.0 stock Quantum Console 2.6.7 validation reported eleven warnings on Unity 6000.6.3f1. No 0.3.0 compilation result or current compiler failure cause is established.",
+      "Narrow-window resizing; scoped visual checks are listed in the native report.",
+      "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
+      "Real elapsed 30-minute lease soak and multiple physical machines.",
+      "Project-specific native identity adapters."
+    ]
   }
 }
