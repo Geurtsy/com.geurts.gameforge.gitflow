@@ -1,7 +1,7 @@
 param(
     [string]$FixturePath = 'C:/gfe68',
     [string]$UnityEditor = 'C:/Program Files/Unity/Hub/Editor/6000.6.3f1/Editor/Unity.exe',
-    [string]$TestedCommit = '1b8282e1f231ffa3e420244966581bd005656d56',
+    [string]$TestedCommit = '9f26671983dfc3cd240d6a4088041bc64736663c',
     [ValidateRange(60,1800)][int]$TimeoutSeconds = 1200
 )
 # User-invoked fallback only. Agent execution of the native test launch is currently blocked.

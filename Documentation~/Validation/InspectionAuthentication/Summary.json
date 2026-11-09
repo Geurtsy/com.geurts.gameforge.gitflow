@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0.0",
   "packageVersion": "0.1.3",
-  "testedImplementationCommit": "e476bdfdb0ca1c41c3832417c2d93b8fe636ac8f",
-  "sourceFingerprint": "b83db634522746055ab35742dffc01432e026a6604618c964111f62ddd5e6afb",
-  "standalonePassed": 10,
+  "testedImplementationCommit": "9f26671983dfc3cd240d6a4088041bc64736663c",
+  "sourceFingerprint": "dbde186eb5592cf20564eb273d19a95c31d8eb6617c89714ad497b8d0f762014",
+  "standalonePassed": 11,
   "standaloneFailed": 0,
   "checks": [
     "160 records above historical128 limit",
@@ -15,15 +15,16 @@
     "shell helper refused before execution",
     "credential refusal preserves caller config/index/content",
     "actual HTTPS helper canceled and descendants socket closed",
+    "HTTPS without any helper remains available noninteractively",
     "UTF8 byte framing and five missing/malformed controls"
   ],
-  "largeQueueMissingObjectSeconds": 3.302444800006924,
+  "largeQueueMissingObjectSeconds": 3.7989402000093833,
   "actualServiceInspection": {
     "deliveryClaimsRevalidated": false,
     "matchedReceipts": 252,
-    "observedUtc": "2026-11-09T13:19:49.3074068Z",
+    "observedUtc": "2026-11-09T13:38:36.9200232Z",
     "findings": 0,
-    "elapsedSeconds": 47.1371689,
+    "elapsedSeconds": 3.8115653,
     "processorOwnershipVerified": false,
     "requests": 316
   },
@@ -34,10 +35,15 @@
     "warningsAsErrors": true,
     "warningLevel": 4,
     "owningEditorTestsAndExamplesCompiled": true,
-    "nativeTestExecution": false
+    "nativeTestExecution": false,
+    "separateActualAssemblyNames": [
+      "Geurts.GameForge.GitFlow.Editor",
+      "Geurts.GameForge.GitFlow.Editor.Tests",
+      "GitFlow.SupportedExamples"
+    ]
   },
   "preservation": {
-    "liveConfigConcurrentDrift": "Observed; attributable cause unverified. No claim of exact live configuration preservation; disposable byte-for-byte controls passed.",
+    "liveConfigConcurrentDrift": "Earlier observation had unattributed concurrent config drift. Current exact9f26671 service repeat preserved HEAD/index/config/FETCH_HEAD hashes; whole disposable byte-preservation controls also pass.",
     "disposableRemoteAllRawBytes": true,
     "liveHeadIndexFetchHeadUnchanged": true,
     "disposableCallerAllRawBytes": true
