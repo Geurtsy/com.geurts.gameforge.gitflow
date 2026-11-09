@@ -6,6 +6,8 @@ The actual C# RefreshAsync service and native suspended/job-contained Windows pr
 
 All reads use fixed exact objects; missing commits are fetched into an owned temporary repository. Disposable preservation tests and cancellation/fault tests qualify caller isolation separately from concurrent changes in the live repository. No live processor start/stop, lease acquisition, publisher call, queue rewrite or IPC deployment is part of this fix.
 
+The corrected Compatibility262 qualifier also compiled all7current Editor files against the original installed0.1.2 native recipe, immutable reference/analyzer/additional inputs and secondary response. Default compiler/Unity-analyzer diagnostics are zero; all674inputs in the combined backport/forward-port packet remained unchanged. The recipe's coherent Framework4.8/God0.44 reference cohort is explicitly distinct from liveGod0.43 or declared minimumGod0.39.3. See `Validation/InspectionAuthentication/DefaultDiagnosticComponent.json`. This is component source replacement evidence; the pending native13tests, new actual compilation graph and appearance acceptance are not implied.
+
 No rendered UI, physical input, layout/skin/DPI, native Steam, player build or gameplay acceptance is claimed. The physical desktop stop remains respected. Window/control source is unchanged; only inspection behavior and version metadata change. SSH, custom/shell credential helpers and interactive sign-in are unsupported.
 
 ## Manual native test handoff

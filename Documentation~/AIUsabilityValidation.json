@@ -18,5 +18,11 @@
     "Native rendered appearance/input remains unverified and desktop stop remains in force.",
     "Compiler-only evidence excludes analyzer-policy qualification."
   ],
-  "integrationRecipes": []
+  "integrationRecipes": [],
+  "defaultDiagnosticEditorComponent": {
+    "passed": true,
+    "report": "Documentation~/Validation/InspectionAuthentication/DefaultDiagnosticComponent.json",
+    "diagnostics": 0,
+    "scope": "Original installed native recipe with explicit owning Editor inventory, not fresh native/test/fullclosure acceptance."
+  }
 }
