@@ -8,6 +8,18 @@ All reads use fixed exact objects; missing commits are fetched into an owned tem
 
 No rendered UI, physical input, layout/skin/DPI, native Steam, player build or gameplay acceptance is claimed. The physical desktop stop remains respected. Window/control source is unchanged; only inspection behavior and version metadata change. SSH, custom/shell credential helpers and interactive sign-in are unsupported.
 
+## Manual native test handoff
+
+Agent launches were rejected twice with only `blocked by policy`, including after renewed authorization for isolated batch tests. No alternate launch was attempted. If the user elects to run the pending tests themselves, the single prepared action on this machine is:
+
+```powershell
+pwsh -NoProfile -File C:/ggf-gitflow-authfix/Tools~/Validate-InspectionBatch.ps1 -FixturePath C:/gfe68
+```
+
+The source-owned script selects exact immutable maintenance candidate `1b8282e1f231ffa3e420244966581bd005656d56` in the existing marked disposable fixture only. God remains minimum0.39.3 and Unity minimum6000.6.3f1; no live project, processor, credentials, desktop input or display settings are changed. It refuses a running fixture Editor, retains raw manifest/lock backups, runs the13 owning tests with hidden batch/nographics/noaudio flags, and restores those files only after its process exits and unrelated dependency/concurrent-edit checks pass. A timeout leaves the process and backups intact for inspection, never kills another Editor, and cannot claim restoration.
+
+Results are retained under `C:/gfe68/Evidence/GitFlowAuth-<UTC>/`: `Results.xml`, `Editor.log`, before/tested package manifests/locks and `Receipt.json`. Required evidence is13passed/0failed/0skipped, exit0, correct resolved candidate, exact source fingerprint and confirmed restoration. We will inspect those artifacts and the actual compiler/analyzer evidence before any publication/adoption. This script has been parsed/reviewed but not executed; it is a user handoff, not a claim that the blocked native gate passed. Broader Editor appearance acceptance remains separately pending.
+
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
 {
