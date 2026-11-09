@@ -308,6 +308,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         {
             if (!remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return Array.Empty<string>();
             string helper = CredentialOption(repository, remote, "helper", cancellation);
+            if (helper.Length == 0) return Array.Empty<string>(); // Preserve unauthenticated public HTTPS without requesting credentials.
             if (helper != "manager" && helper != "manager-core" && helper != "wincred") throw new InvalidOperationException("Configure the selected remote's existing native Git Credential Manager before refreshing. Shell/custom credential helpers are not executed by inspection.");
             var options = new List<string> { "-c", "credential.helper=" + helper };
             string username = CredentialOption(repository, remote, "username", cancellation);

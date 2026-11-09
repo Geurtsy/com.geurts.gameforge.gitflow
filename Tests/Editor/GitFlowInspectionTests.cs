@@ -245,6 +245,9 @@ namespace Geurts.GameForge.GitFlow.Tests
                 Assert.That(observed.Issues.Any(value => value.Contains("Shell/custom credential helpers are not executed")), Is.True);
             }
             Assert.That(Fingerprint(_checkout), Is.EqualTo(before));
+            Run(_checkout, "config", "credential.helper", "");
+            var credentialOptions = typeof(GitFlowInspection).GetMethod("CredentialOptions", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            Assert.That((string[])credentialOptions.Invoke(null, new object[] { _checkout, "https://example.invalid/fixture.git", CancellationToken.None }), Is.Empty, "Public HTTPS without a configured helper must remain available without credential interaction.");
         }
 
         /// <summary>Checks byte-framed UTF-8, explicit missing objects and malformed/oversized batch refusals.</summary>
