@@ -128,7 +128,7 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Unreleased source-only 0.3.0 machinery candidate. Focused real-Git batching, selective reads, ownership/recovery and safe failure diagnostics checked; no Unity, production queue/publisher, model request or consumer installation. Current native release gate remains blocked.",
+    "scope": "Current Editor and test assemblies passed source-only compiler replay against Unity 6000.6.3f1 references at warning level four/WAE. Six actual discovery test methods passed outside Unity. This is not native Unity compilation/test/UI acceptance; no open fixture or game project was changed.",
     "unverified": [
       "All changed 0.3.0 Unity source compilation, supported minimum dependency graph, rendered standalone/embedded layouts and native repeated/cancel/close flows.",
       "Historical 0.2.0 stock Quantum Console 2.6.7 validation reported eleven warnings on Unity 6000.6.3f1. No 0.3.0 compilation result or current compiler failure cause is established.",

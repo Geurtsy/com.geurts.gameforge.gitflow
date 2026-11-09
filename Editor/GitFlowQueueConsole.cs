@@ -27,6 +27,12 @@ namespace Geurts.GameForge.GitFlow.Editor
             _summary.style.whiteSpace = WhiteSpace.Normal; group.Add(_summary);
             group.Add(new HelpBox("Read-only console, not a shell. History contains the last 64 local action events, not publisher logs. Snapshot fields are bounded projections; raw diagnostics, commands and unknown fields are withheld. No validation or publication is rerun. Pages are separate dated observations, not one atomic whole-queue scan.", HelpBoxMessageType.Info));
             _history = new TextField("Local action history (UTC)") { multiline = true, isReadOnly = true };
+            _history.style.whiteSpace = WhiteSpace.Normal;
+            _history.style.flexDirection = FlexDirection.Column;
+            _history.style.minWidth = 0;
+            _history.labelElement.style.minWidth = 0;
+            _history.labelElement.style.whiteSpace = WhiteSpace.Normal;
+            _history.verticalScrollerVisibility = ScrollerVisibility.Auto;
             _history.style.maxHeight = 220; group.Add(_history);
             group.Add(new Button(() => { _events.Clear(); _history.value = ""; }) { text = "Clear local display history" });
             _snapshot = new VisualElement(); group.Add(_snapshot);

@@ -1,5 +1,14 @@
 # GitFlow 0.3.0 source-only validation
 
+## Current feedback update
+
+The wrapping and local executable-discovery update has fingerprint 8f613ddb186131a10e389033e8608c8aa7c94a03f64da2db639293096e6391e8. Both Editor and test assemblies compile at warning level four with warnings as errors against Unity 6000.6.3f1 references, retaining the existing Unity common-warning defaults and adding no suppression. Six focused package discovery tests passed in a standalone Windows harness, and both local tool files were found without executing them. [Compact source verification](Evidence/0.3.0/HistoryWrapAndToolDiscovery.json).
+
+Current native Unity compilation/examples/tests and rendered UI acceptance remain pending. The screenshot confirms clipped history but exposes only a partial ArgumentException; missing tool paths now have actionable pre-launch errors, while the full original error cause is not established by that image alone. No open fixture, game project or live queue was changed. This is source delivery only, not package release or installation. The evidence below belongs to the earlier candidate and is not relabelled as current native acceptance. The earlier candidate reached main through PR #4 at 1d6be08b0536819cc1fa92b7166f71a80ef4a3f1.
+
+## Earlier candidate evidence
+
+
 Version 0.3.0 remains unreleased and not installed. The source candidate was pushed and verified on codex/queue-reference-batching at 48a7e07fb363c60510110886565f8a39183ecff0. No Unity Editor, production queue, production publisher, model request or consumer was launched or observed during its validation. Disposable local queue/lease checks and a 314-ref benchmark were run. Native compilation, licensed dependency verification and rendered/physical interaction remain unverified for these changed sources. No current 0.3.0 compiler result or failure cause has been established; the 0.2.0 stock compiler diagnostics are historical evidence only.
 
 ## Source and authority

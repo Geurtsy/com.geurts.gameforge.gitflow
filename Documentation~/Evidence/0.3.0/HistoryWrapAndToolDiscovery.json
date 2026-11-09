@@ -1,0 +1,43 @@
+{
+  "packageId": "com.geurts.gameforge.gitflow",
+  "packageVersion": "0.3.0",
+  "sourceFingerprint": "8f613ddb186131a10e389033e8608c8aa7c94a03f64da2db639293096e6391e8",
+  "changes": [
+    "History wraps with a stacked label and vertical scrolling within the existing height limit",
+    "Explicit local executable discovery retains manual override paths",
+    "Missing Python/Codex paths have actionable pre-launch errors"
+  ],
+  "compiler": {
+    "status": "source_replay_passed",
+    "assemblies": 2,
+    "unityReferenceVersion": "6000.6.3f1",
+    "warningLevel": 4,
+    "warningsAsErrors": true,
+    "diagnostics": 0,
+    "existingUnityCommonNoWarnDefaults": [
+      "0169",
+      "0649",
+      "0282",
+      "1701",
+      "1702"
+    ],
+    "newSuppressions": false,
+    "nativeEditorLaunched": false,
+    "full_script_rebuild": false
+  },
+  "discoveryChecks": {
+    "passed": 6,
+    "failed": 0,
+    "execution": "Actual package NUnit test methods in a standalone Windows .NET harness; not Unity test execution",
+    "installedPythonFound": true,
+    "installedCodexFound": true,
+    "discoveredExecutablesRun": 0
+  },
+  "screenshot": "User feedback shows horizontally clipped history and a partial ArgumentException message. Missing-tool preflight is fixed; the clipped image alone cannot prove the entire original failure cause.",
+  "nativeAcceptance": "Pending for changed source. The previous 16-test Unity run remains historical evidence at its original fingerprint.",
+  "userFixtureChanged": false,
+  "liveDreadvaultChanged": false,
+  "activeOrUncertainNativeOperations": [],
+  "publicationReady": false,
+  "documentationAuthority": "3ba7b00c888c13a1d8c54c7e748a210f3c15a1d5"
+}
