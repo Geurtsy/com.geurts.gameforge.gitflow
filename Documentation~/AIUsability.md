@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.3.0 is an unreleased source-only candidate. Changed native sources have not been compiled or exercised in Unity. Historical 0.2.0 evidence is not acceptance of this update. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
+Version 0.4.0 is an unreleased source-only candidate. Changed native sources have not been compiled or exercised in Unity. Historical 0.2.0 evidence is not acceptance of this update. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
 
 ## Choose the relevant surface
 
@@ -102,13 +102,6 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{
-  "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
-  "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
-    "com.unity.nuget.newtonsoft-json": "3.2.2"
-  }
-}
+{"packageId": "com.geurts.gameforge.gitflow", "packageVersion": "0.4.0", "dependencies": {"com.geurts.gameforge.god": "0.44.0", "com.unity.nuget.newtonsoft-json": "3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

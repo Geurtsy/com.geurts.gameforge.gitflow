@@ -1,0 +1,13 @@
+test_active_owner_and_changed_confirmation_refused_without_record (__main__.ExistingRunnerAdapterTests.test_active_owner_and_changed_confirmation_refused_without_record) ... ok
+test_host_request_preserves_selected_target_in_complete_protocol_message (__main__.ExistingRunnerAdapterTests.test_host_request_preserves_selected_target_in_complete_protocol_message) ... ok
+test_host_request_refuses_record_for_different_selected_repository (__main__.ExistingRunnerAdapterTests.test_host_request_refuses_record_for_different_selected_repository) ... ok
+test_modern_coexistence_and_untracked_source_fail_closed (__main__.ExistingRunnerAdapterTests.test_modern_coexistence_and_untracked_source_fail_closed) ... ok
+test_modified_config_source_and_adoption_are_preserved_and_refused (__main__.ExistingRunnerAdapterTests.test_modified_config_source_and_adoption_are_preserved_and_refused) ... ok
+test_readonly_inspection_then_fresh_adoption_preserves_existing_config (__main__.ExistingRunnerAdapterTests.test_readonly_inspection_then_fresh_adoption_preserves_existing_config) ... ok
+test_resume_delegates_exact_supported_flags_and_job_starts_are_blocked (__main__.ExistingRunnerAdapterTests.test_resume_delegates_exact_supported_flags_and_job_starts_are_blocked) ... ok
+test_unrelated_committed_game_change_does_not_rebind_runner (__main__.ExistingRunnerAdapterTests.test_unrelated_committed_game_change_does_not_rebind_runner) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 29.187s
+
+OK

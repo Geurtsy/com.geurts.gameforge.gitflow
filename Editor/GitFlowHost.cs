@@ -57,6 +57,16 @@ namespace Geurts.GameForge.GitFlow.Editor
             return RunAsync(preferences.PythonExecutable, "GitFlowQueue.py", new[] { "--repository", preferences.Repository, "--remote", preferences.Remote }.Concat(arguments), timeoutSeconds, cancellation);
         }
 
+        /// <summary>Queues an explicitly approved existing-owner action to its verified independent boot host; no publisher is spawned under this bounded Editor job.</summary>
+        public Task<JObject> RequestExistingHostAsync(GitFlowPreferences preferences, string adoptionRecord, string hostStateDirectory, string operation, bool operatorConfirmed, CancellationToken cancellation = default)
+        {
+            ValidateTarget(preferences);
+            if (!operatorConfirmed) throw new InvalidOperationException("An explicit current operator action is required.");
+            if (operation != "start" && operation != "resume" && operation != "request-stop") throw new ArgumentException("Choose start, resume or request-stop.");
+            return RunAsync(preferences.PythonExecutable, "GitFlowExistingRunner.py", new[] { "request-host", "--repository", preferences.Repository, "--record", adoptionRecord, "--host-state", hostStateDirectory,
+                "--operation", operation, "--operator", "--wait-seconds", "0" }, 45, cancellation);
+        }
+
         /// <summary>Refuses empty or missing explicit action targets instead of resolving them against the package working directory.</summary>
         private static void ValidateTarget(GitFlowPreferences preferences)
         {

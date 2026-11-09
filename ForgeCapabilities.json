@@ -67,15 +67,26 @@
       "validation": [
         "Focused real-Git and enhanced C# presentation smoke checks passed; see Validation.md. Unity type resolution, rendering and interaction remain unverified."
       ]
+    },
+    {
+      "id": "existing_runner_adapter",
+      "description": "Explicit committed legacy IntegrationQueue adapter: read-only inspection, stopped-owner adoption and exact supported lifecycle delegation. Existing publisher retains all queue/gate/repair authority; no modern queue or migration.",
+      "implemented": true,
+      "maturity": "source_only_candidate",
+      "provider": "none",
+      "operations": [],
+      "validation": [
+        "31/31fullPythonchecks, currentEditorC#own-sourcewarning4/errorcompile, actualWindowsindependenthostlifecycle/duplicate/cleanup proof. No live package/IPC adoption; current nativeUI/full dependency gate remains pending."
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.4.0",
   "prerequisites": [
     {
       "required": true,
       "kind": "package",
-      "minimumVersion": "0.39.3",
+      "minimumVersion": "0.44.0",
       "id": "com.geurts.gameforge.god",
       "detail": "Exact minimum declared in package.json."
     },
