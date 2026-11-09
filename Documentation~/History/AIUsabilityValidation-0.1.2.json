@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageId": "com.geurts.gameforge.gitflow",
+  "packageVersion": "0.1.2",
+  "sourceFingerprint": "ff0fbeab6f786d1c158fe4da8cae8b53e8163c5293fd2fa2cbdd4f4c86019947",
+  "sourceFingerprintAlgorithm": "Owning Tools~/Validate-Release.ps1 normalized C# hashes",
+  "unityVersion": "6000.6.3f1",
+  "candidateCommit": "88abe279dd95b45f4294e7b348a342fdbee74ea3",
+  "testedCandidateCommit": "88abe279dd95b45f4294e7b348a342fdbee74ea3",
+  "sourceKind": "git",
+  "resolvedPackageHash": "88abe279dd95b45f4294e7b348a342fdbee74ea3",
+  "testedPackagePins": {
+    "com.geurts.gameforge.god": "https://github.com/Geurtsy/com.geurts.gameforge.god.git#2338772f7cf6232a3d40d30a8b37d23c88b6c3aa",
+    "com.geurts.gameforge.angels": "https://github.com/Geurtsy/com.geurts.gameforge.angels.git#83a0c2f0df50b6889a8777343bac2f26e9aeba21",
+    "com.geurts.gameforge.bigbang": "https://github.com/Geurtsy/GeurtsGameForgeBigBang.git#788536a921fd65af691c5ddc028a55650f8ecf28",
+    "com.geurts.gameforge.documentation": "https://github.com/Geurtsy/com.geurts.gameforge.commandments.git#05e5ec0ef91e7e41ee0fd7ec262a27f6231510f4",
+    "com.geurts.gameforge.steam": "https://github.com/Geurtsy/com.geurts.gameforge.steam.git#5775e713c9b71877f89caf8035d437a49fb3285f",
+    "com.geurts.gameforge.diagnostics": "https://github.com/Geurtsy/com.geurts.gameforge.diagnostics.git#300f8a17cf0ed28a4c5c0018933048231bdbdf85",
+    "com.geurts.gameforge.settings": "https://github.com/Geurtsy/com.geurts.gameforge.settings.git#d0d6d44b64e117b45e55193740402461ab482844",
+    "com.geurts.gameforge.sceneloading": "https://github.com/Geurtsy/com.geurts.gameforge.sceneloading.git#fc5827bbe3f6a652029541319da12d037e5db947",
+    "com.geurts.gameforge.saveload": "https://github.com/Geurtsy/com.geurts.gameforge.saveload.git#89259ddcaf89acda424a4b888af01ec80e3ed5c7",
+    "com.geurts.gameforge.audio": "https://github.com/Geurtsy/com.geurts.gameforge.audio.git#2f3d6af7c694df1eaed01fc500ad077472182625",
+    "com.geurts.gameforge.userinterface": "https://github.com/Geurtsy/com.geurts.gameforge.userinterface.git#c86f1ddbcd372b28090da23086f9980e4416b647",
+    "com.geurts.gameforge.objectpooling": "https://github.com/Geurtsy/com.geurts.gameforge.objectpooling.git#3dcefd5c1adffc73ed8a3e7e31c141a8f6f76148",
+    "com.geurts.gameforge.gitflow": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow.git#88abe279dd95b45f4294e7b348a342fdbee74ea3"
+  },
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "passedTests": [
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.CancellationContainsStalledHttpsHelperAndCleansObjects",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.FailedUnavailableAndMalformedProcessorEvidenceRemainVisible",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.GodDiscoveryAndDispatchMatchImplementedDeclaration",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.MalformedAndFutureRecordsStayActionable",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.MissingAndDisposedInspectionCleanUp",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.RepeatedRefreshPreservesFilesIndexesRefsAndPublisherSentinel",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.StoppedAndStaleHealthNeverInventLeaseExpiry",
+    "Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.ViewerAndApiUseOneObservationForAllPhases"
+  ],
+  "examplesCompiled": true,
+  "exampleSources": [
+    "Tools~/Examples/InspectionExample.cs"
+  ],
+  "integrationRecipes": [],
+  "publicationReady": true,
+  "historicalEvidence": "Documentation~/History/AIUsabilityValidation-0.1.1.json",
+  "scope": "AI reading-efficiency maintenance: all supported examples compiled; ten practical recipes, selected owner lifecycle/preservation checks and all-owner operation parity executed. Package runtime behavior is unchanged apart from version metadata.",
+  "runs": [
+    {
+      "file": "recipes-results.xml",
+      "sha256": "eefe7e885911adfa93abe0051f3238ded7370f52066d6b5405abfabf699e230b",
+      "passed": 51,
+      "failed": 2,
+      "skipped": 0
+    },
+    {
+      "file": "graphics-results.xml",
+      "sha256": "46167c5cda34a00ea40f689f6ac09fed5d94b9bdb90ab180fd32e8e30d17aacb",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "resolvedFixtureFailures": {
+    "originalFailed": [
+      "Geurts.GameForge.SaveLoad.Tests.SaveLoadStarterTests.PrimaryMenuIsTruthfulAndReadOnly",
+      "Geurts.GameForge.SaveLoad.Tests.SaveLoadStarterTests.SharedSourceRulesAndExplicitCreationPreserveScope"
+    ],
+    "reason": "Initial headless fixture could not create a real Editor view and omitted the legacy test folder. The same unchanged cases passed with graphics and the missing disposable folder; no product assertion was changed."
+  },
+  "unverified": [
+    "No new player/backend, native Steam, audio listening, physical input, visual-layout or newer-Editor acceptance is claimed. Prior release evidence retains its original source/environment scope.",
+    "No consumer project or Docs/GameDesign content was modified. Consumer adoption remains manual."
+  ],
+  "testResult": "Documentation~/Validation/AIReadEfficiency/Results.xml",
+  "testResultSha256": "7b67c9c63f87551d590da54a7982511e246344b5f04ce905587f726e01279da1",
+  "rawTestResultSha256": "7b67c9c63f87551d590da54a7982511e246344b5f04ce905587f726e01279da1",
+  "testResultNormalization": "Unmodified native Unity XML; exact bytes preserved by Git attributes."
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageVersion": "0.1.3",
+  "testedImplementationCommit": "e476bdfdb0ca1c41c3832417c2d93b8fe636ac8f",
+  "sourceFingerprint": "b83db634522746055ab35742dffc01432e026a6604618c964111f62ddd5e6afb",
+  "standalonePassed": 10,
+  "standaloneFailed": 0,
+  "checks": [
+    "160 records above historical128 limit",
+    "terminal superseded remains distinct",
+    "temporary missing-object fetch preserves caller all bytes",
+    "inspection preserves remote all bytes",
+    "repeat complete without caller mutation",
+    "finite request limit reports actual673 count",
+    "shell helper refused before execution",
+    "credential refusal preserves caller config/index/content",
+    "actual HTTPS helper canceled and descendants socket closed",
+    "UTF8 byte framing and five missing/malformed controls"
+  ],
+  "largeQueueMissingObjectSeconds": 3.302444800006924,
+  "actualServiceInspection": {
+    "deliveryClaimsRevalidated": false,
+    "matchedReceipts": 252,
+    "observedUtc": "2026-11-09T13:19:49.3074068Z",
+    "findings": 0,
+    "elapsedSeconds": 47.1371689,
+    "processorOwnershipVerified": false,
+    "requests": 316
+  },
+  "compilerOnly": {
+    "unityReferenceVersion": "6000.6.3f1",
+    "analyzerAcceptance": false,
+    "diagnostics": 0,
+    "warningsAsErrors": true,
+    "warningLevel": 4,
+    "owningEditorTestsAndExamplesCompiled": true,
+    "nativeTestExecution": false
+  },
+  "preservation": {
+    "liveConfigConcurrentDrift": "Observed; attributable cause unverified. No claim of exact live configuration preservation; disposable byte-for-byte controls passed.",
+    "disposableRemoteAllRawBytes": true,
+    "liveHeadIndexFetchHeadUnchanged": true,
+    "disposableCallerAllRawBytes": true
+  },
+  "nativeUnity": {
+    "executed": 0,
+    "publicationReady": false,
+    "statedReason": "blocked by policy",
+    "launchRejections": 2,
+    "renewedUserBatchAuthorizationBeforeSecondRejection": true,
+    "desktopControlAttempted": false,
+    "fixtureManifestAndLockUntouched": true,
+    "plannedOwningTests": 13
+  }
+}
