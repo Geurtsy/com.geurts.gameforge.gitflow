@@ -17,9 +17,9 @@ namespace Geurts.GameForge.GitFlow.Editor
     /// <remarks>Help: Documentation~/AIUsability.md. No repository scripts, publishers, lock probes or configuration writes are supported.</remarks>
     public sealed class GitFlowInspection : IDisposable
     {
-        public const int MaximumRequests = 128;
+        public const int MaximumRequests = 512;
         public const int MaximumJsonBytes = 1024 * 1024;
-        public const int RefreshBudgetSeconds = 45;
+        public const int RefreshBudgetSeconds = 90;
         private const string QueuePrefix = "refs/heads/codex/queue/";
         private const string LeaseRef = "refs/heads/codex/integration-lock";
         private readonly object _gate = new object();
@@ -83,23 +83,34 @@ namespace Geurts.GameForge.GitFlow.Editor
                     CheckPath(temporary + "/objects/pack/pack-" + new string('a', 40) + ".pack");
                     Directory.CreateDirectory(temporary);
                     Git(temporary, budget.Token, "init", "--bare", "--quiet");
-                    string advertised = Git(temporary, budget.Token, "ls-remote", "--heads", remote, QueuePrefix + "*", LeaseRef);
+                    string[] authentication = CredentialOptions(repository, remote, budget.Token);
+                    string advertised = GitAuthenticated(temporary, budget.Token, authentication, "ls-remote", "--heads", remote, QueuePrefix + "*", LeaseRef);
                     var refs = ParseRefs(advertised);
-                    if (refs.Keys.Count(value => value != LeaseRef) > MaximumRequests) throw new InvalidOperationException("Queue exceeds the 128-request inspection bound. Ask the queue owner to provide a paged adapter; no partial queue is labelled complete.");
-                    if (refs.Count > 0)
+                    if (refs.Keys.Count(value => value != LeaseRef) > MaximumRequests) throw new InvalidOperationException("Queue advertises " + refs.Keys.Count(value => value != LeaseRef) + " requests, exceeding the 512-request inspection bound. No partial queue is labelled complete.");
+                    var controls = ReadBlobs(repository, temporary, remote, authentication, budget.Token, refs.Values.Distinct().Select(value => value + ":IntegrationRequest.json").ToArray());
+                    var receiptSpecifications = new HashSet<string>(StringComparer.Ordinal);
+                    foreach (var control in controls.Values)
                     {
-                        var fetch = new List<string> { "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", "--depth=1", remote };
-                        fetch.AddRange(refs.Values.Distinct());
-                        Git(temporary, budget.Token, fetch.ToArray());
+                        if (control.Error != null) continue;
+                        try
+                        {
+                            JObject candidate = ParseObject(control.Text);
+                            string id = Text(candidate, "id"), published = Text(candidate, "main_commit");
+                            if (State(Text(candidate, "status")) == "Delivered" && Regex.IsMatch(id, "^q_[0-9]{8}_[0-9]{6}_[0-9a-f]{12}$") && Regex.IsMatch(published, "^[0-9a-f]{40}$"))
+                                receiptSpecifications.Add(published + ":Tools/IntegrationQueue/Receipts/" + id + ".json");
+                        }
+                        catch (Exception error) when (error is JsonException || error is InvalidDataException) { /* The row below retains its exact actionable failure. */ }
                     }
+                    var receipts = ReadBlobs(repository, temporary, remote, authentication, budget.Token, receiptSpecifications.ToArray());
                     queue = "Observed";
                     lease = "Absent"; leaseDetail = "No lease ref was advertised during this refresh. Absence does not authorize acquisition.";
                     foreach (var pair in refs)
                     {
                         try
                         {
-                            if (Git(temporary, budget.Token, "cat-file", "-t", pair.Value).Trim() != "commit") throw new InvalidDataException("Control object is not a commit.");
-                            string raw = Git(temporary, budget.Token, "show", pair.Value + ":IntegrationRequest.json");
+                            GitFlowBlobResult control = controls[pair.Value + ":IntegrationRequest.json"];
+                            if (control.Error != null) throw new InvalidDataException(control.Error);
+                            string raw = control.Text;
                             JObject data = ParseObject(raw);
                             if (pair.Key == LeaseRef) { ReadLease(data, pair.Value, out lease, out leaseDetail); continue; }
                             string id = Text(data, "id");
@@ -108,15 +119,16 @@ namespace Geurts.GameForge.GitFlow.Editor
                             string state = State(Text(data, "status"));
                             string source = Text(data, "source");
                             if (!Regex.IsMatch(source, "^[0-9a-f]{40}$")) throw new InvalidDataException("Submitted source must be an exact commit identity.");
-                            string receipt = "", receiptDetail = "Not published; no receipt inspected.";
+                            string receipt = "", receiptDetail = state == "Superseded" ? "Reported terminal supersession; recorded recovery evidence is preserved below. Current-main ancestry is not independently verified." : "Not published; no receipt inspected.";
                             string published = Text(data, "main_commit");
                             if (state == "Delivered")
                             {
                                 if (!Regex.IsMatch(published, "^[0-9a-f]{40}$")) throw new InvalidDataException("Delivered record lacks an exact published commit.");
                                 try
                                 {
-                                    Git(temporary, budget.Token, "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", "--depth=1", remote, published);
-                                    receipt = Git(temporary, budget.Token, "show", published + ":Tools/IntegrationQueue/Receipts/" + id + ".json");
+                                    GitFlowBlobResult proofBlob = receipts[published + ":Tools/IntegrationQueue/Receipts/" + id + ".json"];
+                                    if (proofBlob.Error != null) throw new InvalidDataException(proofBlob.Error);
+                                    receipt = proofBlob.Text;
                                     JObject proof = ParseObject(receipt);
                                     if ((int?)proof["schema"] != 1 || Text(proof, "id") != id || Text(proof, "source") != source || Text(proof, "version") != Text(data, "version"))
                                         throw new InvalidDataException("Receipt identity/source/version does not match the request.");
@@ -165,6 +177,47 @@ namespace Geurts.GameForge.GitFlow.Editor
             return snapshot;
         }
 
+        /// <summary>Reads exact local objects first; missing commits are fetched together only into this refresh's owned object store.</summary>
+        private static Dictionary<string, GitFlowBlobResult> ReadBlobs(string repository, string temporary, string remote, string[] authentication, CancellationToken cancellation, string[] specifications)
+        {
+            var result = new Dictionary<string, GitFlowBlobResult>(StringComparer.Ordinal);
+            if (specifications.Length == 0) return result;
+            string[] commits = specifications.Select(value => value.Substring(0, 40)).Distinct().ToArray();
+            string[] types = GitBatch(repository, cancellation, string.Join("\n", commits) + "\n", "cat-file", "--batch-check=%(objectname) %(objecttype)").Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            if (types.Length != commits.Length) throw new InvalidDataException("Incomplete exact-commit inventory.");
+            var local = new HashSet<string>(StringComparer.Ordinal);
+            var missing = new List<string>();
+            for (int index = 0; index < commits.Length; index++)
+            {
+                if (types[index] == commits[index] + " commit") local.Add(commits[index]);
+                else if (types[index] == commits[index] + " missing") missing.Add(commits[index]);
+                else throw new InvalidDataException("Advertised or published object is not an exact commit.");
+            }
+            if (missing.Count > 0)
+            {
+                var fetch = new List<string> { "fetch", "--quiet", "--no-tags", "--no-write-fetch-head", "--depth=1", remote };
+                fetch.AddRange(missing);
+                try { GitAuthenticated(temporary, cancellation, authentication, fetch.ToArray()); }
+                catch (IOException error)
+                {
+                    foreach (string specification in specifications.Where(value => !local.Contains(value.Substring(0, 40))))
+                        result.Add(specification, new GitFlowBlobResult(null, "Missing exact commit could not be fetched into the owned temporary store: " + Detail(error)));
+                }
+                if (result.Count == 0)
+                {
+                string[] fetched = GitBatch(temporary, cancellation, string.Join("\n", missing) + "\n", "cat-file", "--batch-check=%(objectname) %(objecttype)").Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                if (fetched.Length != missing.Count || fetched.Where((value, index) => value != missing[index] + " commit").Any()) throw new InvalidDataException("Fetched control or published object is not an exact commit.");
+                }
+            }
+            foreach (bool useLocal in new[] { true, false })
+            {
+                string[] selected = specifications.Where(value => !result.ContainsKey(value) && local.Contains(value.Substring(0, 40)) == useLocal).ToArray();
+                string directory = useLocal ? repository : temporary;
+                foreach (var pair in GitFlowObjectBatch.Read(selected, input => GitBatch(directory, cancellation, input, "cat-file", "--batch"))) result.Add(pair.Key, pair.Value);
+            }
+            return result;
+        }
+
         /// <summary>Reads local status without creating the state directory or probing its ownership lock.</summary>
         private static void ReadProcessor(string common, out string state, out string detail)
         {
@@ -210,7 +263,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             var result = new Dictionary<string, string>(StringComparer.Ordinal);
             foreach (string row in output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                string[] parts = row.Split('\t');
+                string[] parts = row.Split(new[] { '\t' });
                 if (parts.Length != 2 || !Regex.IsMatch(parts[0], "^[0-9a-f]{40}$") ||
                     !(parts[1] == LeaseRef || parts[1].StartsWith(QueuePrefix, StringComparison.Ordinal)) || result.ContainsKey(parts[1]))
                     throw new InvalidDataException("Malformed or duplicated advertised queue reference.");
@@ -219,21 +272,62 @@ namespace Geurts.GameForge.GitFlow.Editor
             return result;
         }
 
-        /// <summary>Runs a fixed Git argument vector with bounded output, no shell, no console and no credential helpers.</summary>
+        /// <summary>Runs fixed local Git reads with isolated config, bounded output and no credential interaction.</summary>
         private static string Git(string directory, CancellationToken cancellation, params string[] arguments)
+            => GitCommand(directory, cancellation, null, null, MaximumJsonBytes, true, arguments);
+
+        /// <summary>Delegates HTTPS authentication only to the existing configured native credential manager.</summary>
+        private static string GitAuthenticated(string directory, CancellationToken cancellation, string[] authentication, params string[] arguments)
+            => GitCommand(directory, cancellation, authentication, null, MaximumJsonBytes, true, arguments);
+
+        /// <summary>Feeds only fixed exact-object specifications to the bounded batch transport.</summary>
+        private static string GitBatch(string directory, CancellationToken cancellation, string input, params string[] arguments)
+            => GitCommand(directory, cancellation, null, input, 16 * 1024 * 1024, true, arguments);
+
+        /// <summary>Builds one fixed command; global/system config is read only for explicit credential-option discovery.</summary>
+        private static string GitCommand(string directory, CancellationToken cancellation, string[] authentication, string input, int maximumBytes, bool isolated, params string[] arguments)
         {
             cancellation.ThrowIfCancellationRequested();
             var start = new ProcessStartInfo("git") { WorkingDirectory = directory, UseShellExecute = false, CreateNoWindow = true,
                 RedirectStandardInput = true, RedirectStandardOutput = true, RedirectStandardError = true, StandardOutputEncoding = Encoding.UTF8, StandardErrorEncoding = Encoding.UTF8 };
-            // Unity's baseline lacks ProcessStartInfo.ArgumentList. Quote each fixed vector element for Windows CRT parsing.
-            string[] prefix = { "--no-optional-locks", "-c", "credential.helper=", "-c", "credential.interactive=never", "-c", "core.hooksPath=", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
+            var prefix = new List<string> { "--no-optional-locks", "-c", "credential.interactive=never", "-c", "core.hooksPath=", "-c", "protocol.ext.allow=never", "-c", "protocol.ssh.allow=never", "-c", "gc.auto=0" };
+            if (isolated) { prefix.Add("-c"); prefix.Add("credential.helper="); }
+            if (authentication != null) prefix.AddRange(authentication);
             start.Arguments = string.Join(" ", prefix.Concat(arguments).Select(Quote));
             foreach (string name in start.EnvironmentVariables.Keys.Cast<string>().Where(value => value.StartsWith("GIT_", StringComparison.OrdinalIgnoreCase)).ToArray()) start.EnvironmentVariables.Remove(name);
             start.EnvironmentVariables["GIT_TERMINAL_PROMPT"] = "0"; start.EnvironmentVariables["GCM_INTERACTIVE"] = "Never";
-            start.EnvironmentVariables["GIT_OPTIONAL_LOCKS"] = "0"; start.EnvironmentVariables["GIT_CONFIG_NOSYSTEM"] = "1";
-            start.EnvironmentVariables["GIT_CONFIG_GLOBAL"] = "NUL"; start.EnvironmentVariables["GIT_LFS_SKIP_SMUDGE"] = "1";
-            try { return GitFlowProcess.Run(start, cancellation); }
+            start.EnvironmentVariables["GIT_OPTIONAL_LOCKS"] = "0"; start.EnvironmentVariables["GIT_LFS_SKIP_SMUDGE"] = "1";
+            start.EnvironmentVariables["GIT_NO_LAZY_FETCH"] = "1"; start.EnvironmentVariables["GIT_NO_REPLACE_OBJECTS"] = "1";
+            if (isolated) { start.EnvironmentVariables["GIT_CONFIG_NOSYSTEM"] = "1"; start.EnvironmentVariables["GIT_CONFIG_GLOBAL"] = "NUL"; }
+            try { return GitFlowProcess.Run(start, cancellation, input, maximumBytes); }
             catch (IOException error) { throw new IOException("Git " + arguments[0] + ": " + error.Message, error); }
+        }
+
+        /// <summary>Reads only nonsecret credential routing; tokens remain inside Git and the trusted native manager.</summary>
+        private static string[] CredentialOptions(string repository, string remote, CancellationToken cancellation)
+        {
+            if (!remote.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) return Array.Empty<string>();
+            string helper = CredentialOption(repository, remote, "helper", cancellation);
+            if (helper.Length == 0) return Array.Empty<string>(); // Preserve unauthenticated public HTTPS without requesting credentials.
+            if (helper != "manager" && helper != "manager-core" && helper != "wincred") throw new InvalidOperationException("Configure the selected remote's existing native Git Credential Manager before refreshing. Shell/custom credential helpers are not executed by inspection.");
+            var options = new List<string> { "-c", "credential.helper=" + helper };
+            string username = CredentialOption(repository, remote, "username", cancellation);
+            if (username.Length > 256 || username.IndexOfAny(new[] { '\r', '\n', '\0' }) >= 0) throw new InvalidDataException("Invalid configured credential username.");
+            if (username.Length != 0) { options.Add("-c"); options.Add("credential.username=" + username); }
+            string usePath = CredentialOption(repository, remote, "useHttpPath", cancellation);
+            if (usePath.Length != 0)
+            {
+                if (usePath != "true" && usePath != "false") throw new InvalidDataException("Unsupported credential path-routing value.");
+                options.Add("-c"); options.Add("credential.useHttpPath=" + usePath);
+            }
+            return options.ToArray();
+        }
+
+        /// <summary>Queries one safe credential option from the caller's normal Git config without invoking a helper.</summary>
+        private static string CredentialOption(string repository, string remote, string option, CancellationToken cancellation)
+        {
+            try { return GitCommand(repository, cancellation, null, null, 4096, false, "config", "--get-urlmatch", "credential." + option, remote).Trim(); }
+            catch (IOException error) when (error.Message.Contains("Git failed (exit 1).")) { return ""; }
         }
 
         /// <summary>Quotes a single Windows process argument without shell evaluation.</summary>
@@ -276,7 +370,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private static string State(string value)
         {
             switch (value) { case "queued": return "Queued"; case "processing": return "Processing"; case "validating": return "Validating";
-                case "integrated": case "delivered": return "Delivered"; case "blocked": case "failed": return "Failed"; default: return "Unknown"; }
+                case "integrated": case "delivered": return "Delivered"; case "superseded": return "Superseded"; case "blocked": case "failed": return "Failed"; default: return "Unknown"; }
         }
 
         /// <summary>Checks the resolved path and every existing ancestor before inspection or temporary creation.</summary>
@@ -290,7 +384,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         }
 
         /// <summary>Retains useful exception type and remedy context; cancellation never becomes a successful observation.</summary>
-        private static string Detail(Exception error) => error is OperationCanceledException ? "Inspection cancelled or exceeded its 45-second budget." : error.GetType().Name + ": " + error.Message;
+        private static string Detail(Exception error) => error is OperationCanceledException ? "Inspection cancelled or exceeded its 90-second budget." : error.GetType().Name + ": " + error.Message;
 
         /// <summary>Cancels owned inspection without touching the observed repository, processor or caller settings.</summary>
         public void Dispose()

@@ -1,6 +1,6 @@
 # GitFlow queue console and selected-repository setup
 
-Version 0.3.0 is a source-only, unreleased candidate. No game installation, queue adoption, processor invocation or Unity acceptance was performed for this update. Use the Catalogue for released installation targets, not this candidate branch.
+Version 0.4.0 is a source-only, unreleased candidate. No game installation, queue adoption, processor invocation or Unity acceptance was performed for this update. Use the Catalogue for released installation targets, not this candidate branch.
 
 ## Editor workflow
 
@@ -57,6 +57,8 @@ Focused disposable regressions cover a 140-request queue, page navigation, repea
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.3.0","dependencies":{"com.geurts.gameforge.god":"0.39.3","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId": "com.geurts.gameforge.gitflow", "packageVersion": "0.4.0", "dependencies": {"com.geurts.gameforge.god": "0.44.0", "com.unity.nuget.newtonsoft-json": "3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->
+
+The modern viewer/configuration boundary above remains unchanged. The separate [existing-runner bridge](ExistingQueueAdapter.md) can bind an already configured committed legacy owner through explicit stopped-owner adoption; current Editor action jobs are not a persistent publisher host. It does not create modern refs or silently migrate this legacy console.

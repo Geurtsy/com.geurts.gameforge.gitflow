@@ -1,3 +1,9 @@
+# 0.4.0 source candidate
+
+- Forward-port the0.1.3 legacy-inspection maintenance fix: trusted native credential routing, finite512-record/90-second exact-object batches and truthful reported supersession. Preserve the independent-host RunExecutable transport, current modern queue protocol and native saved-Inspector test. No installed consumer or live publisher changes.
+
+Added an explicit fingerprint-bound existing IntegrationQueue owner adapter with stopped-owner adoption and supported lifecycle delegation; original queue/gates/policy/model routing remain authoritative. Independent host integration/native acceptance remain unverified. Requires God0.44.0/central Compatibility prerequisite.
+
 # Changelog
 
 ## 0.3.0 - unreleased source-only candidate
@@ -13,7 +19,7 @@
 - Candidate source was pushed and verified at 48a7e07 on codex/queue-reference-batching. That candidate reached main through PR #4; native visual acceptance and immutable package release remain pending; historical 0.2.0 diagnostics are not a demonstrated 0.3.0 failure cause.
 
 
-## 0.2.0 — Unreleased candidate
+## 0.2.0 â€” Unreleased candidate
 
 Strict reusable integration host with one shared worktree, exact-source idempotent submission, ownership-fenced publication and retained evidence. Failed checks block later requests; no skip or validation bypass exists.
 

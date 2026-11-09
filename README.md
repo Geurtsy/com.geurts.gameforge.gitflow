@@ -1,6 +1,6 @@
 # Geurts Game Forge GitFlow
 
-Version 0.3.0 is an unreleased candidate for a reusable strict game integration queue.
+Version 0.4.0 is an unreleased candidate for a reusable strict game integration queue.
 
 In Unity, Queue local changes captures saved task-owned work into a recorded checkpoint and confirms its waiting-list entry while preserving the live branch, staging and working edits. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
@@ -16,15 +16,10 @@ Install only from the authoritative released catalogue after acceptance. The can
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{
-  "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
-  "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
-    "com.unity.nuget.newtonsoft-json": "3.2.2"
-  }
-}
+{"packageId": "com.geurts.gameforge.gitflow", "packageVersion": "0.4.0", "dependencies": {"com.geurts.gameforge.god": "0.44.0", "com.unity.nuget.newtonsoft-json": "3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->
 
 Queue console and selected-repository setup: [supported workflow and limits](Documentation~/QueueConsole.md). This source-only update is not installed or Unity-validated.
+
+Existing legacy queues have a separate [explicit existing-runner bridge](Documentation~/ExistingQueueAdapter.md). This source candidate does not install/adopt it, alter live queues or turn the modern processor into a legacy migration. God0.44.0 requires the independent Compatibility0.1.0 core.

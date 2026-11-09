@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.3.0 is an unreleased source-only candidate. Changed native sources have not been compiled or exercised in Unity. Historical 0.2.0 evidence is not acceptance of this update. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
+Version 0.4.0 is an unreleased source-only candidate. Changed native sources have not been compiled or exercised in Unity. Historical 0.2.0 evidence is not acceptance of this update. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
 
 ## Choose the relevant surface
 
@@ -70,7 +70,7 @@ GitFlow never installs or updates itself, another Forge package or managed Comma
 
 ## Legacy read-only API example
 
-The legacy inspector retains its 45-second / 128-request read bounds, dated snapshots, no automatic refresh, preserved checkout and temporary observation object store. Public HTTPS and absolute local remotes are its supported transports. It reads recorded legacy claims; it does not prove live integration or operate the legacy runner.
+The legacy inspector has finite 90-second /512-request bounds, one MiB per JSON object,16 MiB per object batch and128 KiB per batch query. It advertises refs once and batches exact local objects/receipts first with lazy fetch/replacement objects disabled; missing commits are fetched together only into its owned temporary object store. HTTPS delegates noninteractively only to the selected remote's existing native manager/manager-core/wincred helper; tokens remain inside Git/helper and unrelated global/system config stays isolated. Shell/custom helpers, SSH and sign-in dialogs are unsupported. Dated snapshots, explicit refresh, checkout preservation and truthful incomplete coverage remain. The existing processor's reported superseded terminal state is distinguished from independently verified main ancestry. Inspection does not operate the legacy runner; the separate explicit existing-runner bridge owns its scoped control contract.
 
 <!-- GEURTS-EXAMPLE: Tools~/Examples/InspectionExample.cs -->
 ```csharp
@@ -102,13 +102,6 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{
-  "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
-  "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
-    "com.unity.nuget.newtonsoft-json": "3.2.2"
-  }
-}
+{"packageId": "com.geurts.gameforge.gitflow", "packageVersion": "0.4.0", "dependencies": {"com.geurts.gameforge.god": "0.44.0", "com.unity.nuget.newtonsoft-json": "3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

@@ -1,32 +1,49 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
-  "sourceFingerprint": "8f613ddb186131a10e389033e8608c8aa7c94a03f64da2db639293096e6391e8",
+  "packageVersion": "0.4.0",
+  "sourceFingerprint": "0c381ef84c301cdefa12e0960e7c4d6e99bab29ade5c839a06f934a3ef245e3e",
   "unityVersion": "6000.6.3f1",
   "passed": 0,
   "failed": 0,
   "skipped": 0,
-  "examplesCompiled": false,
+  "examplesCompiled": true,
   "nativeVisualAcceptance": "pending_updated_candidate",
   "publicationReady": false,
-  "scope": "Current Editor and test assemblies passed source-only compiler replay against Unity 6000.6.3f1 references at warning level four/WAE. Six actual discovery test methods passed outside Unity. This is not native Unity compilation/test/UI acceptance; no open fixture or game project was changed.",
+  "scope": "Unreleased source candidate. Current actual Editor/test/example assembly names compile at warn4/WAE against actual Unity6000.6.3 fixture references, zero C# compiler diagnostics. Eleven actual service/Windows-transport legacy inspection controls pass. This is not analyzer-policy, native Unity or appearance acceptance. Prior lifecycle proof retains original source identity; live watchers/publishers were not changed.",
   "sourceChecks": {
     "executableDiscovery": {
       "passed": 6,
       "failed": 0,
       "report": "Documentation~/Evidence/0.3.0/HistoryWrapAndToolDiscovery.json"
+    },
+    "legacyInspectionAuthentication": {
+      "report": "Documentation~/Evidence/0.4.0/LegacyInspectionAuthentication.json",
+      "failed": 0,
+      "passed": 11
+    },
+    "modernPythonSuite": {
+      "report": "Documentation~/Evidence/0.4.0/LegacyInspectionAuthentication.json",
+      "failed": 0,
+      "passed": 33,
+      "durationSeconds": 437.233
     }
   },
   "compilerGate": {
     "status": "native_pending",
-    "report": "Documentation~/Evidence/0.3.0/HistoryWrapAndToolDiscovery.json",
-    "sha256": "a46ec2e2d9e9880223290e0062d3be844ed15fdb4d820aa262604007c507bccd",
+    "report": "Documentation~/Evidence/0.4.0/LegacyInspectionAuthentication.json",
+    "sha256": "9d07b6256aa20a772060150862b16ec0793f8fd2be41cf6d23486491d740d284",
     "warnings": 0,
     "errors": 0,
-    "scope": "Both current source assemblies compile strictly; native full rebuild remains pending."
+    "scope": "Three separate owning Editor/test/example source assemblies compile; native/analyzer closure remains pending."
   },
   "integrationRecipes": [],
   "publicationBlockers": [
     "Native Unity compilation/examples/tests and actual user visual acceptance remain pending for the changed fingerprint; no package release is claimed."
-  ]
+  ],
+  "defaultDiagnosticEditorComponent": {
+    "passed": true,
+    "report": "Documentation~/Evidence/0.4.0/DefaultDiagnosticComponent.json",
+    "diagnostics": 0,
+    "scope": "Original installed native recipe with explicit owning Editor inventory, not fresh native/test/fullclosure acceptance."
+  }
 }

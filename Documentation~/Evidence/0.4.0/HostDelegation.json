@@ -1,0 +1,88 @@
+{
+  "bounded-action.json": {
+    "driverPid": 46964,
+    "startedUtc": "2026-11-09T10:16:23.4576751Z",
+    "returnedUtc": "2026-11-09T10:16:41.1910748Z",
+    "transport": "Actual GitFlowProcess.RunExecutable with KILL_ON_JOB_CLOSE; unchanged source compiled with max-json-constant-only fixture stub",
+    "result": {
+      "state": "host_request_dispatched",
+      "requestId": "82aee53f8b0146f0a608613b76d62334",
+      "action": "resume",
+      "receiptPath": "C:\\ProgramData\\GeurtsGameForge\\Archangels\\ArchangelsHostFixture-b7ca0ec0\\control-receipts\\82aee53f8b0146f0a608613b76d62334.json",
+      "receipt": null,
+      "detail": "Existing independent boot host owns execution; a bounded client exit/cancel does not undo the request. Read this exact receipt/owner state before retrying. Dispatched is not delivered."
+    }
+  },
+  "lifecycle-proof.json": {
+    "observedUtc": "2026-11-09T10:17:35.6681721Z",
+    "boundedClientPid": 46964,
+    "boundedClientAlive": false,
+    "hostTaskState": "Running",
+    "hostPid": 28656,
+    "hostAlive": true,
+    "receipt": {
+      "formatVersion": 1,
+      "requestId": "82aee53f8b0146f0a608613b76d62334",
+      "completedUtc": "2026-11-09T18:16:47.717358+08:00",
+      "status": "dispatched",
+      "action": "resume",
+      "reportedState": "starting"
+    },
+    "harmlessPublisherPid": 23644,
+    "harmlessPublisherAlive": true,
+    "heartbeat": {
+      "pid": 23644,
+      "epoch": 1794219455.483774,
+      "purpose": "Harmless fixture; no Git/ref/model/native game work"
+    },
+    "liveQueueTouched": false
+  },
+  "host-exit-proof.json": {
+    "observedUtc": "2026-11-09T10:22:14.2658526Z",
+    "fixtureTaskState": "Disabled",
+    "hostPid": 28656,
+    "hostAlive": false,
+    "hostStatus": "disabled",
+    "publisherPid": 23644,
+    "publisherAlive": true,
+    "duplicateResumeLaunchCount": 1
+  },
+  "cleanup-proof.json": {
+    "observedUtc": "2026-11-09T10:23:15.7576792Z",
+    "temporaryTaskRemoved": true,
+    "fixturePublisherAlive": false,
+    "fixtureHostAlive": false,
+    "liveDreadvaultWatcherAlive": true,
+    "liveDreadvaultPublisherAlive": true,
+    "liveQueueTouched": false
+  },
+  "scope": "Harmless protocol fixture; simulated resolver metadata, not real Unity/package installation or live queue adoption.",
+  "sourceHashes": {
+    "Tools~/Queue/GitFlowExistingRunner.py": "d8f2586fa4887df0947345b170e5bcbe5cc56586835ef6e9594f46473dbab68e",
+    "Editor/GitFlowProcess.cs": "e61888cbb17e98d217e17b7a2c5684ea57bab08f79cf26bbedbd2afd669fb065",
+    "Editor/GitFlowHost.cs": "cc5b61428c53f1b6864b109ff02dcce7178f7626f373fe457d974c9068ca5b3b"
+  },
+  "finalIdentityGuardRetest": {
+    "observedUtc": "2026-11-09T11:00:06.4127895Z",
+    "boundedClientExited": true,
+    "receipt": {
+      "formatVersion": 1,
+      "requestId": "364a0f49a95941259e14b7978366c934",
+      "completedUtc": "2026-11-09T18:57:55.719796+08:00",
+      "status": "dispatched",
+      "action": "resume",
+      "reportedState": "starting"
+    },
+    "publisherPid": 56344,
+    "publisherAlive": true,
+    "finalTaskIdentityChecks": "Executable, working directory, exact action, same account SID, boot trigger, deployed source hash",
+    "liveQueueTouched": false
+  },
+  "finalIdentityCleanup": {
+    "temporaryTaskRemoved": true,
+    "fixturePublisherAlive": false,
+    "observedUtc": "2026-11-09T11:03:15.7343206Z",
+    "liveQueueTouched": false
+  },
+  "subsequentReview": "After native lifecycle/identity proof, added selected-repository binding and batched read-only Python cohort provenance. Final8affected tests cover those changes; original native lifecycle source identity is retained above, not rebound."
+}

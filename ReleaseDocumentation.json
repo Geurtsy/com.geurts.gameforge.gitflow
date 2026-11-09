@@ -1,17 +1,19 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.4.0",
   "currentDocuments": [
     "README.md",
     "Documentation~/AIUsability.md",
     "Documentation~/Validation.md",
     "Documentation~/QueueLocalChanges.md",
-    "Documentation~/QueueConsole.md"
+    "Documentation~/QueueConsole.md",
+    "Documentation~/ExistingQueueAdapter.md"
   ],
   "integrationRecipes": [],
   "schemaVersion": "1.0.0",
   "historicalDocuments": [
-    "Documentation~/History/Validation-0.2.0.md"
+    "Documentation~/History/Validation-0.2.0.md",
+    "Documentation~/History/Validation-0.3.0.md"
   ],
   "examples": [
     {

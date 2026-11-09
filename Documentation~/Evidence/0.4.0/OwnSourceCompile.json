@@ -1,0 +1,59 @@
+{
+  "scope": "All current GitFlow Editor C# sources compiled against actual resolved Unity6000.6.3f1/God0.44/Odin/QC/Newtonsoft references; warning4/warnings-as-errors, no NoWarn. Not native UI or full dependency acceptance.",
+  "diagnostics": 0,
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sourceFiles": [
+    {
+      "path": "Editor/AssemblyInfo.cs",
+      "sha256": "a6e38c5ea742fe22493bae75e79f4d3b20978218de0d9900c699d209bcfec73b"
+    },
+    {
+      "path": "Editor/GitFlowBrick.cs",
+      "sha256": "194642be911beee8e19633a471d5e11da94708fa2edd705efcd77c2ee75c4245"
+    },
+    {
+      "path": "Editor/GitFlowControls.cs",
+      "sha256": "1e61619849fb9f69b3c39e5bd871ef15bbc3afdd2fb0f88335eb468a8593a571"
+    },
+    {
+      "path": "Editor/GitFlowHelp.cs",
+      "sha256": "3965e6d8787c43da350aee6a2da85462551cb1af06f5c32e216be1665af5bb1d"
+    },
+    {
+      "path": "Editor/GitFlowHost.cs",
+      "sha256": "0cb0fd0c8eb730ad6947c888265faa2864747ba31db86e9066c3dc508bb65d49"
+    },
+    {
+      "path": "Editor/GitFlowInspection.cs",
+      "sha256": "7c298edc9ba8ec91dced54ebde8b1ee8a894b84a73601dd7e78653384833c4af"
+    },
+    {
+      "path": "Editor/GitFlowNativeGate.cs",
+      "sha256": "bc8f27eacb84e5c82e2e3dbbb24feff5f17e7fe2a8fb5c19eae8ac88b09ba81b"
+    },
+    {
+      "path": "Editor/GitFlowPresentation.cs",
+      "sha256": "10bba1c20d4218a1fcc0a10e61579fa62a61cecb0e2b822f65e3cfc7461a3e17"
+    },
+    {
+      "path": "Editor/GitFlowProcess.cs",
+      "sha256": "e61888cbb17e98d217e17b7a2c5684ea57bab08f79cf26bbedbd2afd669fb065"
+    },
+    {
+      "path": "Editor/GitFlowQueueConsole.cs",
+      "sha256": "3a12c59fef93de8035529080dbc850098d5ce5c45037444fbec0e8ac6e62e92e"
+    },
+    {
+      "path": "Editor/GitFlowSnapshot.cs",
+      "sha256": "4f1db5cb9b26d1701d43132c4fc6bc91708944a1a36608fbe19dfd70e7b57b95"
+    },
+    {
+      "path": "Editor/GitFlowToolDiscovery.cs",
+      "sha256": "cb310f0bd25b261fc713a556f1e9431db942c0d583d7218933a9e5bf8e33709f"
+    },
+    {
+      "path": "Editor/GitFlowWindow.cs",
+      "sha256": "7649ccafefff792b1e8a1e4d0abfefe024318ebdfb0e2b77ee276d49483585aa"
+    }
+  ]
+}
