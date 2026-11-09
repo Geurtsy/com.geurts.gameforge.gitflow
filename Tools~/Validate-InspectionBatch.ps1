@@ -29,7 +29,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $FixturePath 'ForgePrivateCompatibil
 if (-not (Test-Path -LiteralPath $UnityEditor -PathType Leaf)) { throw 'The selected Unity Editor is unavailable.' }
 if ($TestedCommit -cnotmatch '^[0-9a-f]{40}$') { throw 'Select an exact immutable candidate commit.' }
 if ((Get-Content -LiteralPath (Join-Path $FixturePath 'ProjectSettings/ProjectVersion.txt') -Raw) -notmatch 'm_EditorVersion: 6000\.6\.3f1') { throw 'This handoff qualifies Unity6000.6.3f1 only.' }
-$busy = @(Get-CimInstance Win32_Process -Filter "Name='Unity.exe'" | Where-Object { $_.CommandLine -and $_.CommandLine.Replace('\','/').Contains($FixturePath.Replace('\','/')) })
+$busy = @(Get-CimInstance Win32_Process -Filter "Name='Unity.exe'" | Where-Object { $_.CommandLine -and $_.CommandLine.Replace('\','/').IndexOf($FixturePath.Replace('\','/'), [StringComparison]::OrdinalIgnoreCase) -ge 0 })
 if ($busy.Count) { throw 'The disposable fixture already has an Editor process. Do not interrupt it.' }
 $manifestPath = Join-Path $FixturePath 'Packages/manifest.json'
 $lockPath = Join-Path $FixturePath 'Packages/packages-lock.json'
