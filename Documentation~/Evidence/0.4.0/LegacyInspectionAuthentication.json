@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageVersion": "0.4.0",
+  "sourceFingerprint": "0c381ef84c301cdefa12e0960e7c4d6e99bab29ade5c839a06f934a3ef245e3e",
+  "forwardPortFrom": "9f26671983dfc3cd240d6a4088041bc64736663c",
+  "standalonePassed": 11,
+  "standaloneFailed": 0,
+  "checks": [
+    "160 records above historical128 limit",
+    "terminal superseded remains distinct",
+    "temporary missing-object fetch preserves caller all bytes",
+    "inspection preserves remote all bytes",
+    "repeat complete without caller mutation",
+    "finite request limit reports actual673 count",
+    "shell helper refused before execution",
+    "credential refusal preserves caller config/index/content",
+    "actual HTTPS helper canceled and descendants socket closed",
+    "HTTPS without any helper remains available noninteractively",
+    "UTF8 byte framing and five missing/malformed controls"
+  ],
+  "largeQueueMissingObjectSeconds": 3.014979100000346,
+  "separateCompilerChecks": {
+    "assemblies": [
+      "Geurts.GameForge.GitFlow.Editor",
+      "Geurts.GameForge.GitFlow.Editor.Tests",
+      "GitFlow.SupportedExamples"
+    ],
+    "diagnostics": 0,
+    "analyzersExecuted": false,
+    "warningsAsErrors": true,
+    "nativeUnityExecuted": false,
+    "warningLevel": 4,
+    "unityReferenceVersion": "6000.6.3f1"
+  },
+  "preserved": [
+    "Generic native RunExecutable overload/executable admission and job ownership",
+    "Existing native saved-Inspector capture test",
+    "Every modern queue/lease/storage/repair/host Python source",
+    "Independent Windows boot-host delegation and no live IPC adoption"
+  ],
+  "nativeAccepted": false,
+  "installed": false,
+  "publicationReady": false,
+  "scope": "Forward-port actual legacy inspection fixes only. Existing lifecycle proof retains its original source identity; current generic transport has compiler/standalone checks, not a new persistent-host acceptance run.",
+  "modernPythonSuite": {
+    "command": "python -m unittest discover -s Tools~/Queue -p 'Test*.py'",
+    "failed": 0,
+    "passed": 33,
+    "durationSeconds": 437.233
+  },
+  "actualServiceInspection": {
+    "requests": 316,
+    "observedUtc": "2026-11-09T13:39:18.8510739Z",
+    "findings": 0,
+    "deliveryClaimsRevalidated": false,
+    "matchedReceipts": 252,
+    "processorOwnershipVerified": false,
+    "elapsedSeconds": 3.8091726
+  }
+}

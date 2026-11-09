@@ -1,5 +1,7 @@
 # 0.4.0 source candidate
 
+- Forward-port the0.1.3 legacy-inspection maintenance fix: trusted native credential routing, finite512-record/90-second exact-object batches and truthful reported supersession. Preserve the independent-host RunExecutable transport, current modern queue protocol and native saved-Inspector test. No installed consumer or live publisher changes.
+
 Added an explicit fingerprint-bound existing IntegrationQueue owner adapter with stopped-owner adoption and supported lifecycle delegation; original queue/gates/policy/model routing remain authoritative. Independent host integration/native acceptance remain unverified. Requires God0.44.0/central Compatibility prerequisite.
 
 # Changelog

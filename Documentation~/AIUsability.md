@@ -70,7 +70,7 @@ GitFlow never installs or updates itself, another Forge package or managed Comma
 
 ## Legacy read-only API example
 
-The legacy inspector retains its 45-second / 128-request read bounds, dated snapshots, no automatic refresh, preserved checkout and temporary observation object store. Public HTTPS and absolute local remotes are its supported transports. It reads recorded legacy claims; it does not prove live integration or operate the legacy runner.
+The legacy inspector has finite 90-second /512-request bounds, one MiB per JSON object,16 MiB per object batch and128 KiB per batch query. It advertises refs once and batches exact local objects/receipts first with lazy fetch/replacement objects disabled; missing commits are fetched together only into its owned temporary object store. HTTPS delegates noninteractively only to the selected remote's existing native manager/manager-core/wincred helper; tokens remain inside Git/helper and unrelated global/system config stays isolated. Shell/custom helpers, SSH and sign-in dialogs are unsupported. Dated snapshots, explicit refresh, checkout preservation and truthful incomplete coverage remain. The existing processor's reported superseded terminal state is distinguished from independently verified main ancestry. Inspection does not operate the legacy runner; the separate explicit existing-runner bridge owns its scoped control contract.
 
 <!-- GEURTS-EXAMPLE: Tools~/Examples/InspectionExample.cs -->
 ```csharp
