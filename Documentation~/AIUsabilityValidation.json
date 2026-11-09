@@ -1,73 +1,32 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.3.0",
-  "sourceCandidate": "published source-only candidate codex/queue-reference-batching at 48a7e07fb363c60510110886565f8a39183ecff0; unreleased",
-  "sourceFingerprint": "636593a86b1c8b46489cd457e83a84cfd84ce27a5571691782220ba9d8da45cc",
+  "sourceFingerprint": "8f613ddb186131a10e389033e8608c8aa7c94a03f64da2db639293096e6391e8",
   "unityVersion": "6000.6.3f1",
   "passed": 0,
   "failed": 0,
   "skipped": 0,
   "examplesCompiled": false,
-  "compilerGate": {
-    "status": "not_run",
-    "warnings": null,
-    "errors": null
-  },
-  "nativeVisualAcceptance": "not_run",
+  "nativeVisualAcceptance": "pending_updated_candidate",
   "publicationReady": false,
-  "scope": "Current Unity/native acceptance was not run. Focused machinery and safe-diagnostic results are separate from initial 0.3.0 and historical native evidence. No live queue or consumer changed.",
+  "scope": "Current Editor and test assemblies passed source-only compiler replay against Unity 6000.6.3f1 references at warning level four/WAE. Six actual discovery test methods passed outside Unity. This is not native Unity compilation/test/UI acceptance; no open fixture or game project was changed.",
   "sourceChecks": {
-    "initialCandidate": {
-      "commit": "2e5ab9ab08cc6a3bcd505f7dc16e71a2cded494c",
-      "sourceFingerprint": "747f42e8595d1b18a97b3b3d61e7c56baa371ff12bbc049e29d1387a5a868632",
-      "checks": {
-        "pythonSyntax": "passed",
-        "presentation": "3 focused smoke checks; 6 C#9 syntax trees; actual presentation compiled warnings-as-errors outside Unity",
-        "cliAndExistingCapture": "3 passed; 0 failed",
-        "observation": "5 passed; 0 failed",
-        "finalAffected": "3 passed; 0 failed; latest affected rerun 11.337s",
-        "finalIdentity": "1 passed; 0 failed; exact CLI PID and SHA projection verified in 5.062s"
-      }
-    },
-    "referenceReadBenchmark": {
-      "records": 314,
-      "report": "Documentation~/Evidence/0.3.0/ReferenceReadBenchmark.json",
-      "scope": "Synthetic batching measurement before selective-read and diagnostic additions; no production/LFS forecast or final whole-source timing certification."
-    },
-    "finalMachinery": {
-      "passed": 5,
+    "executableDiscovery": {
+      "passed": 6,
       "failed": 0,
-      "report": "Documentation~/Evidence/0.3.0/FinalMachineryAcceptance.log",
-      "scope": "Five focused real-Git cases; no full-suite claim. Later root-exception metadata exercised by the final diagnostic rerun/smoke."
-    },
-    "finalDiagnostic": {
-      "passed": 1,
-      "failed": 0,
-      "report": "Documentation~/Evidence/0.3.0/FinalDiagnosticAcceptance.log"
-    },
-    "diagnosticSmoke": {
-      "scenarios": 4,
-      "report": "Documentation~/Evidence/0.3.0/FinalDiagnosticSmoke.log"
-    },
-    "presentation": {
-      "smokeChecks": 3,
-      "csharp9SyntaxTrees": 6,
-      "report": "Documentation~/Evidence/0.3.0/FinalPresentationSmoke.log",
-      "scope": "Actual presentation source compiled warnings-as-errors outside Unity; no native type-resolution/visual claim."
-    },
-    "pythonSyntax": "passed"
+      "report": "Documentation~/Evidence/0.3.0/HistoryWrapAndToolDiscovery.json"
+    }
   },
+  "compilerGate": {
+    "status": "native_pending",
+    "report": "Documentation~/Evidence/0.3.0/HistoryWrapAndToolDiscovery.json",
+    "sha256": "a46ec2e2d9e9880223290e0062d3be844ed15fdb4d820aa262604007c507bccd",
+    "warnings": 0,
+    "errors": 0,
+    "scope": "Both current source assemblies compile strictly; native full rebuild remains pending."
+  },
+  "integrationRecipes": [],
   "publicationBlockers": [
-    "Current-source Unity compilation/examples/tests and rendered standalone/embedded acceptance remain unverified.",
-    "Current-source zero-warning/zero-error licensed dependency validation is required; no 0.3.0 compiler cause has been established. Historical 0.2.0 QC diagnostics/private tests are not current release evidence."
-  ],
-  "candidatePublication": {
-    "status": "pushed_and_remote_verified",
-    "commit": "48a7e07fb363c60510110886565f8a39183ecff0",
-    "reference": "refs/heads/codex/queue-reference-batching",
-    "url": "https://github.com/Geurtsy/com.geurts.gameforge.gitflow/commit/48a7e07fb363c60510110886565f8a39183ecff0",
-    "merged": false,
-    "released": false,
-    "installed": false
-  }
+    "Native Unity compilation/examples/tests and actual user visual acceptance remain pending for the changed fingerprint; no package release is claimed."
+  ]
 }

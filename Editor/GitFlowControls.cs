@@ -102,6 +102,24 @@ namespace Geurts.GameForge.GitFlow.Editor
             _cancel = new Button(() => { _requestCancellation?.Cancel(); _status.text = "Cancellation requested. Awaiting cleanup; dispatched writes may already have completed. The independent publisher is not stopped."; }) { text = "Cancel current panel request" };
             _cancel.SetEnabled(false); parent.Add(_cancel);
             _console = new GitFlowQueueConsole(parent);
+            Button(group, "Find Python and Codex executables", async () =>
+            {
+                CancellationToken cancellation = _requestCancellation.Token;
+                string python = "", codex = "";
+                await Task.Run(() =>
+                {
+                    python = GitFlowToolDiscovery.Resolve(_actionPreferences.PythonExecutable, GitFlowToolDiscovery.PythonCandidates(), cancellation);
+                    codex = GitFlowToolDiscovery.Resolve(_actionPreferences.CodexExecutable, GitFlowToolDiscovery.CodexCandidates(), cancellation);
+                }, cancellation);
+                if (_disposed) return new JObject { ["state"] = "cancelled" };
+                if (!string.IsNullOrEmpty(python)) _configuration.PythonExecutable = python;
+                if (!string.IsNullOrEmpty(codex)) _configuration.CodexExecutable = codex;
+                _tree.UpdateTree(); _configurationView.MarkDirtyRepaint();
+                return new JObject { ["state"] = string.IsNullOrEmpty(python) || string.IsNullOrEmpty(codex) ? "partial" : "found",
+                    ["checks"] = new JArray(new JObject { ["name"] = "Python", ["state"] = string.IsNullOrEmpty(python) ? "unavailable" : "found", ["source"] = python },
+                        new JObject { ["name"] = "Codex", ["state"] = string.IsNullOrEmpty(codex) ? "unavailable" : "found", ["source"] = codex }),
+                    ["findings"] = new JArray("Existing valid manual paths are kept. Review or edit the visible paths under Local tools; choose missing executables manually. Then discover models and save preferences. No executable was run or installed; Python version and Codex access are not yet verified.") };
+            });
             Button(group, "Discover local Codex models", async () =>
             {
                 var result = await Host().DiscoverModelsAsync(_actionPreferences, _requestCancellation.Token);

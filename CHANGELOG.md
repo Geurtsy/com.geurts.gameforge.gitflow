@@ -2,13 +2,15 @@
 
 ## 0.3.0 - unreleased source-only candidate
 
+- Wrap action history with a stacked label and vertical scrolling. Add explicit local Python/Codex executable discovery with editable manual paths and useful missing-tool preflight. Both current assemblies compile strictly and six focused discovery checks pass outside Unity; updated native acceptance and package release remain pending.
+
 - Add an embedded bounded queue console with explicit pages, scope/time/coverage, recorded owner/setup/lease/processor and request validation/publication/sync fields.
 - Isolate modern inspection in a temporary bare store; report malformed/legacy/partial evidence without adopting records or probing live ownership.
 - Freeze action scope, expose per-panel cancellation uncertainty and preserve dated observations; withhold unrestricted raw diagnostics and JSON from panel output.
 - Add a reviewed existing-policy setup route for selected repositories, retaining all existing required gates and explicit publisher start.
 - Batch publisher request-ref reads, fetch missing exact commits in one transport and reuse cached objects while retaining fresh remote-ref/lease checks. Preflight control sizes and read blobs in batches of sixteen.
 - Remove redundant dependency-free scans and query exact dependency refs only. Add assistant-readable safe failure stage/cause/evidence/action records without a new collector or supervisor; retain raw owner evidence and uncertain-outcome protections.
-- Candidate source was pushed and verified at 48a7e07 on codex/queue-reference-batching. Native Unity/visual acceptance, main merge and release remain pending; historical 0.2.0 diagnostics are not a demonstrated 0.3.0 failure cause.
+- Candidate source was pushed and verified at 48a7e07 on codex/queue-reference-batching. That candidate reached main through PR #4; native visual acceptance and immutable package release remain pending; historical 0.2.0 diagnostics are not a demonstrated 0.3.0 failure cause.
 
 
 ## 0.2.0 — Unreleased candidate

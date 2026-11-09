@@ -43,7 +43,12 @@ namespace Geurts.GameForge.GitFlow.Editor
 
         /// <summary>Queries the installed Codex metadata interface; no inference or project context is sent.</summary>
         public Task<JObject> DiscoverModelsAsync(GitFlowPreferences preferences, CancellationToken cancellation = default)
-            => RunAsync(preferences.PythonExecutable, "GitFlowModels.py", new[] { "--executable", preferences.CodexExecutable, "list-models" }, 45, cancellation);
+        {
+            if (preferences == null) throw new ArgumentNullException(nameof(preferences));
+            GitFlowToolDiscovery.RequireSelected(preferences.PythonExecutable, "Python");
+            GitFlowToolDiscovery.RequireSelected(preferences.CodexExecutable, "Codex");
+            return RunAsync(preferences.PythonExecutable, "GitFlowModels.py", new[] { "--executable", preferences.CodexExecutable, "list-models" }, 45, cancellation);
+        }
 
         /// <summary>Executes an explicit supported host command; callers retain the operation's authorization boundary.</summary>
         public Task<JObject> ExecuteQueueAsync(GitFlowPreferences preferences, IEnumerable<string> arguments, int timeoutSeconds = 60, CancellationToken cancellation = default)
@@ -132,6 +137,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Serializes bridge requests and contains every native descendant through cancellation and reload.</summary>
         private async Task<JObject> RunAsync(string python, string script, IEnumerable<string> arguments, int timeoutSeconds, CancellationToken cancellation)
         {
+            GitFlowToolDiscovery.RequireSelected(python, "Python");
             if (Interlocked.Exchange(ref _busy, 1) != 0) throw new InvalidOperationException("A GitFlow host request is already running.");
             try
             {
