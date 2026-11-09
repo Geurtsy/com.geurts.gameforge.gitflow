@@ -1,0 +1,13 @@
+{
+  "script": "Tools~/Validate-InspectionBatch.ps1",
+  "scriptRawSha256": "467796560c4fe0546940f6dc7d163dd0a1e33f05e01ccd44f212872834effd17",
+  "ordinaryWindowsExecutable": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+  "actualVersion": "5.1.26100.9843",
+  "parsed": true,
+  "usedCmdletParametersAvailable": true,
+  "frameworkOverloadChecksPassed": 7,
+  "ps7OnlyFeaturesFound": 0,
+  "scriptExecuted": false,
+  "unityLaunched": false,
+  "scope": "Read-only parser/command metadata/reflection and static language/API review. This is not execution of the manual validation action or native acceptance."
+}

@@ -1,5 +1,6 @@
 // IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -167,6 +168,100 @@ namespace Geurts.GameForge.GitFlow.Tests
             service.Dispose(); service.Dispose(); Assert.Throws<ObjectDisposedException>(() => service.RefreshAsync(new GitFlowTarget(_checkout)));
         }
 
+        /// <summary>Inspects more than the historical 128-record limit without changing any caller or remote bytes.</summary>
+        [Test]
+        public async Task LargerQueueUsesBatchesAndPreservesAllRecords()
+        {
+            string source = Run(_checkout, "rev-parse", "HEAD").Trim();
+            var pushes = new List<string> { "push", "origin" };
+            for (int index = 0; index < 160; index++)
+            {
+                string id = "q_20261109_000000_" + index.ToString("x12");
+                Write("IntegrationRequest.json", new JObject { ["schema"] = 1, ["id"] = id,
+                    ["status"] = index == 159 ? "superseded" : "queued", ["source"] = source, ["title"] = "Café 🎮 " + index }.ToString());
+                Run(_checkout, "add", "IntegrationRequest.json"); Run(_checkout, "commit", "-m", "bounded record");
+                string commit = Run(_checkout, "rev-parse", "HEAD").Trim();
+                pushes.Add(commit + ":refs/heads/codex/queue/" + id);
+            }
+            Run(_checkout, pushes.ToArray());
+            string before = Fingerprint(_checkout), remote = Fingerprint(_remote);
+            using (var service = new GitFlowInspection())
+            {
+                var observed = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(observed.Complete, Is.True, string.Join("\n", observed.Issues));
+                Assert.That(observed.Requests.Count, Is.EqualTo(160));
+                Assert.That(observed.Requests.Count(value => value.State == "Superseded"), Is.EqualTo(1));
+                Assert.That(observed.Requests.All(value => value.Title.StartsWith("Café 🎮 ", StringComparison.Ordinal)), Is.True);
+            }
+            Assert.That(Fingerprint(_checkout), Is.EqualTo(before)); Assert.That(Fingerprint(_remote), Is.EqualTo(remote));
+        }
+
+        /// <summary>Fetches missing control objects only into the owned temporary store and preserves a separate checkout byte-for-byte.</summary>
+        [Test]
+        public async Task MissingLocalObjectsUseTemporaryStoreOnly()
+        {
+            PublishRequest(0, "queued", Run(_checkout, "rev-parse", "HEAD").Trim());
+            string reader = Path.Combine(_root, "reader");
+            Run(_root, "clone", "--no-local", "--single-branch", "--branch", "main", _remote, reader);
+            string before = Fingerprint(reader), remote = Fingerprint(_remote);
+            using (var service = new GitFlowInspection())
+            {
+                var observed = await service.RefreshAsync(new GitFlowTarget(reader));
+                Assert.That(observed.Complete, Is.True, string.Join("\n", observed.Issues));
+                Assert.That(observed.Requests.Count, Is.EqualTo(1));
+            }
+            Assert.That(Fingerprint(reader), Is.EqualTo(before)); Assert.That(Fingerprint(_remote), Is.EqualTo(remote));
+        }
+
+        /// <summary>Reports the actual advertised count beyond the finite bound without claiming complete coverage.</summary>
+        [Test]
+        public async Task OversizedQueueReportsCountAndRemainsUnavailable()
+        {
+            string source = Run(_checkout, "rev-parse", "HEAD").Trim();
+            string directory = Path.Combine(_remote, "refs/heads/codex/queue"); Directory.CreateDirectory(directory);
+            for (int index = 0; index <= GitFlowInspection.MaximumRequests; index++)
+                File.WriteAllText(Path.Combine(directory, "q_20261109_000000_" + index.ToString("x12")), source + "\n", new UTF8Encoding(false));
+            string before = Fingerprint(_checkout), remote = Fingerprint(_remote);
+            using (var service = new GitFlowInspection())
+            {
+                var observed = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(observed.Complete, Is.False); Assert.That(observed.Requests, Is.Empty);
+                Assert.That(observed.Issues.Single(), Does.Contain("513 requests"));
+            }
+            Assert.That(Fingerprint(_checkout), Is.EqualTo(before)); Assert.That(Fingerprint(_remote), Is.EqualTo(remote));
+        }
+
+        /// <summary>Refuses executable credential helpers without invoking them or altering caller configuration.</summary>
+        [Test]
+        public async Task CustomCredentialHelpersAreNeverExecuted()
+        {
+            Run(_checkout, "config", "remote.origin.url", "https://example.invalid/fixture.git");
+            Run(_checkout, "config", "credential.helper", "!echo forbidden");
+            string before = Fingerprint(_checkout);
+            using (var service = new GitFlowInspection())
+            {
+                var observed = await service.RefreshAsync(new GitFlowTarget(_checkout));
+                Assert.That(observed.QueueState, Is.EqualTo("Unavailable"));
+                Assert.That(observed.Issues.Any(value => value.Contains("Shell/custom credential helpers are not executed")), Is.True);
+            }
+            Assert.That(Fingerprint(_checkout), Is.EqualTo(before));
+            Run(_checkout, "config", "credential.helper", "");
+            var credentialOptions = typeof(GitFlowInspection).GetMethod("CredentialOptions", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            Assert.That((string[])credentialOptions.Invoke(null, new object[] { _checkout, "https://example.invalid/fixture.git", CancellationToken.None }), Is.Empty, "Public HTTPS without a configured helper must remain available without credential interaction.");
+        }
+
+        /// <summary>Checks byte-framed UTF-8, explicit missing objects and malformed/oversized batch refusals.</summary>
+        [Test]
+        public void ObjectBatchPreservesUtf8AndRejectsMalformedFrames()
+        {
+            string specification = new string('a', 40) + ":IntegrationRequest.json", body = "{\"title\":\"Café 🎮\"}\n";
+            var observed = GitFlowObjectBatch.Read(new[] { specification }, _ => new string('b', 40) + " blob " + Encoding.UTF8.GetByteCount(body) + "\n" + body + "\n");
+            Assert.That(observed[specification].Text, Is.EqualTo(body));
+            Assert.That(GitFlowObjectBatch.Read(new[] { specification }, _ => specification + " missing\n")[specification].Error, Is.Not.Null);
+            foreach (string raw in new[] { "bad\n", new string('b', 40) + " blob 1048577\n", new string('b', 40) + " blob 1\nx", specification + " missing\nextra" })
+                Assert.Throws<InvalidDataException>(() => GitFlowObjectBatch.Read(new[] { specification }, _ => raw));
+        }
+
         /// <summary>Verifies installed God discovery stays offline and dispatch uses the active shared lifecycle service.</summary>
         [Test]
         public async Task GodDiscoveryAndDispatchMatchImplementedDeclaration()
@@ -197,6 +292,7 @@ namespace Geurts.GameForge.GitFlow.Tests
             {
                 int port = ((IPEndPoint)listener.LocalEndpoint).Port;
                 Run(_checkout, "config", "remote.origin.url", "https://127.0.0.1:" + port + "/fixture.git");
+                Run(_checkout, "config", "credential.helper", "manager");
                 Task<TcpClient> accepted = listener.AcceptTcpClientAsync();
                 Task<GitFlowSnapshot> operation = service.RefreshAsync(new GitFlowTarget(_checkout));
                 Assert.That(await Task.WhenAny(accepted, Task.Delay(10000)), Is.SameAs(accepted), "Git did not create its HTTPS helper connection");

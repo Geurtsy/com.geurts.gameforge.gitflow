@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0.0",
+  "packageVersion": "0.1.3",
+  "testedImplementationCommit": "9f26671983dfc3cd240d6a4088041bc64736663c",
+  "sourceFingerprint": "dbde186eb5592cf20564eb273d19a95c31d8eb6617c89714ad497b8d0f762014",
+  "standalonePassed": 11,
+  "standaloneFailed": 0,
+  "checks": [
+    "160 records above historical128 limit",
+    "terminal superseded remains distinct",
+    "temporary missing-object fetch preserves caller all bytes",
+    "inspection preserves remote all bytes",
+    "repeat complete without caller mutation",
+    "finite request limit reports actual673 count",
+    "shell helper refused before execution",
+    "credential refusal preserves caller config/index/content",
+    "actual HTTPS helper canceled and descendants socket closed",
+    "HTTPS without any helper remains available noninteractively",
+    "UTF8 byte framing and five missing/malformed controls"
+  ],
+  "largeQueueMissingObjectSeconds": 3.7989402000093833,
+  "actualServiceInspection": {
+    "deliveryClaimsRevalidated": false,
+    "matchedReceipts": 252,
+    "observedUtc": "2026-11-09T13:38:36.9200232Z",
+    "findings": 0,
+    "elapsedSeconds": 3.8115653,
+    "processorOwnershipVerified": false,
+    "requests": 316
+  },
+  "compilerOnly": {
+    "unityReferenceVersion": "6000.6.3f1",
+    "analyzerAcceptance": false,
+    "diagnostics": 0,
+    "warningsAsErrors": true,
+    "warningLevel": 4,
+    "owningEditorTestsAndExamplesCompiled": true,
+    "nativeTestExecution": false,
+    "separateActualAssemblyNames": [
+      "Geurts.GameForge.GitFlow.Editor",
+      "Geurts.GameForge.GitFlow.Editor.Tests",
+      "GitFlow.SupportedExamples"
+    ]
+  },
+  "preservation": {
+    "liveConfigConcurrentDrift": "Earlier observation had unattributed concurrent config drift. Current exact9f26671 service repeat preserved HEAD/index/config/FETCH_HEAD hashes; whole disposable byte-preservation controls also pass.",
+    "disposableRemoteAllRawBytes": true,
+    "liveHeadIndexFetchHeadUnchanged": true,
+    "disposableCallerAllRawBytes": true
+  },
+  "nativeUnity": {
+    "executed": 0,
+    "publicationReady": false,
+    "statedReason": "blocked by policy",
+    "launchRejections": 2,
+    "renewedUserBatchAuthorizationBeforeSecondRejection": true,
+    "desktopControlAttempted": false,
+    "fixtureManifestAndLockUntouched": true,
+    "plannedOwningTests": 13
+  }
+}
