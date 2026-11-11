@@ -1,4 +1,4 @@
-// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
+// IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Geurts.GameForge.God.Editor;
+using Geurts.GameForge.God;
 using Newtonsoft.Json.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -64,7 +65,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private readonly PropertyTree _tree;
         private ForgeEditorTheme _theme;
         private readonly CancellationTokenSource _cancellation = new CancellationTokenSource();
-        private readonly Label _status;
+        private readonly HelpBox _status;
         private readonly TextField _output;
         private readonly VisualElement _configurationView;
         private readonly List<Button> _buttons = new List<Button>();
@@ -75,7 +76,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private bool _busy, _disposed;
 
         /// <summary>Creates controls and loads local settings only; no discovery, inference or queue action runs on opening.</summary>
-        internal GitFlowControls(VisualElement parent)
+        internal GitFlowControls(VisualElement parent, VisualElement feedbackParent = null)
         {
             var group = new Foldout { text = "Queue host and local Codex — Not checked", value = false };
             group.AddToClassList("forge-card"); group.style.marginTop = 16; group.style.paddingLeft = group.style.paddingRight = 12; parent.Add(group);
@@ -83,7 +84,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             string failure = null;
             try
             {
-                var saved = GitFlowBrick.Host?.Load();
+                var saved = GitFlowBrick.Host?.Load() ?? ReadSavedPreferences(_configuration.Repository);
                 if (saved != null)
                 {
                     _configuration.PythonExecutable = saved.PythonExecutable; _configuration.CodexExecutable = saved.CodexExecutable;
@@ -97,10 +98,10 @@ namespace Geurts.GameForge.GitFlow.Editor
             _tree = PropertyTree.Create(_configuration);
             _configurationView = new IMGUIContainer(() => { if (_theme == null) _theme = new ForgeEditorTheme(); using (_theme.Scope()) _tree.Draw(false); });
             group.Add(_configurationView);
-            _status = new Label(failure ?? "Not checked. Model discovery sends no project context and makes no inference request.");
-            _status.style.whiteSpace = WhiteSpace.Normal; parent.Add(_status);
-            _cancel = new Button(() => { _requestCancellation?.Cancel(); _status.text = "Cancellation requested. Awaiting cleanup; dispatched writes may already have completed. The independent publisher is not stopped."; }) { text = "Cancel current panel request" };
-            _cancel.SetEnabled(false); parent.Add(_cancel);
+            _status = new HelpBox(failure ?? "Information: Not checked. Model discovery sends no project context and makes no inference request.", failure == null ? HelpBoxMessageType.Info : HelpBoxMessageType.Error);
+            _status.style.whiteSpace = WhiteSpace.Normal; (feedbackParent ?? parent).Add(_status);
+            _cancel = new Button(() => { _requestCancellation?.Cancel(); _status.messageType = HelpBoxMessageType.Warning; _status.text = "Warning: Cancellation requested. Awaiting cleanup; dispatched writes may already have completed. The independent publisher is not stopped."; }) { text = "Cancel current panel request" };
+            _cancel.SetEnabled(false); (feedbackParent ?? parent).Add(_cancel);
             _console = new GitFlowQueueConsole(parent);
             Button(group, "Find Python and Codex executables", async () =>
             {
@@ -235,6 +236,13 @@ namespace Geurts.GameForge.GitFlow.Editor
             group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex — " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
         }
 
+        /// <summary>Reads only existing God-owned preferences while lifecycle startup is pending; creates no settings or project folders.</summary>
+        internal static GitFlowPreferences ReadSavedPreferences(string projectRoot)
+        {
+            string folder = Path.Combine(projectRoot, "ProjectSettings", "GeurtsGameForge");
+            return Directory.Exists(folder) ? new BrickSettingsStore(folder).Load<GitFlowPreferences>(GitFlowBrick.PackageId) : null;
+        }
+
         /// <summary>Returns the enabled lifecycle service and exposes a useful unavailable state otherwise.</summary>
         private static GitFlowHost Host() => GitFlowBrick.Host ?? throw new InvalidOperationException("Enable GitFlow in God before using the host.");
 
@@ -303,21 +311,21 @@ namespace Geurts.GameForge.GitFlow.Editor
                 _busy = true; _actionPreferences = _configuration.Preferences();
                 _requestCancellation = CancellationTokenSource.CreateLinkedTokenSource(_cancellation.Token);
                 _configurationView.SetEnabled(false); foreach (Button current in _buttons) current.SetEnabled(false);
-                _cancel.SetEnabled(true); _status.text = "Working locally: " + title + ". Waiting for the actual host result; publisher progress is not streamed.";
+                _cancel.SetEnabled(true); _status.messageType = HelpBoxMessageType.Info; _status.text = "Information: Working locally: " + title + ". Waiting for the actual host result; publisher progress is not streamed.";
                 _console.Record("Started local action: " + title + "; selected repository: " + _actionPreferences.Repository + "; remote: " + _actionPreferences.Remote);
                 try
                 {
                     JObject result = await action();
-                    if (!_disposed) { _output.value = GitFlowPresentation.Format(result); _status.text = GitFlowPresentation.Summary(result); _console.Present(result); }
+                    if (!_disposed) { _output.value = GitFlowPresentation.Format(result); _status.text = GitFlowPresentation.Summary(result); _status.messageType = (string)result["state"] == "partial" ? HelpBoxMessageType.Warning : (string)result["state"] == "failed" || (string)result["state"] == "unavailable" ? HelpBoxMessageType.Error : HelpBoxMessageType.Info; _console.Present(result); }
                 }
                 catch (OperationCanceledException)
                 {
-                    if (!_disposed) { _status.text = "Panel request cancelled or timed out. Prior observations remain dated. Dispatched writes may have completed: inspect original request/configuration before retrying. The publisher was not stopped."; _console.Record(_status.text); }
+                    if (!_disposed) { _status.messageType = HelpBoxMessageType.Warning; _status.text = "Warning: Panel request cancelled or timed out. Prior observations remain dated. Dispatched writes may have completed: inspect original request/configuration before retrying. The publisher was not stopped."; _console.Record(_status.text); }
                 }
                 catch (Exception error)
                 {
                     // Raw subprocess/diagnostic messages may include credentials or project context.
-                    if (!_disposed) { _status.text = "Failed: " + error.GetType().Name + ". " + (error is InvalidOperationException || error is ArgumentException ? GitFlowPresentation.Text(error.Message) : "Check selected paths, access and owner-retained evidence. Raw diagnostics withheld; partial writes are possible."); _console.Record(_status.text); }
+                    if (!_disposed) { _status.messageType = HelpBoxMessageType.Error; _status.text = "Error: Failed: " + error.GetType().Name + ". " + (error is InvalidOperationException || error is ArgumentException ? GitFlowPresentation.Text(error.Message) : "Check selected paths, access and owner-retained evidence. Raw diagnostics withheld; partial writes are possible."); _console.Record(_status.text); }
                 }
                 finally
                 {

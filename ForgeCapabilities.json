@@ -75,7 +75,7 @@
     {
       "required": true,
       "kind": "package",
-      "minimumVersion": "0.39.3",
+      "minimumVersion": "0.44.4",
       "id": "com.geurts.gameforge.god",
       "detail": "Exact minimum declared in package.json."
     },
@@ -128,14 +128,20 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Current Editor and test assemblies passed source-only compiler replay against Unity 6000.6.3f1 references at warning level four/WAE. Six actual discovery test methods passed outside Unity. This is not native Unity compilation/test/UI acceptance; no open fixture or game project was changed.",
+    "scope": "Disposable native validation at Unity6000.6.3f1 and6000.6.8f1, exact source fingerprint, real-Git queue evidence and complete default-diagnostic compiler-response qualification are bound in Documentation~/AIUsabilityValidation.json. Visual inspection is informational and explicitly user-waived as a release requirement on2026-11-11. No live game, paid inference, player or physical multi-machine certification.",
     "unverified": [
-      "All changed 0.3.0 Unity source compilation, supported minimum dependency graph, rendered standalone/embedded layouts and native repeated/cancel/close flows.",
-      "Historical 0.2.0 stock Quantum Console 2.6.7 validation reported eleven warnings on Unity 6000.6.3f1. No 0.3.0 compilation result or current compiler failure cause is established.",
-      "Narrow-window resizing; scoped visual checks are listed in the native report.",
+      "Complete rendered/physical interaction, light/dark host-skin and normal/high display-scale matrix (visual release requirement removed by user).",
       "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
       "Real elapsed 30-minute lease soak and multiple physical machines.",
-      "Project-specific native identity adapters."
-    ]
+      "Project-specific native derived-identity adapters, player/backend/rendering and arbitrary game dependency graphs."
+    ],
+    "visualAcceptance": {
+      "required": false,
+      "status": "user-waived",
+      "passed": false,
+      "userInstruction": "Remove visual checks as a requirement and publish.",
+      "date": "2026-11-11",
+      "scope": "GitFlow0.3.0 release; no change to the generic Forge standards or other owners."
+    }
   }
 }

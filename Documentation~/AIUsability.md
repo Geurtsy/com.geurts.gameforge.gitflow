@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.3.0 is an unreleased source-only candidate. Changed native sources have not been compiled or exercised in Unity. Historical 0.2.0 evidence is not acceptance of this update. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
+Version 0.3.0 has source-bound disposable native validation. Consult the current validation record for exact Editor, dependency, UI and publication coverage. Historical evidence retains its original scope. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
 
 ## Choose the relevant surface
 
@@ -10,7 +10,7 @@ Version 0.3.0 is an unreleased source-only candidate. Changed native sources hav
 
 ## Queue console and selected repository
 
-Read [QueueConsole.md](QueueConsole.md) for explicit modern pages, selected-repository setup, coverage/freshness, safe evidence and legacy non-adoption. Modern inspect now defaults to 16 requests in a temporary bare store, with explicit partial/unavailable results. Opening and repainting remain offline; no native or live queue action was taken by this implementation task.
+Read [QueueConsole.md](QueueConsole.md) for explicit modern pages, selected-repository setup, coverage/freshness, safe evidence and legacy non-adoption. Modern inspect now defaults to 16 requests in a temporary bare store, with explicit partial/unavailable results. Opening and repainting remain offline. Validation used a disposable local queue; no production queue action was taken.
 
 ## Prerequisites and lifecycle
 
@@ -47,6 +47,14 @@ Start configured background publisher starts one deterministic native program. I
 After a manual Forge update, Adopt this installed runner after stopping requires stopped local owners, a released shared owner and the exact reviewed configuration identity. It preserves requests, candidates, repair history and evidence, journals both configurations and updates only the configured runner/owned adapter paths. An interrupted ownership/configuration mismatch fails closed for operator reconciliation. This action installs nothing and does not restart the processor.
 
 Publisher ref reads batch missing exact Git objects and bounded request blobs, while sensitive ref/lease checks still query the remote freshly. See [reference-read behavior and limits](QueueConsole.md#bounds-and-truthful-evidence). The source-only benchmark is `python Tools~/Queue/BenchmarkGitFlowReferences.py --output <new-task-owned-report.json>` from a Git source checkout retaining commit 2e5ab9a. It creates only disposable local repositories and requires an existing output directory; results are synthetic local evidence, not production or LFS savings forecasts.
+
+## Native compiler prerequisite and evidence
+
+Use the published Compatibility owner for exact dependency preparation and coherent native reference settings. God 0.44.4 requires that independent core; it is not an optional peer brick. The minimum fixture used Compatibility 0.1.1; the selected Unity 6000.6.8f1 fixture uses released Compatibility 0.2.0 and its reviewed profile. Preserve licensed originals and use the owning preparation/adoption workflow. Never patch PackageCache or suppress warnings.
+
+`GitFlowUnity.py compile-project` requires its evidence directory outside the Unity project. It performs a native full script rebuild and scans the complete log, then invokes the installed Compatibility qualifier over every actual source-bearing compiler response with compiler/analyzer default diagnostics. Private response copies remove diagnostic filters without altering sources, references, analyzers or native policy files. A zero native exit alone is insufficient. The shared deadline includes both stages.
+
+The gate emits flat portable `result.json` and `compiler-qualification.json` with run/candidate identities and hashes. Full input inventories, copied responses and derived assemblies remain in a private sibling `<evidence>.compiler-private` directory; its launcher log is private too. Retain those owner-local records and publish only safe summaries. Any diagnostics, ignored immutable code assets, incomplete inputs or changed native/private-policy inputs fail the gate. No success receipt is written after failure.
 
 ## Local Codex and bounded repair
 
@@ -106,7 +114,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.3.0",
   "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
+    "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   }
 }

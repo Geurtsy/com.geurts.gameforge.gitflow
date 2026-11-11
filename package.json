@@ -6,7 +6,7 @@
   "unity": "6000.6",
   "unityRelease": "3f1",
   "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
+    "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   },
   "author": {

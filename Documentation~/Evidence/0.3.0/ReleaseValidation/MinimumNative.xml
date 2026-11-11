@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="20" result="Passed" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:43:25Z" duration="96.9643985">
+  <test-suite type="TestSuite" id="1000" name="gfv030" fullname="gfv030" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:43:25Z" duration="96.964399" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1025" name="Geurts.GameForge.GitFlow.Editor.Tests.dll" fullname="C:/gff030/Library/ScriptAssemblies/Geurts.GameForge.GitFlow.Editor.Tests.dll" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:43:25Z" duration="96.940493" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="81936" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1026" name="Geurts" fullname="Geurts" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:43:25Z" duration="96.939276" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1027" name="GameForge" fullname="Geurts.GameForge" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:43:25Z" duration="96.938718" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1028" name="GitFlow" fullname="Geurts.GameForge.GitFlow" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:43:25Z" duration="96.938146" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1029" name="Tests" fullname="Geurts.GameForge.GitFlow.Tests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:43:25Z" duration="96.937582" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1001" name="GitFlowHelpTests" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowHelpTests" classname="Geurts.GameForge.GitFlow.Tests.GitFlowHelpTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-11-11 02:41:48Z" end-time="2026-11-11 02:41:49Z" duration="0.302175" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1002" name="HelpViewDisplaysInstalledGuideInsideUnity" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowHelpTests.HelpViewDisplaysInstalledGuideInsideUnity" methodname="HelpViewDisplaysInstalledGuideInsideUnity" classname="Geurts.GameForge.GitFlow.Tests.GitFlowHelpTests" runstate="Runnable" seed="1676877148" result="Passed" start-time="2026-11-11 02:41:49Z" end-time="2026-11-11 02:41:49Z" duration="0.276133" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1003" name="GitFlowInspectionTests" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-11-11 02:41:49Z" end-time="2026-11-11 02:43:25Z" duration="95.829652" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1011" name="CancellationContainsStalledHttpsHelperAndCleansObjects" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.CancellationContainsStalledHttpsHelperAndCleansObjects" methodname="CancellationContainsStalledHttpsHelperAndCleansObjects" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="1346979636" result="Passed" start-time="2026-11-11 02:41:49Z" end-time="2026-11-11 02:41:56Z" duration="6.746958" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1008" name="FailedUnavailableAndMalformedProcessorEvidenceRemainVisible" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.FailedUnavailableAndMalformedProcessorEvidenceRemainVisible" methodname="FailedUnavailableAndMalformedProcessorEvidenceRemainVisible" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="1508920377" result="Passed" start-time="2026-11-11 02:41:56Z" end-time="2026-11-11 02:42:07Z" duration="11.681910" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1010" name="GodDiscoveryAndDispatchMatchImplementedDeclaration" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.GodDiscoveryAndDispatchMatchImplementedDeclaration" methodname="GodDiscoveryAndDispatchMatchImplementedDeclaration" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="2036551185" result="Passed" start-time="2026-11-11 02:42:07Z" end-time="2026-11-11 02:42:12Z" duration="5.077863" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1006" name="MalformedAndFutureRecordsStayActionable" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.MalformedAndFutureRecordsStayActionable" methodname="MalformedAndFutureRecordsStayActionable" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="512949263" result="Passed" start-time="2026-11-11 02:42:12Z" end-time="2026-11-11 02:42:25Z" duration="12.859398" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1009" name="MissingAndDisposedInspectionCleanUp" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.MissingAndDisposedInspectionCleanUp" methodname="MissingAndDisposedInspectionCleanUp" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="2120449556" result="Passed" start-time="2026-11-11 02:42:25Z" end-time="2026-11-11 02:42:28Z" duration="2.421788" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1012" name="NativeSavedInspectorChangeQueuesAndPreservesWorkingState" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.NativeSavedInspectorChangeQueuesAndPreservesWorkingState" methodname="NativeSavedInspectorChangeQueuesAndPreservesWorkingState" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="1174415086" result="Passed" start-time="2026-11-11 02:42:28Z" end-time="2026-11-11 02:42:38Z" duration="10.559332" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Main Object Name 'Owned change' does not match filename 'Owned'
+]]></output>
+                </test-case>
+                <test-case id="1005" name="RepeatedRefreshPreservesFilesIndexesRefsAndPublisherSentinel" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.RepeatedRefreshPreservesFilesIndexesRefsAndPublisherSentinel" methodname="RepeatedRefreshPreservesFilesIndexesRefsAndPublisherSentinel" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="112466720" result="Passed" start-time="2026-11-11 02:42:38Z" end-time="2026-11-11 02:42:52Z" duration="13.405304" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1013" name="RestoredPanelPreferencesPreserveOwnedBytesWithoutStartingHost" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.RestoredPanelPreferencesPreserveOwnedBytesWithoutStartingHost" methodname="RestoredPanelPreferencesPreserveOwnedBytesWithoutStartingHost" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="211907749" result="Passed" start-time="2026-11-11 02:42:52Z" end-time="2026-11-11 02:42:56Z" duration="4.158391" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1007" name="StoppedAndStaleHealthNeverInventLeaseExpiry" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.StoppedAndStaleHealthNeverInventLeaseExpiry" methodname="StoppedAndStaleHealthNeverInventLeaseExpiry" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="57081492" result="Passed" start-time="2026-11-11 02:42:56Z" end-time="2026-11-11 02:43:08Z" duration="12.537029" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1004" name="ViewerAndApiUseOneObservationForAllPhases" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests.ViewerAndApiUseOneObservationForAllPhases" methodname="ViewerAndApiUseOneObservationForAllPhases" classname="Geurts.GameForge.GitFlow.Tests.GitFlowInspectionTests" runstate="Runnable" seed="2059334169" result="Passed" start-time="2026-11-11 02:43:08Z" end-time="2026-11-11 02:43:25Z" duration="16.336965" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1014" name="GitFlowPresentationTests" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.767373" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1017" name="ConsolePreservesDatedScopeAndBoundsRepeatedLocalEvents" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests.ConsolePreservesDatedScopeAndBoundsRepeatedLocalEvents" methodname="ConsolePreservesDatedScopeAndBoundsRepeatedLocalEvents" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" seed="1714172190" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.018593" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1016" name="ProjectionBoundsDeepOrLargeEvidenceVisibly" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests.ProjectionBoundsDeepOrLargeEvidenceVisibly" methodname="ProjectionBoundsDeepOrLargeEvidenceVisibly" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" seed="535438603" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.743380" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1015" name="ProjectionWithholdsRawDiagnosticsAndCredentialLikeValues" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests.ProjectionWithholdsRawDiagnosticsAndCredentialLikeValues" methodname="ProjectionWithholdsRawDiagnosticsAndCredentialLikeValues" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" seed="174599880" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.001514" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1018" name="GitFlowToolDiscoveryTests" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" classname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.034321" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1022" name="CancellationStopsBeforeKeepingAnExistingSelection" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests.CancellationStopsBeforeKeepingAnExistingSelection" methodname="CancellationStopsBeforeKeepingAnExistingSelection" classname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" runstate="Runnable" seed="124466432" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.004353" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1023" name="CandidateSearchIsBounded" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests.CandidateSearchIsBounded" methodname="CandidateSearchIsBounded" classname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" runstate="Runnable" seed="1516209875" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.005137" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1020" name="FindsNativeFileAfterMissingAndWrapperCandidates" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests.FindsNativeFileAfterMissingAndWrapperCandidates" methodname="FindsNativeFileAfterMissingAndWrapperCandidates" classname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" runstate="Runnable" seed="835307423" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.005661" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1019" name="KeepsExistingManualOverride" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests.KeepsExistingManualOverride" methodname="KeepsExistingManualOverride" classname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" runstate="Runnable" seed="430111396" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.004840" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1024" name="MissingSelectionNamesTheToolAndDiscoveryAction" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests.MissingSelectionNamesTheToolAndDiscoveryAction" methodname="MissingSelectionNamesTheToolAndDiscoveryAction" classname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" runstate="Runnable" seed="1730896585" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.003937" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1021" name="RejectsRelativeNetworkAndStoreAliasPaths" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests.RejectsRelativeNetworkAndStoreAliasPaths" methodname="RejectsRelativeNetworkAndStoreAliasPaths" classname="Geurts.GameForge.GitFlow.Tests.GitFlowToolDiscoveryTests" runstate="Runnable" seed="2065272673" result="Passed" start-time="2026-11-11 02:43:25Z" end-time="2026-11-11 02:43:25Z" duration="0.003355" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:\gfe030\FinalMinimumNative\Results.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

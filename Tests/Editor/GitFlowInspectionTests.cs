@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -256,6 +256,7 @@ namespace Geurts.GameForge.GitFlow.Tests
                 AssetDatabase.CreateFolder(folder, "Plugins");
                 AssetDatabase.CreateAsset(owned, folder + "/Owned.mat");
                 AssetDatabase.CreateAsset(excluded, folder + "/Plugins/Excluded.mat");
+                await WaitForFixtureImports();
                 owned.name = "Owned change"; excluded.name = "Preserved unrelated change";
                 EditorUtility.SetDirty(owned); EditorUtility.SetDirty(excluded);
                 Assert.That(EditorUtility.IsDirty(excluded), Is.True, "Fixture must begin with an unsaved excluded asset.");
@@ -284,6 +285,37 @@ namespace Geurts.GameForge.GitFlow.Tests
                 EditorSceneManager.CloseScene(scene, true);
                 if (savedInitial) EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                 AssetDatabase.DeleteAsset(folder);
+            }
+        }
+
+        /// <summary>Restored or disabled-host panels read existing preferences without changing their bytes or provisioning a missing project.</summary>
+        [Test]
+        public void RestoredPanelPreferencesPreserveOwnedBytesWithoutStartingHost()
+        {
+            string settings = Path.Combine(_checkout, "ProjectSettings", "GeurtsGameForge");
+            var store = new BrickSettingsStore(settings);
+            var selected = new GitFlowPreferences { Repository = _checkout, PythonExecutable = Path.Combine(_root, "selected-python.exe"), CaptureScope = "Assets/Task" };
+            store.Save(GitFlowBrick.PackageId, selected);
+            string file = Path.Combine(settings, GitFlowBrick.PackageId + ".json");
+            byte[] before = File.ReadAllBytes(file);
+            GitFlowPreferences loaded = GitFlowControls.ReadSavedPreferences(_checkout);
+            Assert.That(loaded.Repository, Is.EqualTo(selected.Repository));
+            Assert.That(loaded.PythonExecutable, Is.EqualTo(selected.PythonExecutable));
+            Assert.That(loaded.CaptureScope, Is.EqualTo(selected.CaptureScope));
+            CollectionAssert.AreEqual(before, File.ReadAllBytes(file));
+            string missing = Path.Combine(_root, "UnconfiguredProject");
+            Assert.That(GitFlowControls.ReadSavedPreferences(missing), Is.Null);
+            Assert.That(Directory.Exists(missing), Is.False);
+        }
+
+        /// <summary>Waits for this disposable fixture's native imports without saving or clearing unrelated dirty state.</summary>
+        private static async Task WaitForFixtureImports()
+        {
+            var timer = Stopwatch.StartNew();
+            while (EditorApplication.isUpdating || EditorApplication.isCompiling)
+            {
+                Assert.That(timer.Elapsed.TotalSeconds, Is.LessThan(15), "Disposable fixture imports did not settle; capture safety remains enforced.");
+                await Task.Delay(50);
             }
         }
 

@@ -1,0 +1,54 @@
+{
+  "base": "2558ba377cd7756e75226668226b3de2cb6d3042",
+  "unchanged": [
+    {
+      "path": "Tools~/Queue/BenchmarkGitFlowReferences.py",
+      "normalizedSha256": "49f2a016da636858f67e1826a307540f8ca2918626272fa2ca4b606e6b04a987"
+    },
+    {
+      "path": "Tools~/Queue/BenchmarkGitFlowStorage.py",
+      "normalizedSha256": "b468f3a12e389a6ba52819c3f0eef8b1daac887f67b52dd3efddf6a65f158a41"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowCapture.py",
+      "normalizedSha256": "4909f34697f6212e3c7e8620cf6b2a5f9c80d24de4b6d262d4854efbf23443cd"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowLease.py",
+      "normalizedSha256": "51d94fc4375769b0d73fc9277017bca0453087ab9cef120f0234b6a2daa49a0d"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowModels.py",
+      "normalizedSha256": "1a4e59c6865c00d1b194243fb42875364ab40ea138025a96b6af5eddad2048e2"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowObserve.py",
+      "normalizedSha256": "481d4c7d40bf53fa882573325ad9d26d6190aa46e33e50ef87ac3b3c9d744213"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowProcess.py",
+      "normalizedSha256": "906bf164e84ef630b6c6d4f213faebedfe861bcae50b0334eb874fc92fd9d959"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowQueue.py",
+      "normalizedSha256": "0868854811519a565fa4435e24ffc56842a55f9e57f6bcac6f843f05b1cfc54b"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowRepair.py",
+      "normalizedSha256": "753f57b7187d9e1c7a3f4653aa1c6b6a0c0383df94b861e7e2e1f79b395e4a76"
+    },
+    {
+      "path": "Tools~/Queue/GitFlowStorage.py",
+      "normalizedSha256": "428c5dc416281d561d2d2950f68a739259a07eb754b86ed06b15cc4f102884c1"
+    },
+    {
+      "path": "Tools~/Queue/TestGitFlowObserve.py",
+      "normalizedSha256": "e297b0025e4c8750d2783ff1fc1b0724ecec7cf5d1dc3445d467f9000b6dc9dd"
+    },
+    {
+      "path": "Tools~/Queue/TestGitFlowQueue.py",
+      "normalizedSha256": "063ff679ad0d921c36b42004d0a94eba22d585bb5c29a658bed92990146628e0"
+    }
+  ],
+  "scope": "The 25-test real-Git run covers these unchanged queue implementation and test sources. GitFlowUnity.py changed and has fresh native/negative-control qualification plus the five affected regressions."
+}

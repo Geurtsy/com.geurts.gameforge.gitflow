@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.IO;
 using System.Linq;
@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.Compilation;
+using Geurts.GameForge.Compatibility.Editor;
+using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace Geurts.GameForge.GitFlow.Editor
 {
@@ -13,7 +15,7 @@ namespace Geurts.GameForge.GitFlow.Editor
     public static class GitFlowNativeGate
     {
         private static readonly List<CompilerMessage> _messages = new List<CompilerMessage>();
-        private static string _evidence, _run, _candidate;
+        private static string _evidence, _run, _candidate, _compatibilityRoot;
         private static int _assemblies;
         private static bool _compilationStarted;
 
@@ -24,6 +26,8 @@ namespace Geurts.GameForge.GitFlow.Editor
             if (Argument("-gitFlowCompilationProtocol") != "1") throw new ArgumentException("Unsupported full compilation protocol.");
             _evidence = Argument("-gitFlowEvidence"); _run = Argument("-gitFlowRun"); _candidate = Argument("-gitFlowCandidate");
             Directory.CreateDirectory(_evidence); _messages.Clear(); _assemblies = 0; _compilationStarted = false;
+            _compatibilityRoot = PackageInfo.FindForAssembly(typeof(CompatibilityPreflight).Assembly)?.resolvedPath;
+            if (string.IsNullOrEmpty(_compatibilityRoot)) throw new InvalidOperationException("Resolve the required Compatibility package before full compilation.");
             CompilationPipeline.compilationStarted += StartCompilation;
             CompilationPipeline.assemblyCompilationFinished += CollectCompilation;
             CompilationPipeline.compilationFinished += FinishCompilation;
@@ -57,7 +61,8 @@ namespace Geurts.GameForge.GitFlow.Editor
             {
                 run = _run, candidate = _candidate, status = "native_pipeline_completed", observed_warnings = warnings, observed_errors = errors,
                 observed_assembly_callbacks = _assemblies, expected_assemblies = expectedAssemblies,
-                pipeline_started = _compilationStarted, full_script_rebuild_requested = true, unity = UnityEngine.Application.unityVersion
+                pipeline_started = _compilationStarted, full_script_rebuild_requested = true, unity = UnityEngine.Application.unityVersion,
+                compatibility_package_root = _compatibilityRoot, compatibility_version = CompatibilityPreflight.PackageVersion
             }));
             EditorApplication.Exit(errors == 0 && warnings == 0 && expectedAssemblies > 0 ? 0 : 2);
         }

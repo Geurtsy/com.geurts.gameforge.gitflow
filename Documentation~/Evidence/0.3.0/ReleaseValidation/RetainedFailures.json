@@ -1,0 +1,8 @@
+{
+  "stockGraphs": "Fresh0.3 runs using stock QC2.6.7 reproduced11compiler warnings in each Editor; preserved locally. They do not qualify for release.",
+  "unsupportedNewerProfile": "Released Compatibility0.1.1 leaves the6.6.8 graph unsupported; initial full compile reportedCS1701. Released0.2.0 supports the exact newer Editor and its coherent native profile; final strict closure passes. No guard was bypassed.",
+  "nativeFixture": "Initial capture test raced fixture imports; production import guard retained and only fixture import wait corrected. Parallel native suites interfered through a shared temporary test namespace; final suites run serially.",
+  "intermediateEncoding": "Presentation commit4e9e226 passed strict compilation but19/20native tests; Error-dash-Failed assertion exposed an introduced UTF8 decoding regression. Corrected source d99dba8 has fresh20/20proof in both Editors.",
+  "negativeControl": "First immutable synthetic warning package lacked meta files and Unity ignored its source; its apparent pass is not negative coverage. Native-generated metadata was committed before the valid hidden-warning run. Current adapter also rejects such ignored immutable code assets.",
+  "hiddenWarning": "Native immutable-package response used-warn:0. Complete default-diagnostic replay caughtCS0169as an error, rejected the run and emitted no success result. See HiddenWarningQualification.json and HiddenWarningCompiler.log. Negative control binds e5fddd3; qualifier/adapter bytes are unchanged in the final candidate."
+}

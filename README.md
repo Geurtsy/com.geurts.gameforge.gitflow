@@ -1,6 +1,6 @@
 # Geurts Game Forge GitFlow
 
-Version 0.3.0 is an unreleased candidate for a reusable strict game integration queue.
+Version 0.3.0 provides a reusable strict game integration queue.
 
 In Unity, Queue local changes captures saved task-owned work into a recorded checkpoint and confirms its waiting-list entry while preserving the live branch, staging and working edits. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
@@ -12,7 +12,7 @@ Forge package and documentation updates remain manual. Opening, refreshing and q
 - [Supported AI and automation usage](Documentation~/AIUsability.md)
 - [Actual validation and remaining blockers](Documentation~/Validation.md)
 
-Install only from the authoritative released catalogue after acceptance. The candidate branch is not a published release or consumer installation.
+Install from the authoritative released catalogue. Publication and consumer installation are separate; installed projects update only through an explicit user action.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
@@ -20,11 +20,11 @@ Install only from the authoritative released catalogue after acceptance. The can
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.3.0",
   "dependencies": {
-    "com.geurts.gameforge.god": "0.39.3",
+    "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
   }
 }
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->
 
-Queue console and selected-repository setup: [supported workflow and limits](Documentation~/QueueConsole.md). This source-only update is not installed or Unity-validated.
+Queue console and selected-repository setup: [supported workflow and limits](Documentation~/QueueConsole.md). See the source-bound validation record for exact Editor and dependency coverage. Visual checks are informational after the user removed them as a release requirement. No live consumer was changed.

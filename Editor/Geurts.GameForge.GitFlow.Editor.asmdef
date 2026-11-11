@@ -1,7 +1,7 @@
 {
   "name": "Geurts.GameForge.GitFlow.Editor",
   "rootNamespace": "Geurts.GameForge.GitFlow.Editor",
-  "references": ["Geurts.GameForge.God", "Geurts.GameForge.God.Editor", "QFSW.QC"],
+  "references": ["Geurts.GameForge.God", "Geurts.GameForge.God.Editor", "Geurts.GameForge.Compatibility.Editor", "QFSW.QC"],
   "includePlatforms": ["Editor"],
   "autoReferenced": true,
   "overrideReferences": true,
