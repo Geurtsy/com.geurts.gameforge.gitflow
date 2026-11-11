@@ -159,6 +159,13 @@ if ($RequireUnityEvidence) {
     Require ((Get-FileHash -LiteralPath $compilerReport -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $evidence.compilerGate.sha256) 'Compiler evidence bytes differ.'
     $compiler = [IO.File]::ReadAllText($compilerReport) | ConvertFrom-Json
     Require ($compiler.status -eq 'passed' -and $compiler.warnings -eq 0 -and $compiler.errors -eq 0 -and $compiler.full_script_rebuild) 'Native compilation evidence is not an accepted full rebuild.'
+    $qualificationPath = Resolve-Owned $evidence.compilerQualification.report
+    $qualificationHash = (Get-FileHash -LiteralPath $qualificationPath -Algorithm SHA256).Hash.ToLowerInvariant()
+    Require ($qualificationHash -ceq $evidence.compilerQualification.sha256 -and $qualificationHash -ceq $compiler.compiler_qualification_sha256) 'Unsuppressed compiler qualification is not bound to the native gate.'
+    $qualification = [IO.File]::ReadAllText($qualificationPath) | ConvertFrom-Json
+    Require ($qualification.status -eq 'passed' -and $qualification.candidate -eq $compiler.candidate -and $qualification.run -eq $compiler.run -and
+        $qualification.diagnostic_policy_version -eq 'native-default-diagnostics-v1' -and $qualification.assemblies -gt 0 -and
+        $qualification.diagnostics -eq 0 -and $qualification.inputs_unchanged -and $qualification.policy_copies_unchanged) 'Complete unsuppressed compiler qualification is still required.'
     Require ($evidence.nativeVisualAcceptance -eq 'verified') 'Rendered native controls and interaction remain unverified; explicit desktop-testing authorization is required.'
     foreach ($recipe in @($documents.integrationRecipes)) {
         if ($null -eq $recipe) { continue }

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import time
 import xml.etree.ElementTree as xml
 
 from GitFlowQueue import QueueError, durable, plain, file_digest
@@ -11,9 +12,12 @@ from GitFlowProcess import process_run
 
 
 def execute(arguments):
+    deadline = time.monotonic() + 7200
     root, editor, evidence = plain(arguments.repository), plain(arguments.unity), plain(arguments.evidence)
     if not editor.is_file():
         raise QueueError('Configured Unity Editor is unavailable.')
+    if arguments.action == 'compile-project' and (evidence == root or evidence.is_relative_to(root)):
+        raise QueueError('Full compiler evidence must be outside the project; select the publisher workspace Evidence folder.')
     evidence.mkdir(parents=True, exist_ok=True)
     if any((evidence / name).exists() for name in ['Unity.log', 'compilation.json', 'result.json', 'version-proof.json', 'Results.xml']):
         raise QueueError('Native evidence output already exists. Preserve it and select a fresh invocation folder.')
@@ -32,7 +36,7 @@ def execute(arguments):
         command.extend(['-runTests', '-testPlatform', arguments.test_platform, '-testFilter', arguments.test_filter,
                         '-testResults', str(evidence / 'Results.xml')])
     with (evidence / 'process.log').open('wb') as output:
-        result = process_run(command, cwd=root, stdout=output, stderr=output, timeout=7200)
+        result = process_run(command, cwd=root, stdout=output, stderr=output, timeout=max(1, deadline - time.monotonic()))
     if not log.is_file():
         raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')
     text = log.read_text(encoding='utf-8-sig', errors='replace')
@@ -60,8 +64,40 @@ def execute(arguments):
                 or report.get('expected_assemblies', 0) < 1 or report.get('run') != arguments.run or report.get('candidate') != arguments.candidate
                 or report.get('observed_warnings') != 0 or report.get('observed_errors') != 0):
             raise QueueError('Native compilation callback did not prove a full script rebuild.')
+        compatibility = plain(report.get('compatibility_package_root', ''))
+        package = json.loads((compatibility / 'package.json').read_text(encoding='utf-8-sig'))
+        qualifier = compatibility / 'Tools~' / 'qualify_compilers.py'
+        if (package.get('name') != 'com.geurts.gameforge.compatibility' or package.get('version') != report.get('compatibility_version')
+                or not qualifier.is_file()):
+            raise QueueError('Native compilation did not identify the required installed compiler qualifier.')
+        # Compiler copies can contain licensed derived binaries. Keep them outside the flat portable gate artifacts.
+        private = evidence.with_name(evidence.name + '.compiler-private')
+        private_log = plain(evidence.with_name(evidence.name + '.compiler-private-process.log'))
+        if private_log.exists():
+            raise QueueError('Private compiler process evidence already exists; select a fresh invocation folder.')
+        qualifier_hash = file_digest(qualifier)
+        with private_log.open('xb') as output:
+            qualified = process_run([sys.executable, str(qualifier), '--project', str(root), '--unity-editor', str(editor),
+                    '--destination', str(private)], cwd=root, stdout=output, stderr=output, timeout=max(1, deadline - time.monotonic()))
+        qualification = json.loads((private / 'qualification.json').read_text(encoding='utf-8-sig'))
+        assemblies = qualification.get('assemblies', [])
+        complete = (qualified.returncode == 0 and qualification.get('passed') is True
+                and qualification.get('diagnosticPolicyVersion') == 'native-default-diagnostics-v1'
+                and qualification.get('inputsUnchanged') is True and qualification.get('diagnosticPolicyCopiesUnchanged') is True
+                and qualification.get('nativeResponseCount', 0) > 0 and len(assemblies) == qualification['nativeResponseCount']
+                and all(item.get('exitCode') == 0 and item.get('diagnosticCount') == 0 for item in assemblies)
+                and file_digest(qualifier) == qualifier_hash)
+        durable(evidence / 'compiler-qualification.json', dict(run=arguments.run, candidate=arguments.candidate,
+                status='passed' if complete else 'failed', diagnostic_policy_version=qualification.get('diagnosticPolicyVersion'),
+                assemblies=len(assemblies), diagnostics=sum(item.get('diagnosticCount', 0) for item in assemblies),
+                inputs_unchanged=qualification.get('inputsUnchanged'), policy_copies_unchanged=qualification.get('diagnosticPolicyCopiesUnchanged'),
+                qualifier_sha256=qualifier_hash, private_report_sha256=file_digest(private / 'qualification.json'),
+                private_evidence_scope='Owner-local sibling folder; source/reference inventory and derived binaries are not portable artifacts.'))
+        if not complete:
+            raise QueueError('Unsuppressed full compiler qualification failed; preserve the private owner evidence before retrying.')
         durable(evidence / 'result.json', dict(run=arguments.run, candidate=arguments.candidate, status='passed', warnings=0, errors=0, skipped=0,
-                full_script_rebuild=True, native_report_sha256=file_digest(evidence / 'compilation.json'), full_log_sha256=file_digest(log)))
+                full_script_rebuild=True, native_report_sha256=file_digest(evidence / 'compilation.json'), full_log_sha256=file_digest(log),
+                compiler_qualification_sha256=file_digest(evidence / 'compiler-qualification.json')))
 
 
 if __name__ == '__main__':

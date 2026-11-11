@@ -1,4 +1,4 @@
-// IMPORTANT: Follow the manifest-selected Geurts Technical and Folder Structure techniques.
+// IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Diagnostics;
 using System.IO;
