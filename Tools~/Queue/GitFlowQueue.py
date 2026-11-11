@@ -907,11 +907,13 @@ def inspect_owner(root, remote):
                     observed_utc=observed, process_health='unknown')
 
 
-def serve(root):
+def serve(root, expected_configuration=None):
     """One ordinary background program per repository; no AI monitoring, implicit retry or new workspace."""
     configuration(root)
     control = common(root) / 'gameforge_queue'
     with exclusive(control / 'service.lock'):
+        if expected_configuration is not None and digest(configuration(root)) != expected_configuration:
+            raise QueueError('The reviewed publisher configuration changed. Review it again before starting.')
         if (control / 'stop.json').exists():
             update_state(root, state='stopped', detail='A graceful stop is recorded. Explicit operator resume is required.')
             return
@@ -934,11 +936,13 @@ def serve(root):
         update_state(root, state='stopped', detail='Graceful stop completed between requests.')
 
 
-def resume_service(root):
+def resume_service(root, expected_configuration=None):
     """Remove only a proven stopped-owner request; never clear a live service lock."""
     configuration(root)
     control = common(root) / 'gameforge_queue'
     with exclusive(control / 'service.lock'), exclusive(control / 'processor.lock'):
+        if expected_configuration is not None and digest(configuration(root)) != expected_configuration:
+            raise QueueError('The reviewed publisher configuration changed. The existing stop marker is preserved.')
         path = plain(control / 'stop.json')
         if path.exists():
             if read_json(path).get('schema') != SCHEMA:
@@ -976,10 +980,14 @@ def main():
     observation = subcommands.add_parser('inspect')
     observation.add_argument('--offset', type=int, default=0)
     observation.add_argument('--limit', type=int, default=16)
+    defaults = subcommands.add_parser('publisher-settings')
+    defaults.add_argument('--unity', default='')
     subcommands.add_parser('storage')
     for name in ('serve', 'request-stop', 'resume-service'):
         command = subcommands.add_parser(name)
         command.add_argument('--operator', action='store_true', required=True)
+        if name in ('serve', 'resume-service'):
+            command.add_argument('--expected-configuration')
     upgrade = subcommands.add_parser('upgrade-runner')
     upgrade.add_argument('--operator', action='store_true', required=True)
     upgrade.add_argument('--expected-configuration', required=True)
@@ -994,17 +1002,21 @@ def main():
         result = dict(state='preview', **inventory(sys.modules[__name__], root, arguments.scope))
     elif arguments.command == 'configure':
         result = configure(root, arguments.remote, arguments.workspace_root, reviewed_policy(arguments.policy, arguments.policy_sha256))
+        result = dict(result, configuration_identity=digest(result))
+    elif arguments.command == 'publisher-settings':
+        from GitFlowPublisher import settings
+        result = settings(sys.modules[__name__], root, arguments.remote, arguments.unity)
     elif arguments.command == 'process':
         result = process_once(root, arguments.expected_request, arguments.expected_candidate)
     elif arguments.command == 'serve':
-        serve(root)
+        serve(root, arguments.expected_configuration)
         return
     elif arguments.command == 'request-stop':
         configuration(root)
         durable(common(root) / 'gameforge_queue/stop.json', dict(schema=SCHEMA, requested_utc=utc()))
         result = {'state': 'stop_requested', 'detail': 'The current owned request finishes before shutdown. This is not stopped-owner proof.'}
     elif arguments.command == 'resume-service':
-        result = resume_service(root)
+        result = resume_service(root, arguments.expected_configuration)
     elif arguments.command == 'upgrade-runner':
         result = upgrade_runner(root, arguments.expected_configuration)
     elif arguments.command == 'storage':

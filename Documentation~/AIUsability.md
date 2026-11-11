@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.3.0 has source-bound disposable native validation. Consult the current validation record for exact Editor, dependency, UI and publication coverage. Historical evidence retains its original scope. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
+Version 0.5.0 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -29,6 +29,12 @@ Capture uses a temporary GIT_INDEX_FILE initialized from the current HEAD. It se
 The resulting checkpoint is an ordinary commit with the original HEAD as parent. Canonical snapshot metadata makes an unchanged capture idempotent even after a response is lost. The live HEAD, branch, index and working bytes are preserved. Existing committed branch history is included; a scope cannot isolate earlier unrelated commits or distinguish two tasks in one file. No stash/reset, forced ignored-file add, direct-main push or second Unity clone occurs.
 
 The optional submit command requires an already clean committed task branch. It accepts title, summary, patch/minor/major size and explicit dependency request IDs. Both routes verify the remote immutable source request. The request ID is derived from the full source commit. A submission response ambiguity triggers one read reconciliation, never a repeated uncertain write. Existing legacy queue refs block new-protocol submission/configuration until an explicitly reviewed migration occurs.
+
+## Publisher defaults and complete queue display
+
+Use the UI's Auto-fill fields and start processor button for combined confirmed setup/start, and Refresh Queue Panel for all modern pages. Live queue updates is default-off, view-owned and read-only. The shared host's `ExecuteQueueAsync(preferences, new[] { "publisher-settings", "--unity", installedUnity }, cancellation: token)` reads defaults or validates/reuses the existing policy. It performs no setup or launch. New defaults require every Edit Mode test (`.*`); existing custom policy commands remain unchanged.
+
+`ConfigureUnityAsync` returns `configuration_identity` after successful new configuration. Existing defaults return that same digest. `StartPublisher(preferences, expectedConfiguration)` is the additive bound-start overload; the original one-argument API remains available. For an existing stopped owner, execute `resume-service --operator --expected-configuration <digest>` before the bound start. Both resume and service startup compare the reviewed identity under the existing exclusive guard; a changed policy preserves the stop marker and cannot start. No runner adoption, legacy migration, model choice or gate reduction is implied. Startup dispatch is not readiness; inspect afterward. Modern `inspect --offset <n> --limit 64` pages expose `coverage.queue_identity`; collect all pages only while that identity agrees, otherwise report partial and refresh again. UI and API use these same commands and guards.
 
 ## Publisher, ownership and recovery
 
@@ -112,7 +118,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.5.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

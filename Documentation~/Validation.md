@@ -1,42 +1,21 @@
-# GitFlow 0.3.0 release validation
+# GitFlow 0.5.0 validation
 
-The final executable candidate `d99dba8c4320ac8cf214a87559dc40df91b0f817` has fingerprint `16e0ffd1407d31e620c19d667d9d262a0f62b1cde691354a178f2479f07cf5a9`. Later release-documentation commits retain those exact executable bytes. [Machine-readable acceptance](AIUsabilityValidation.json) binds the actual reports and checksums. Remote publication/catalogue and consumer installation are separate operations.
+The changed publisher setup and Queue Panel pass the scoped nonvisual checks below; visual checks are explicitly user-waived for this update. This release uses the published 0.3.0 main as its base; the separate 0.4.0 candidate is preserved. No live game, installed package or production publisher is changed by development checks.
 
-## Required nonvisual acceptance
+## Changed behavior and checks
 
-| Actual Windows Editor | Native tests | Full native compiler response closure | Compatibility owner |
-|---|---:|---:|---|
-| 6000.6.3f1 | 20 passed, 0 failed/skipped | 31 assemblies, 0 diagnostics | released 0.1.1 |
-| 6000.6.8f1 | 20 passed, 0 failed/skipped | 31 assemblies, 0 diagnostics | released 0.2.0 |
+Automatic defaults are read-only until the user's combined configure/start confirmation. Existing policy identity, required gates, repair budget, workspace ownership and legacy refusal stay with the existing host. New defaults select the exact installed project Editor and every Edit Mode test. Queue collection visits all advertised pages; each row has a visible status, while failed or partial inspection cannot claim an empty queue. Local Windows process creation times distinguish running and stale/reused PIDs. Live reads are explicitly opted in and view-owned.
 
-Both fixtures resolve GitFlow and God 0.44.4 from immutable Git commits. The supported InspectionExample source is copied byte-for-byte into Assets/_Project/Scripts/Editor/InspectionExample.cs and compiled in the actual Assembly-CSharp-Editor response. Native tests cover shared viewer/API results, real-Git preservation, malformed/future/stale/failed records, operation discovery and consent, bounded HTTPS cancellation, actual saved dirty-asset capture and cleanup, executable discovery and saved preferences before host startup. Run the owning suite with `GitFlowUnity.py run-tests --test-filter Geurts.GameForge.GitFlow.Tests`; exact run/candidate identities are retained in the reports.
+Executable candidate `a9f9416dce46b74f7ee2fbdd0426bcac2e334866` has source fingerprint `1f0496569513bcf99056db5d8bef9d96947ce6390fc4cff60266f24bdad018a8`. [Machine-readable evidence](AIUsabilityValidation.json) binds 4 focused Unity tests, 9 disposable real-Git/Windows checks and an actual windowless processor idle/stop/resume check. Native compilation at Unity 6000.6.3f1 and complete default-diagnostic replay passed 31 assemblies with 0 diagnostics. All 1858 native inputs remain unchanged after testing, and all 34 installed executable source files match the Git candidate. The supported example is included unchanged in the actual compiler response.
 
-The [cohort receipt](Evidence/0.3.0/ReleaseValidation/NativeCohorts.json) records exact dependencies and post-test input integrity. Licensed Odin and QC 2.6.7 archives were privately acquired and hash-bound. The Compatibility owner's exact approved private preparation profiles preserve originals and notices. The Unity-derived uGUI/Input/Test Framework snapshots were explicitly selected through private immutable Git sources for these fixtures. No paid sources, transforms, full private inventories or compiled dependency binaries are redistributed here. This is Editor-tool validation, not a whole-game/player/render-pipeline or Steam certification.
+The changed defaults, exact existing-policy preservation, stale/reused PID handling, stale-confirmation refusal, 140-item rendering, complete-empty versus partial messages and original-file/ref preservation are covered. The existing broader native/queue/lease suites were not rerun because these narrow changes do not change their algorithms; prior results retain their exact historical scope. Previous release reports remain [historical](History/Validation-0.3.0-release.md).
 
-Native full rebuilds and complete logs contain zero compiler/shader warning/error diagnostics. Unity still supplies immutable-package warning filters; they are not edited. The installed Compatibility qualifier independently compiles every actual source-bearing response using private copies with warning 4/warnings-as-errors and default compiler/analyzer severities. Sources, references, analyzers, defines, output identities and native policy inputs remain unchanged. All recorded inputs remain unchanged after native testing. Native success alone cannot satisfy this gate.
+## Limits and delivery
 
-The actual synthetic hidden-warning negative control used native-generated metadata, was compiled by Unity with warn0, and was rejected by the unsuppressed gate on CS0169. A first metadata-free control was ignored by Unity and is explicitly not negative coverage. The adapter now refuses ignored immutable code assets too. [Retained failures and corrections](Evidence/0.3.0/ReleaseValidation/RetainedFailures.json) preserve the stock eleven-warning graphs, initial newer CS1701, fixture timing/interference failures and intermediate encoding regression without rebinding them as passes.
-
-The complete real-Git suite passes 25 checks in 883.972 seconds; five affected regressions pass in 625.490 seconds. These are two separate runs, not 30 unique tests. [Queue source identities](Evidence/0.3.0/ReleaseValidation/QueueSourceIdentity.json) prove the queue implementations/tests remain unchanged from the full run; the changed native adapter is covered by the fresh native/qualification and negative-control evidence. No production queue or publisher was changed.
-
-## Visual requirement removed by user
-
-On 2026-11-11 the user instructed: "Remove visual checks as a requirement and publish." Visual inspection is informational and is no longer enforced by this owner's release validator. It is user-waived, never marked passed. Compiler, functional, metadata, source and publication gates remain required. This exception applies only to this GitFlow release and does not edit generic Forge policy.
-
-Predecessor candidates were physically observed in standalone normal and God normal/narrow views, with editable Odin groups, saved target restoration, executable discovery/save, dated queue failure/history, controlled local TLS cancel/timeout and a real domain reload. Computer Use was stopped by the user. The complete final physical/skin/scaling matrix, standalone narrow resizing and all final lifecycle interactions are incomplete. [Exact waiver and scope](Evidence/0.3.0/ReleaseValidation/VisualAcceptance.json).
-
-## Limits and delivery boundary
-
-Live paid model repair quality, account entitlement, physical multiple-machine/real 30-minute lease soak, arbitrary project-specific native derived-identity adapters and player/backend/game rendering remain unverified. Deterministic repair tests and local Git fixtures do not certify those surfaces. Forge/package/content updates remain manual. Existing consumers and the user's interrupted Editor session are preserved.
-
-Initial work used the user-selected authoritative GeurtsGameForgeDocumentation 0.11.5 source at 3c2e7fa1ba0bc10750852041ab40280879aeee70, preserving its unrelated dirty drafts. Compatibility and catalogue-owner guidance was checked from Commandments 0.71.0 at dac8ada749e0b65cc32330f20563d4d4ed771714. No Compatibility source change was needed: the existing released 0.2.0 exact newer profile resolves the observed mismatch and passes this actual GitFlow graph.
-
-## Historical evidence
-
-[Previous source-only 0.3 report](History/Validation-0.3.0-source-only.md) and [0.2 report](History/Validation-0.2.0.md) retain their original identities and limitations. No historical result is relabelled as current acceptance.
+Native visual/physical interaction, light/dark skins, narrow docking and display scaling remain unverified for this change. On 2026-11-11 the user instructed: "Skip the visual checks for this update and publish it." The [0.5.0 waiver](Evidence/0.5.0/VisualAcceptance.json) removes only this update's visual requirement; no visual pass is claimed. No computer control, live project changes, model inference, legacy migration or live publisher start was performed. The visual requirement is user-waived; compiler, functional, source, metadata and publication checks remain required. The authoritative catalogue/central usage update must wait for the actual immutable release, and no consumer update is implied. Consumer updates remain explicit and separate from source publication.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.3.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

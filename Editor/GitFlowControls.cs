@@ -71,6 +71,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private readonly List<Button> _buttons = new List<Button>();
         private readonly GitFlowQueueConsole _console;
         private readonly Button _cancel;
+        private readonly IVisualElementScheduledItem _liveUpdates;
         private CancellationTokenSource _requestCancellation;
         private GitFlowPreferences _actionPreferences;
         private bool _busy, _disposed;
@@ -78,7 +79,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Creates controls and loads local settings only; no discovery, inference or queue action runs on opening.</summary>
         internal GitFlowControls(VisualElement parent, VisualElement feedbackParent = null)
         {
-            var group = new Foldout { text = "Queue host and local Codex — Not checked", value = false };
+            var group = new Foldout { text = "Queue host and local Codex â€” Not checked", value = false };
             group.AddToClassList("forge-card"); group.style.marginTop = 16; group.style.paddingLeft = group.style.paddingRight = 12; parent.Add(group);
             _configuration = new Configuration { Repository = Path.GetFullPath(Path.Combine(Application.dataPath, "..")) };
             string failure = null;
@@ -103,6 +104,13 @@ namespace Geurts.GameForge.GitFlow.Editor
             _cancel = new Button(() => { _requestCancellation?.Cancel(); _status.messageType = HelpBoxMessageType.Warning; _status.text = "Warning: Cancellation requested. Awaiting cleanup; dispatched writes may already have completed. The independent publisher is not stopped."; }) { text = "Cancel current panel request" };
             _cancel.SetEnabled(false); (feedbackParent ?? parent).Add(_cancel);
             _console = new GitFlowQueueConsole(parent);
+            Button(_console.Panel, "Refresh Queue Panel", RefreshQueuePanel);
+            var live = new Toggle("Live queue updates (every 15 seconds)"); _console.Panel.Add(live);
+            live.RegisterValueChangedCallback(change => { if (change.newValue && !_busy) _ = RunAction("Refresh Queue Panel", RefreshQueuePanel); });
+            _liveUpdates = _console.Panel.schedule.Execute(() =>
+            {
+                if (live.value && !_busy && !_disposed) _ = RunAction("Refresh Queue Panel", RefreshQueuePanel);
+            }).Every(15000);
             Button(group, "Find Python and Codex executables", async () =>
             {
                 CancellationToken cancellation = _requestCancellation.Token;
@@ -152,11 +160,51 @@ namespace Geurts.GameForge.GitFlow.Editor
                     "--title", string.IsNullOrWhiteSpace(captureTitle.value) ? "Saved Unity project changes" : captureTitle.value,
                     "--summary", string.IsNullOrWhiteSpace(captureSummary.value) ? "Saved first-party changes in the configured task scope." : captureSummary.value }, 300, _requestCancellation.Token);
             });
-            var publisher = new Foldout { text = "Operator — Configure and start publisher", value = false }; group.Add(publisher);
+            var publisher = new Foldout { text = "Operator â€” Configure and start publisher", value = false }; group.Add(publisher);
             var workspace = new TextField("New short workspace root"); var unity = new TextField("Installed Unity executable");
             var tests = new TextField("Required project test filter"); var repair = new Toggle("Authorize automatic source repair for up to three hours");
             publisher.Add(workspace); publisher.Add(unity); publisher.Add(tests); publisher.Add(repair);
             publisher.Add(new HelpBox("Configure one new short root per repository. Failed checks stop publication. Automatic repair is disabled until authorized here. It uses the selected local Codex model and account allowance for up to three hours from its original start, stopping after three consecutive attempts without progress. It retains all attempts and cannot alter protected validation/native files or skip checks. No player build is created.", HelpBoxMessageType.Info));
+            Button(publisher, "Auto-fill fields and start processor", async () =>
+            {
+                // Discover existing tools only. Never install tools or select a paid model on the user's behalf.
+                string python = await Task.Run(() => GitFlowToolDiscovery.Resolve(_actionPreferences.PythonExecutable,
+                    GitFlowToolDiscovery.PythonCandidates(), _requestCancellation.Token), _requestCancellation.Token);
+                if (string.IsNullOrEmpty(python)) throw new InvalidOperationException("Choose an installed Python executable under Local tools first.");
+                _configuration.PythonExecutable = python; _actionPreferences.PythonExecutable = python;
+                JObject detected = await Host().ExecuteQueueAsync(_actionPreferences,
+                    new[] { "publisher-settings", "--unity", EditorApplication.applicationPath }, cancellation: _requestCancellation.Token);
+                bool existing = (string)detected["state"] == "configured";
+                workspace.value = (string)detected["workspace_root"];
+                unity.value = (string)detected["unity"];
+                tests.value = (string)detected["test_filter"];
+                if (existing) repair.value = (bool?)detected["automatic_repair"] ?? false;
+                _tree.UpdateTree(); _configurationView.MarkDirtyRepaint();
+                if (existing && (string)detected["process_health"] == "running")
+                {
+                    await RefreshQueuePanel();
+                    return new JObject { ["state"] = "already_running", ["detail"] = "Fields filled from the existing policy. The local publisher is already running; no second process was launched." };
+                }
+                string repairNotice = repair.value ? "\nAutomatic Codex repair uses account allowance for its original three-hour budget. Model: " + (existing ? "retained from existing policy" : _actionPreferences.Model) + "; effort: " + (existing ? "retained from existing policy" : _actionPreferences.ReasoningEffort) : "\nAutomatic repair is disabled.";
+                if (!EditorUtility.DisplayDialog("Start GitFlow processor", "Repository: " + _actionPreferences.Repository + "\nRemote: " + _actionPreferences.Remote +
+                    "\nWorkspace: " + workspace.value + "\nUnity: " + unity.value + "\nRequired tests: " + tests.value + repairNotice +
+                    (existing ? "\n\nKeep the existing validation policy and start its processor. Blocked requests and evidence are preserved." :
+                        "\n\nConfigure this new publisher and start it. .* requires every Edit Mode test. Required failures stop publication. The initial queue version record must already be committed on remote main."), "Start processor", "Cancel"))
+                    return new JObject { ["state"] = "cancelled", ["detail"] = "Fields filled. No publisher was configured or started." };
+                // Existing configuration is never overwritten or silently upgraded. New setup uses the same strict host API.
+                string expectedIdentity = (string)detected["configuration_identity"];
+                if (!existing)
+                {
+                    JObject configured = await Host().ConfigureUnityAsync(_actionPreferences, workspace.value, unity.value, tests.value, repair.value, _requestCancellation.Token);
+                    expectedIdentity = (string)configured["configuration_identity"];
+                }
+                if (string.IsNullOrEmpty(expectedIdentity)) throw new InvalidOperationException("Publisher setup returned no configuration identity. Inspect its retained records before starting.");
+                Host().Save(_actionPreferences);
+                if (existing) await Host().ExecuteQueueAsync(_actionPreferences, new[] { "resume-service", "--operator", "--expected-configuration", expectedIdentity }, cancellation: _requestCancellation.Token);
+                Host().StartPublisher(_actionPreferences, expectedIdentity);
+                await RefreshQueuePanel();
+                return new JObject { ["state"] = "start_requested", ["detail"] = "Processor start requested. The Queue Panel reports the observed local process and all queue items; refresh to observe later changes." };
+            });
             Button(publisher, "Create initial project version record", () =>
             {
                 string active = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
@@ -230,10 +278,10 @@ namespace Geurts.GameForge.GitFlow.Editor
             });
             var details = new Foldout { text = "Details - bounded result projection", value = false }; group.Add(details);
             _output = new TextField("Last reported fields (raw/unknown data withheld)") { multiline = true, isReadOnly = true }; details.Add(_output);
-            var help = new Foldout { text = "Help — local Codex and queue boundaries", value = false }; group.Add(help);
+            var help = new Foldout { text = "Help â€” local Codex and queue boundaries", value = false }; group.Add(help);
             help.Add(new HelpBox("Select installed Python and Codex, discover models, choose a model and supported reasoning effort, then save. Choices come from local Codex and may be cached; only an actual completed request verifies access. Sign in through Codex itself. Credentials never belong in project settings.\n\nSubmit once from a clean task branch. One configured background publisher owns validation and publication. Required failures block the queue; there is no skip action. Published means main changed; Integrated additionally proves required pulls. Storage measurement is read-only and never deletes workspaces.\n\nThe embedded console observes the selected repository's gameforge queue in explicit pages of 16. It shows exact scope/timestamps, coverage, reported owner/lease, processor, setup and request evidence. Health, expiry, artifact validation and current-main ancestry remain unknown. Previous/Next require the same selected repository and do not merge snapshots. Legacy IntegrationQueue is detected but not adopted; use its existing operator and preserve all records. The lower legacy viewer remains separate and may reject large/unknown legacy schemas. Automatic repair requires separate operator configuration and explicit consent; selecting a model alone never enables it.", HelpBoxMessageType.Info));
             foreach (var child in group.Children()) child.style.marginBottom = 8;
-            group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex — " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
+            group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex â€” " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
         }
 
         /// <summary>Reads only existing God-owned preferences while lifecycle startup is pending; creates no settings or project folders.</summary>
@@ -302,41 +350,80 @@ namespace Geurts.GameForge.GitFlow.Editor
         private Task<JObject> InspectPage(int offset) => Host().ExecuteQueueAsync(_actionPreferences,
             new[] { "inspect", "--offset", offset.ToString(System.Globalization.CultureInfo.InvariantCulture), "--limit", "16" }, 55, _requestCancellation.Token);
 
-        /// <summary>Serializes explicit actions, freezes scope, records real local stages and preserves uncertain outcomes on cancellation.</summary>
+        /// <summary>Collects every advertised page, retaining partial coverage instead of reporting an unreadable queue as empty.</summary>
+        private async Task<JObject> RefreshQueuePanel()
+        {
+            JObject combined = null;
+            var requests = new JArray(); var findings = new JArray(); var identities = new HashSet<string>(StringComparer.Ordinal);
+            int offset = 0, advertised = -1, failed = 0; string queueIdentity = null;
+            while (true)
+            {
+                _requestCancellation.Token.ThrowIfCancellationRequested();
+                JObject page = await Host().ExecuteQueueAsync(_actionPreferences, new[] { "inspect", "--offset", offset.ToString(System.Globalization.CultureInfo.InvariantCulture), "--limit", "64" }, 55, _requestCancellation.Token);
+                if (!(page["coverage"] is JObject coverage)) throw new InvalidOperationException("Queue inspection returned no coverage. The previous dated view is retained.");
+                if (combined == null) { combined = (JObject)page.DeepClone(); advertised = (int?)coverage["advertised"] ?? 0; queueIdentity = (string)coverage["queue_identity"]; }
+                else if (advertised != (int?)coverage["advertised"] || queueIdentity != (string)coverage["queue_identity"]) { findings.Add("Queue records changed during refresh. Refresh again for complete current coverage."); break; }
+                foreach (JToken finding in page["findings"] as JArray ?? new JArray()) findings.Add(finding.DeepClone());
+                failed += (int?)coverage["failed"] ?? 0;
+                foreach (JObject request in (page["requests"] as JArray ?? new JArray()).OfType<JObject>())
+                {
+                    if (identities.Add((string)request["id"])) requests.Add(request.DeepClone());
+                    else findings.Add("Queue membership changed between pages. Refresh again; this observation is partial.");
+                }
+                combined["completed_utc"] = page["completed_utc"]?.DeepClone();
+                combined["recorded_processor"] = page["recorded_processor"]?.DeepClone();
+                int? next = (int?)coverage["next_offset"];
+                if (!next.HasValue) break;
+                if (next.Value <= offset) throw new InvalidOperationException("Queue inspection did not advance. Previous dated observations are retained.");
+                offset = next.Value;
+            }
+            combined["requests"] = requests; combined["findings"] = findings;
+            combined["coverage"] = new JObject { ["offset"] = 0, ["limit"] = requests.Count, ["advertised"] = advertised,
+                ["returned"] = requests.Count, ["failed"] = failed, ["omitted"] = Math.Max(0, advertised - requests.Count), ["queue_identity"] = queueIdentity, ["next_offset"] = null };
+            combined["observation"] = "All pages requested. Dated observations collected over this refresh; changes between pages remain possible. Refresh again to observe progress.";
+            combined["state"] = findings.Count == 0 && failed == 0 && requests.Count == advertised ? "observed" : "partial";
+            if (!_disposed) _console.Present(combined);
+            return combined;
+        }
+
+        /// <summary>Adds one explicit button using the shared serialized action handler.</summary>
         private void Button(VisualElement parent, string title, Func<Task<JObject>> action)
         {
-            var button = new Button(async () =>
-            {
-                if (_busy || _disposed) return;
-                _busy = true; _actionPreferences = _configuration.Preferences();
-                _requestCancellation = CancellationTokenSource.CreateLinkedTokenSource(_cancellation.Token);
-                _configurationView.SetEnabled(false); foreach (Button current in _buttons) current.SetEnabled(false);
-                _cancel.SetEnabled(true); _status.messageType = HelpBoxMessageType.Info; _status.text = "Information: Working locally: " + title + ". Waiting for the actual host result; publisher progress is not streamed.";
-                _console.Record("Started local action: " + title + "; selected repository: " + _actionPreferences.Repository + "; remote: " + _actionPreferences.Remote);
-                try
-                {
-                    JObject result = await action();
-                    if (!_disposed) { _output.value = GitFlowPresentation.Format(result); _status.text = GitFlowPresentation.Summary(result); _status.messageType = (string)result["state"] == "partial" ? HelpBoxMessageType.Warning : (string)result["state"] == "failed" || (string)result["state"] == "unavailable" ? HelpBoxMessageType.Error : HelpBoxMessageType.Info; _console.Present(result); }
-                }
-                catch (OperationCanceledException)
-                {
-                    if (!_disposed) { _status.messageType = HelpBoxMessageType.Warning; _status.text = "Warning: Panel request cancelled or timed out. Prior observations remain dated. Dispatched writes may have completed: inspect original request/configuration before retrying. The publisher was not stopped."; _console.Record(_status.text); }
-                }
-                catch (Exception error)
-                {
-                    // Raw subprocess/diagnostic messages may include credentials or project context.
-                    if (!_disposed) { _status.messageType = HelpBoxMessageType.Error; _status.text = "Error: Failed: " + error.GetType().Name + ". " + (error is InvalidOperationException || error is ArgumentException ? GitFlowPresentation.Text(error.Message) : "Check selected paths, access and owner-retained evidence. Raw diagnostics withheld; partial writes are possible."); _console.Record(_status.text); }
-                }
-                finally
-                {
-                    _requestCancellation.Dispose(); _requestCancellation = null; _busy = false;
-                    if (!_disposed) { _configurationView.SetEnabled(true); foreach (Button current in _buttons) current.SetEnabled(true); _cancel.SetEnabled(false); }
-                }
-            }) { text = title };
+            var button = new Button(async () => await RunAction(title, action)) { text = title };
             _buttons.Add(button); parent.Add(button);
         }
 
+        /// <summary>Shares serialized action handling between explicit buttons and the view-owned opt-in read-only refresh.</summary>
+        private async Task RunAction(string title, Func<Task<JObject>> action)
+        {
+            if (_busy || _disposed) return;
+            _busy = true; _actionPreferences = _configuration.Preferences();
+            _requestCancellation = CancellationTokenSource.CreateLinkedTokenSource(_cancellation.Token);
+            _configurationView.SetEnabled(false); foreach (Button current in _buttons) current.SetEnabled(false);
+            _cancel.SetEnabled(true); _status.messageType = HelpBoxMessageType.Info; _status.text = "Information: Working locally: " + title + ". Waiting for the actual host result; publisher progress is not streamed.";
+            _console.Record("Started local action: " + title + "; selected repository: " + _actionPreferences.Repository + "; remote: " + _actionPreferences.Remote);
+            try
+            {
+                JObject result = await action();
+                if (!_disposed) { _output.value = GitFlowPresentation.Format(result); _status.text = GitFlowPresentation.Summary(result); _status.messageType = (string)result["state"] == "partial" ? HelpBoxMessageType.Warning : (string)result["state"] == "failed" || (string)result["state"] == "unavailable" ? HelpBoxMessageType.Error : HelpBoxMessageType.Info; _console.Present(result); }
+            }
+            catch (OperationCanceledException)
+            {
+                if (!_disposed) { _status.messageType = HelpBoxMessageType.Warning; _status.text = "Warning: Panel request cancelled or timed out. Prior observations remain dated. Dispatched writes may have completed: inspect original request/configuration before retrying. The publisher was not stopped."; _console.Record(_status.text); }
+            }
+            catch (Exception error)
+            {
+                // Raw subprocess/diagnostic messages may include credentials or project context.
+                if (!_disposed) { _status.messageType = HelpBoxMessageType.Error; _status.text = "Error: Failed: " + error.GetType().Name + ". " + (error is InvalidOperationException || error is ArgumentException ? GitFlowPresentation.Text(error.Message) : "Check selected paths, access and owner-retained evidence. Raw diagnostics withheld; partial writes are possible."); _console.Record(_status.text); }
+            }
+            finally
+            {
+                _requestCancellation.Dispose(); _requestCancellation = null; _busy = false;
+                if (!_disposed) { _configurationView.SetEnabled(true); foreach (Button current in _buttons) current.SetEnabled(true); _cancel.SetEnabled(false); }
+            }
+        }
+
         /// <summary>Releases only this view's Odin resources and cancels its in-flight bridge request.</summary>
-        public void Dispose() { _disposed = true; _cancellation.Cancel(); _requestCancellation?.Cancel(); _tree.Dispose(); _theme?.Dispose(); }
+        public void Dispose() { _disposed = true; _liveUpdates.Pause(); _cancellation.Cancel(); _requestCancellation?.Cancel(); _tree.Dispose(); _theme?.Dispose(); }
     }
 }

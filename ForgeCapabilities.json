@@ -7,7 +7,7 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Legacy inspection implementation is unchanged from released 0.3.0. Fresh 0.5.0 native compilation and queue-panel checks passed; complete legacy suite was not repeated."
       ],
       "maturity": "pre_release",
       "provider": "editor",
@@ -18,7 +18,7 @@
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "Focused real-Git batching/selective-read/delivery/failure/recovery checks passed; see Validation.md. Current-source full native acceptance remains unverified."
+        "Fresh disposable bound service startup/idle/stop/resume and policy drift checks passed. Broader integration/lease evidence remains historical 0.3.0 scope."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -29,7 +29,7 @@
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -43,7 +43,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
       ]
     },
     {
@@ -54,7 +54,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
       ]
     },
     {
@@ -65,12 +65,23 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Focused real-Git and enhanced C# presentation smoke checks passed; see Validation.md. Unity type resolution, rendering and interaction remain unverified."
+        "Four focused Unity presentation tests and nine disposable real-Git/Windows checks passed for 0.5.0. Complete native compiler qualification passed with zero diagnostics. Rendered appearance and physical interaction remain unverified."
+      ]
+    },
+    {
+      "id": "publisher_quick_start_and_queue_panel",
+      "implemented": true,
+      "provider": "editor",
+      "maturity": "candidate",
+      "operations": [],
+      "description": "Explicit auto-fill/configure/start, full modern queue rows and opt-in view-owned live inspection. Existing policies are retained; local process lifetime is observed without lease takeover.",
+      "validation": [
+        "4 focused Unity checks; 9 disposable real-Git/Windows checks; actual bound service idle/stop/resume; 31 complete native compiler assemblies with zero diagnostics. Native interaction unverified."
       ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.5.0",
   "prerequisites": [
     {
       "required": true,
@@ -128,20 +139,18 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Disposable native validation at Unity6000.6.3f1 and6000.6.8f1, exact source fingerprint, real-Git queue evidence and complete default-diagnostic compiler-response qualification are bound in Documentation~/AIUsabilityValidation.json. Visual inspection is informational and explicitly user-waived as a release requirement on2026-11-11. No live game, paid inference, player or physical multi-machine certification.",
+    "scope": "Exact Git candidate: four focused Unity presentation tests, nine disposable real-Git/Windows observer/default/policy checks, real windowless bound service idle/stop/resume, complete 31-assembly native default-diagnostic qualification with zero diagnostics. All 1858 compiler inputs remain unchanged after tests; installed executable membership/bytes match. Earlier broader queue/lease coverage is historical and is not relabelled.",
     "unverified": [
-      "Complete rendered/physical interaction, light/dark host-skin and normal/high display-scale matrix (visual release requirement removed by user).",
-      "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
-      "Real elapsed 30-minute lease soak and multiple physical machines.",
-      "Project-specific native derived-identity adapters, player/backend/rendering and arbitrary game dependency graphs."
+      "No live game, installed consumer, production queue, paid inference or legacy migration was changed. Newer Editor, light/dark skin, narrow docking, high scaling and physical interaction are not freshly certified. Only modern queue pages are combined; unsupported legacy queues remain explicitly unavailable.",
+      "Native visual/interaction checks remain unverified and are explicitly user-waived for this update."
     ],
     "visualAcceptance": {
       "required": false,
       "status": "user-waived",
       "passed": false,
-      "userInstruction": "Remove visual checks as a requirement and publish.",
       "date": "2026-11-11",
-      "scope": "GitFlow0.3.0 release; no change to the generic Forge standards or other owners."
+      "userInstruction": "Skip the visual checks for this update and publish it.",
+      "scope": "GitFlow 0.5.0 only. Native visual/physical interaction, skins, narrow docking and display scaling remain unverified; no visual pass is claimed. Other required gates remain unchanged."
     }
   }
 }

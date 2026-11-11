@@ -1,0 +1,12 @@
+{
+  "candidate": "a9f9416dce46b74f7ee2fbdd0426bcac2e334866",
+  "unity": "6000.6.3f1",
+  "postNativeTests": true,
+  "inputCount": 1858,
+  "privatePolicyCopies": 0,
+  "changedCount": 0,
+  "unchanged": true,
+  "exampleCompiled": true,
+  "installedExecutableFiles": 34,
+  "scope": "All native compiler inputs and private diagnostic policy copies checked after the four native presentation tests; candidate Git package source membership/bytes also match."
+}

@@ -1,0 +1,14 @@
+test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup (TestGitFlowObserve.ObservationAcceptance.test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup) ... ok
+test_existing_publisher_policy_is_retained_and_stale_runner_refused (TestGitFlowObserve.ObservationAcceptance.test_existing_publisher_policy_is_retained_and_stale_runner_refused) ... ok
+test_interrupted_remote_read_retains_independent_setup_without_false_empty_success (TestGitFlowObserve.ObservationAcceptance.test_interrupted_remote_read_retains_independent_setup_without_false_empty_success) ... ok
+test_large_pages_and_repeated_reads_preserve_selected_checkout_and_remote (TestGitFlowObserve.ObservationAcceptance.test_large_pages_and_repeated_reads_preserve_selected_checkout_and_remote) ... ok
+test_legacy_future_malformed_and_unsafe_payloads_remain_partial (TestGitFlowObserve.ObservationAcceptance.test_legacy_future_malformed_and_unsafe_payloads_remain_partial) ... ok
+test_malformed_object_shapes_are_reported_without_replacing_original_bytes (TestGitFlowObserve.ObservationAcceptance.test_malformed_object_shapes_are_reported_without_replacing_original_bytes) ... ok
+test_publisher_defaults_are_read_only_exact_editor_and_all_tests (TestGitFlowObserve.ObservationAcceptance.test_publisher_defaults_are_read_only_exact_editor_and_all_tests) ... ok
+test_publisher_health_rejects_reused_pid_and_absent_process (TestGitFlowObserve.ObservationAcceptance.test_publisher_health_rejects_reused_pid_and_absent_process) ... ok
+test_reviewed_policy_is_bound_to_exact_bytes_before_setup (TestGitFlowObserve.ObservationAcceptance.test_reviewed_policy_is_bound_to_exact_bytes_before_setup) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 263.053s
+
+OK

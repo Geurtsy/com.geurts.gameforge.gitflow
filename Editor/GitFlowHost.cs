@@ -124,12 +124,20 @@ namespace Geurts.GameForge.GitFlow.Editor
 
         /// <summary>Starts an independent windowless Python host; the host's OS locks reject duplicate service ownership.</summary>
         public void StartPublisher(GitFlowPreferences preferences)
+            => StartPublisher(preferences, null);
+
+        /// <summary>Starts only the exact reviewed configuration; the background owner checks it under its existing service guard.</summary>
+        public void StartPublisher(GitFlowPreferences preferences, string expectedConfiguration)
         {
             ValidateTarget(preferences);
+            if (expectedConfiguration != null && !System.Text.RegularExpressions.Regex.IsMatch(expectedConfiguration, "^[0-9a-f]{64}$"))
+                throw new ArgumentException("A reviewed publisher configuration requires its exact SHA-256 identity.");
             string tool = Path.Combine(_package, "Tools~", "Queue", "GitFlowQueue.py");
             if (!File.Exists(preferences.PythonExecutable) || !File.Exists(tool)) throw new FileNotFoundException("The selected Python executable or queue runner is missing.");
+            var arguments = new List<string> { tool, "--repository", preferences.Repository, "serve", "--operator" };
+            if (expectedConfiguration != null) arguments.AddRange(new[] { "--expected-configuration", expectedConfiguration });
             var start = new ProcessStartInfo(preferences.PythonExecutable) { WorkingDirectory = _package, UseShellExecute = false, CreateNoWindow = true,
-                Arguments = string.Join(" ", new[] { tool, "--repository", preferences.Repository, "serve", "--operator" }.Select(Quote)) };
+                Arguments = string.Join(" ", arguments.Select(Quote)) };
             using (var child = Process.Start(start))
                 if (child == null) throw new IOException("The publisher did not start.");
         }

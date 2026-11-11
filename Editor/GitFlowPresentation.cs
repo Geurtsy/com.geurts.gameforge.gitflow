@@ -16,7 +16,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             "schema id state status title source base size version candidate main_commit verified_main evidence_candidate submitted_utc started_utc finished_utc completed_utc updated_utc " +
             "policy base_main dependencies attempts receipt checks name kind folder run warnings errors skipped reused pulls publisher original repair " +
             "owner host request stage process_id pid lease_protocol lease_seconds control_commit process_health recorded_processor setup " +
-            "repository remote coverage offset limit advertised returned failed omitted next_offset ordering legacy requests locks migration " +
+            "repository remote coverage offset limit advertised returned failed omitted next_offset queue_identity ordering legacy requests locks migration " +
             "runner_current workspace_root policy_hash automatic_repair timeout_seconds configuration_identity evidence_scope observation findings reason failure_summary failure_phase next_action " +
             "account_state models model display_name efforts window_started_utc consecutive_stalled attempt_count " +
             "diagnostic cause_code cause exception_type root_exception_type evidence observed_utc owner_failure_file check_name exit_code line column").Split(' '), StringComparer.Ordinal);

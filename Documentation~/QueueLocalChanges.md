@@ -30,15 +30,20 @@ Enable GitFlow in God. In Queue host and local Codex, choose installed Python, t
 
 Your queue operator configures the background program once using Operator - Configure and start publisher. It needs a short new workspace location, the installed Unity Editor and required project tests. Model discovery is only needed for model features. The queue does not migrate an existing older queue automatically. A start request needs a subsequent status check before it is considered ready.
 
+QUICK START AND QUEUE PANEL
+In Operator - Configure and start publisher, click Auto-fill fields and start processor. Review the detected workspace, Unity executable and required tests, then confirm. Existing publisher settings are retained. New publishers require all Edit Mode tests; missing tests or failed checks stop publication. The initial queue version record must already be committed on main.
+
+Refresh Queue Panel shows every modern queue item and its status. It says No active items in Queue when complete inspection finds none, and says when the local publisher is not started or not running. Enable Live queue updates for refreshes every 15 seconds while this view stays open, or refresh manually. A legacy or unreadable queue is reported explicitly and never displayed as empty.
+
 THE BACKGROUND PROGRAM AND COMMON FIXES
 The processor is the background program that checks, combines and publishes changes. Publication means those changes reach the shared accepted version. Inspect reusable queue once shows its recorded computer, owner, current work and latest recorded update. These are dated observations, not a guarantee that it is healthy. Unknown does not mean available. The advanced Details panel retains the complete results for your operator.
 
-• No eligible changes: save your scene/assets and check Capture Scope and the preview's excluded list.
-• Unsaved or untitled scene: save it first. Save unsaved Prefab Mode work before queueing. Play Mode, compilation and asset import must finish first. If a selected scene and unrelated assets both have unsaved edits, GitFlow stops so Unity cannot save that unrelated work through its scene-save flow.
-• Files changed during capture: finish editing or importing, review the preview, then try again. Nothing was discarded.
-• Uncertain confirmation: inspect the existing request first. The same unchanged snapshot reuses its original queue entry. Do not repeatedly submit it.
-• Failed checks: ask the operator to inspect the recorded failure and continue that same request after a correction. Later requests cannot jump over it.
-• Published but not Integrated: your original files may still contain local edits. GitFlow refuses to overwrite them. Ask the operator to reconcile those preserved edits and synchronize through supported Git tooling. Do not discard work merely to clear the message. Recovery does not assign another version or repeat completed checks.
+Ã¢â‚¬Â¢ No eligible changes: save your scene/assets and check Capture Scope and the preview's excluded list.
+Ã¢â‚¬Â¢ Unsaved or untitled scene: save it first. Save unsaved Prefab Mode work before queueing. Play Mode, compilation and asset import must finish first. If a selected scene and unrelated assets both have unsaved edits, GitFlow stops so Unity cannot save that unrelated work through its scene-save flow.
+Ã¢â‚¬Â¢ Files changed during capture: finish editing or importing, review the preview, then try again. Nothing was discarded.
+Ã¢â‚¬Â¢ Uncertain confirmation: inspect the existing request first. The same unchanged snapshot reuses its original queue entry. Do not repeatedly submit it.
+Ã¢â‚¬Â¢ Failed checks: ask the operator to inspect the recorded failure and continue that same request after a correction. Later requests cannot jump over it.
+Ã¢â‚¬Â¢ Published but not Integrated: your original files may still contain local edits. GitFlow refuses to overwrite them. Ask the operator to reconcile those preserved edits and synchronize through supported Git tooling. Do not discard work merely to clear the message. Recovery does not assign another version or repeat completed checks.
 
 Forge packages and documentation never update automatically through GitFlow. After you deliberately install an update and stop the publisher, the operator can explicitly adopt the already installed runner; that action installs nothing and retains existing work.
 
@@ -53,7 +58,7 @@ An ordinary Git push does not add work to the queue automatically. Direct pushes
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.5.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
