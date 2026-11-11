@@ -1,0 +1,12 @@
+{
+  "editor": "6000.6.3f1",
+  "candidate": "d99dba8c4320ac8cf214a87559dc40df91b0f817",
+  "postNativeTests": true,
+  "inputCount": 1858,
+  "privatePolicyCopies": 0,
+  "changedCount": 0,
+  "unchanged": true,
+  "exampleRawSha256": "6ba058130181ece499594d7bad78c173e9c561523fca6b08b1bd23d3d14bf6b0",
+  "exampleCompiledInActualResponse": true,
+  "privateReportSha256": "756d83d0ba93d2b14415b803f7b4aa797be863144e436796746d753f0be9e61c"
+}

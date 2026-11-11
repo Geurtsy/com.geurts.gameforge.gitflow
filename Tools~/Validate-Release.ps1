@@ -166,7 +166,7 @@ if ($RequireUnityEvidence) {
     Require ($qualification.status -eq 'passed' -and $qualification.candidate -eq $compiler.candidate -and $qualification.run -eq $compiler.run -and
         $qualification.diagnostic_policy_version -eq 'native-default-diagnostics-v1' -and $qualification.assemblies -gt 0 -and
         $qualification.diagnostics -eq 0 -and $qualification.inputs_unchanged -and $qualification.policy_copies_unchanged) 'Complete unsuppressed compiler qualification is still required.'
-    Require ($evidence.nativeVisualAcceptance -eq 'verified') 'Rendered native controls and interaction remain unverified; explicit desktop-testing authorization is required.'
+    # Visual inspection is informational; the user removed it as a release requirement on 2026-11-11.
     foreach ($recipe in @($documents.integrationRecipes)) {
         if ($null -eq $recipe) { continue }
         $record = @($evidence.integrationRecipes | Where-Object { $_.source -eq $recipe.source })

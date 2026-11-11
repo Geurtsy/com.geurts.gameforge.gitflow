@@ -1,6 +1,6 @@
 # GitFlow queue console and selected-repository setup
 
-Version 0.3.0 is a source-only, unreleased candidate. No game installation, queue adoption, processor invocation or Unity acceptance was performed for this update. Use the Catalogue for released installation targets, not this candidate branch.
+Version 0.3.0 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
 
 ## Editor workflow
 
@@ -53,7 +53,7 @@ The owner also retains `Evidence/<request-id>/diagnostic.json` in the configured
 
 Observe.py is called by the existing GitFlowQueue.py inspect command through GitFlowHost.ExecuteQueueAsync. GitFlowQueueConsole is presentation only; GitFlowPresentation applies the same safe output policy to modern and legacy UI. Supported God operation inspect_queue remains the legacy read-only operation; no new generic operation ID is invented.
 
-Focused disposable regressions cover a 140-request queue, page navigation, repeated-read byte preservation, unknown/future/legacy metadata, malformed configuration/state/request shapes, timeout interruption and display bounds. See [current validation](Validation.md) for actual results. Unity minimum-version compilation, rendered normal/narrow embedded/standalone controls, native Cancel/Close/reopen and licensed-dependency checks remain required before publication. Historical 0.2.0 evidence cannot certify these changed sources.
+Focused disposable regressions cover a 140-request queue, page navigation, repeated-read byte preservation, unknown/future/legacy metadata, malformed configuration/state/request shapes, timeout interruption and display bounds. See [current validation](Validation.md) for actual results. Minimum/newer native compilation, licensed prerequisites and functional checks are recorded there. Rendered/physical checks remain incomplete and informational: the user removed visual checks as a release requirement on 2026-11-11. Historical evidence retains its original source scope.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json

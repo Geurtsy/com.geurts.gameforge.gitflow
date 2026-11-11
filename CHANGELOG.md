@@ -1,18 +1,19 @@
 # Changelog
 
-## 0.3.0 - unreleased source-only candidate
+## 0.3.0 - 2026-11-11
 
+- Remove visual inspection as a release gate at the user's explicit request; retain incomplete visual coverage as a documented limitation. Compiler and functional checks remain mandatory.
+- Require God 0.44.4 and bind native full compilation to complete default-diagnostic compiler qualification from the installed Compatibility owner. Reject immutable source assets Unity ignored for missing metadata.
+- Keep panel feedback and cancellation visible while scrolling; wrap narrow headers and preserve restored saved preferences before host startup. Stabilize the native capture fixture without weakening production import guards.
 - Finish native validation against the released God 0.44.4 / Compatibility 0.1.1 prerequisite graph, with licensed inputs prepared explicitly and originals preserved. Keep the capture import guard and wait for disposable fixture imports before testing saved-change capture.
-
-- Wrap action history with a stacked label and vertical scrolling. Add explicit local Python/Codex executable discovery with editable manual paths and useful missing-tool preflight. Both current assemblies compile strictly and six focused discovery checks pass outside Unity; updated native acceptance and package release remain pending.
-
+- Wrap action history with a stacked label and vertical scrolling. Add explicit local Python/Codex executable discovery with editable manual paths and useful missing-tool preflight. Native minimum-Editor acceptance now passes; current exact coverage and remaining release gates are recorded in Documentation~/Validation.md.
 - Add an embedded bounded queue console with explicit pages, scope/time/coverage, recorded owner/setup/lease/processor and request validation/publication/sync fields.
 - Isolate modern inspection in a temporary bare store; report malformed/legacy/partial evidence without adopting records or probing live ownership.
 - Freeze action scope, expose per-panel cancellation uncertainty and preserve dated observations; withhold unrestricted raw diagnostics and JSON from panel output.
 - Add a reviewed existing-policy setup route for selected repositories, retaining all existing required gates and explicit publisher start.
 - Batch publisher request-ref reads, fetch missing exact commits in one transport and reuse cached objects while retaining fresh remote-ref/lease checks. Preflight control sizes and read blobs in batches of sixteen.
 - Remove redundant dependency-free scans and query exact dependency refs only. Add assistant-readable safe failure stage/cause/evidence/action records without a new collector or supervisor; retain raw owner evidence and uncertain-outcome protections.
-- Candidate source was pushed and verified at 48a7e07 on codex/queue-reference-batching. That candidate reached main through PR #4; native visual acceptance and immutable package release remain pending; historical 0.2.0 diagnostics are not a demonstrated 0.3.0 failure cause.
+- Candidate source was pushed and verified at 48a7e07 on codex/queue-reference-batching. That candidate reached main through PR #4; current native evidence and preserved failed stock-dependency runs are recorded separately.
 
 
 ## 0.2.0 — Unreleased candidate

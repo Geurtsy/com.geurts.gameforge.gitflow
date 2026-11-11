@@ -11,7 +11,8 @@
   "integrationRecipes": [],
   "schemaVersion": "1.0.0",
   "historicalDocuments": [
-    "Documentation~/History/Validation-0.2.0.md"
+    "Documentation~/History/Validation-0.2.0.md",
+    "Documentation~/History/Validation-0.3.0-source-only.md"
   ],
   "examples": [
     {

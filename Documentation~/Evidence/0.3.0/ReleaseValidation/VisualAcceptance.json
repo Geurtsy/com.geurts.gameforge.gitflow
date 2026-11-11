@@ -1,0 +1,9 @@
+{
+  "required": false,
+  "status": "user-waived",
+  "passed": false,
+  "date": "2026-11-11",
+  "userInstruction": "Remove visual checks as a requirement and publish.",
+  "scope": "GitFlow0.3.0 only; does not modify the generic Forge standards.",
+  "observedPredecessor": "Standalone normal and God normal/narrow views, Odin controls, restored target, tool discovery/save, scoped inspection/history, controlled local TLS cancellation/timeout and domain reload were observed on predecessor candidates. Final full visual/physical matrix remains incomplete; Computer Use was stopped by the user. No visual pass is claimed."
+}

@@ -1,0 +1,10 @@
+test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner (TestGitFlowQueue.QueueAcceptance.test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner) ... ok
+test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance (TestGitFlowQueue.QueueAcceptance.test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance) ... ok
+test_failure_blocks_following_work_and_never_changes_main (TestGitFlowQueue.QueueAcceptance.test_failure_blocks_following_work_and_never_changes_main) ... ok
+test_shared_workspace_and_library_are_reused (TestGitFlowQueue.QueueAcceptance.test_shared_workspace_and_library_are_reused) ... ok
+test_published_pull_failure_resumes_without_retest_or_second_version (TestGitFlowQueue.QueueAcceptance.test_published_pull_failure_resumes_without_retest_or_second_version) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 625.490s
+
+OK

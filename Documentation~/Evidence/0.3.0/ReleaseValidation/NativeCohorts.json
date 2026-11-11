@@ -1,0 +1,86 @@
+{
+  "sourceFingerprint": "16e0ffd1407d31e620c19d667d9d262a0f62b1cde691354a178f2479f07cf5a9",
+  "candidate": "d99dba8c4320ac8cf214a87559dc40df91b0f817",
+  "cohorts": [
+    {
+      "unityVersion": "6000.6.3f1",
+      "candidate": "d99dba8c4320ac8cf214a87559dc40df91b0f817",
+      "compatibilityVersion": "0.1.1",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "compilerAssemblies": 31,
+      "compilerDiagnostics": 0,
+      "installedExecutableFiles": 33,
+      "nativeTests": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/MinimumNative.xml",
+        "sha256": "11109b4bc7c8b22e2ac9aca2a04ace370d456141453b37917ca3fadb5f6fb31c"
+      },
+      "compilerGate": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/MinimumCompiler.json",
+        "sha256": "b821aa633c4a7adce5f5215618d47d28705b54de7433fe8a58e2c84b797b9ccf"
+      },
+      "compilerQualification": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/MinimumQualification.json",
+        "sha256": "e9cfe310733af74fb222520955dc6ae02aa6b260951c682bdd38dfda1fca20aa"
+      },
+      "postNativeIntegrity": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/MinimumPostNativeIntegrity.json",
+        "sha256": "409650b49035074bac4f54effe50c5736653711d4ec53b30108de9174915cb44"
+      }
+    },
+    {
+      "unityVersion": "6000.6.8f1",
+      "candidate": "d99dba8c4320ac8cf214a87559dc40df91b0f817",
+      "compatibilityVersion": "0.2.0",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "compilerAssemblies": 31,
+      "compilerDiagnostics": 0,
+      "installedExecutableFiles": 33,
+      "nativeTests": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerNative.xml",
+        "sha256": "f7f758522c7037ecce7e7eab2e92ce3b866c3d29742d447738dc9ae22518aac1"
+      },
+      "compilerGate": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerCompiler.json",
+        "sha256": "c647e9f6627fbfb547aced56241bb4a77981bbb87fa1503bee107489c6770b5e"
+      },
+      "compilerQualification": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerQualification.json",
+        "sha256": "c8129ec089db744cd3e1e7260e2ff976aede4324c942de215bb99d8c18331734"
+      },
+      "postNativeIntegrity": {
+        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerPostNativeIntegrity.json",
+        "sha256": "ac4b192920fc8a63ed7d1496f44cd84d08ad13ee55613f2e2ee6bffb68881e3d"
+      }
+    }
+  ],
+  "dependencyGraph": {
+    "god": {
+      "version": "0.44.4",
+      "commit": "057ac66731a9bc461d03790e6d55d074888512fd"
+    },
+    "minimumCompatibility": {
+      "version": "0.1.1",
+      "commit": "6f52270fb94040d428e1aa2f853b30649d841bcd"
+    },
+    "newerCompatibility": {
+      "version": "0.2.0",
+      "commit": "972f0fae8db2033b3d5bfd561ce9a0276a327c83"
+    },
+    "newtonsoft": "3.2.2",
+    "privatePreparedUnityPackages": {
+      "ugui": "2.6.2-geurts.1",
+      "input": "1.20.2-geurts.1",
+      "testFramework": "1.8.1-geurts.1"
+    },
+    "nativeApiProfile": "Coherent Standalone/Editor Framework4.8, applied by the released Compatibility native owner; Standalone enum text aliases NET_4_6. Visible common warnings enabled."
+  },
+  "licensedInputArchives": {
+    "quantumConsole267Sha256": "2ec88884c52c322cc1ec7c8475ff4baccf06135b7f1e0e9454d564d8f26b354b",
+    "odinSha256": "62445c36320797ba4626471df479eed3dd67cde810f96d917da959426d7e885d"
+  },
+  "privacy": "Only summaries, authored synthetic control diagnostics, queue logs and owning native test XML are portable. Commercial originals/prepared sources, full compiler inventories and derived binaries stay private."
+}
