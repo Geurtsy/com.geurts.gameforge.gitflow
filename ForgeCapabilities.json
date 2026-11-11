@@ -59,13 +59,13 @@
     },
     {
       "id": "queue_console",
-      "description": "Explicit paged modern-queue observations, selected-repository setup and a bounded embedded operational console. Legacy queues are detected but not adopted. Assistant-readable safe failure stage/cause/evidence/action records reuse this projection. Private HTTPS reads borrow saved Git credentials noninteractively.",
+      "description": "Labelled read-only queue-record fields grouped into overview, source/dependencies, validation/progress and additional evidence. Full selectable identifiers and nested expansion are retained. Shared projection withholds raw/unknown data; private HTTPS viewing uses existing saved Git credentials.",
       "implemented": true,
       "maturity": "source_only_candidate",
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Fresh four Unity presentation checks; twelve disposable real-Git/Windows tests; actual private HTTPS queue observation; full native rebuild and 31 assembly default-diagnostic qualification. Earlier broader lease/publisher coverage remains historical."
+        "Fresh four native presentation checks and a full 31-assembly zero-diagnostic compilation passed for 0.5.3. Existing backend/authentication/repair evidence retains its historical source/environment scope. No visual checks are performed or required."
       ]
     },
     {
@@ -76,7 +76,7 @@
       "operations": [],
       "description": "Explicit auto-fill/configure/start, full modern queue rows and opt-in view-owned live inspection. Existing policies are retained; local process lifetime is observed without lease takeover.",
       "validation": [
-        "4 focused Unity checks; 9 disposable real-Git/Windows checks; actual bound service idle/stop/resume; 31 complete native compiler assemblies with zero diagnostics. Native interaction unverified."
+        "Fresh four native presentation checks and a full 31-assembly zero-diagnostic compilation passed for 0.5.3. Existing backend/authentication/repair evidence retains its historical source/environment scope. No visual checks are performed or required."
       ]
     }
   ],
@@ -139,7 +139,7 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Seven focused disposable real-Git/transport checks for larger repair inputs and preserved retry/deadline guards. Native presentation, example compilation and 31-assembly default-diagnostic qualification are reused from the unchanged 0.5.1 C# implementation, apart from the release version string.",
+    "scope": "Four focused native presentation checks passed on the exact candidate, including redaction through structured controls, read-only values, 140 item/status/ID fields, empty/partial messages and attached nonvisual foldout events across refresh. Final full rebuild and 31 native default-diagnostic compiler closures passed with zero diagnostics. Broader unchanged queue/authentication/repair evidence is reused at its original scope.",
     "unverified": [
       "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher."
     ],

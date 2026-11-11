@@ -1,45 +1,44 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.5.3",
-  "candidate": "pending committed candidate",
+  "candidate": "7a3c2f727e1a1f822dacc054c6b51ffb0a74e6af",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
   "skipped": 0,
   "examplesCompiled": true,
-  "testResult": "Documentation~/Evidence/0.5.1/Native.xml",
+  "testResult": "Documentation~/Evidence/0.5.3/Native.xml",
   "visualAcceptance": {
     "required": false,
     "status": "not_performed",
     "passed": false,
     "scope": "Current Commandments prohibit rendered checks."
   },
-  "publicationReady": false,
-  "scope": "Presentation update: unchanged queue/authentication/repair evidence is retained; fresh native field controls and compile evidence are pending.",
+  "publicationReady": true,
+  "scope": "Four focused native presentation checks passed on the exact candidate, including redaction through structured controls, read-only values, 140 item/status/ID fields, empty/partial messages and attached nonvisual foldout events across refresh. Final full rebuild and 31 native default-diagnostic compiler closures passed with zero diagnostics. Broader unchanged queue/authentication/repair evidence is reused at its original scope.",
   "queueAcceptance": {
     "report": "Documentation~/Evidence/0.5.2/RepairAcceptance.log",
     "passed": 7,
-    "failed": 0
+    "failed": 0,
+    "scope": "Reused seven successful 0.5.2 repair/diagnosis checks; all queue Python modules, the supported example and dependency declarations are unchanged by this C# presentation patch."
   },
   "compilerGate": {
-    "report": "Documentation~/Evidence/0.5.1/Compiler.json",
+    "report": "Documentation~/Evidence/0.5.3/Compiler.json",
     "status": "passed",
     "warnings": 0,
     "errors": 0
   },
   "compilerQualification": {
-    "report": "Documentation~/Evidence/0.5.1/CompilerQualification.json",
+    "report": "Documentation~/Evidence/0.5.3/CompilerQualification.json",
     "status": "passed"
   },
   "additionalEditors": [],
   "integrationRecipes": [],
-  "publicationBlockers": [
-    "Fresh native compilation and focused presentation checks are pending."
-  ],
+  "publicationBlockers": [],
   "limits": "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher.",
   "evidenceReuse": {
     "sourceCommit": "d81f6715a86b3629bb2b1cfc5c1c8ca6e0965e47",
-    "reason": "Queue, authentication, repair, native adapter, supported example and dependencies are unchanged; only presentation, its focused tests and the version stamp change.",
+    "reason": "Queue/authentication/repair algorithms, native adapter, supported example and dependencies are unchanged. Existing broader reports retain their original source/environment scope; no broad regression suite is rerun.",
     "freshPaidInference": false
   }
 }
