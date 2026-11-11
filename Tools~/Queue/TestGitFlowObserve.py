@@ -9,6 +9,7 @@ import unittest
 from unittest import mock
 import GitFlowObserve as observation
 import GitFlowQueue as queue
+import GitFlowPublisher as publisher
 
 
 class ObservationAcceptance(unittest.TestCase):
@@ -42,6 +43,55 @@ class ObservationAcceptance(unittest.TestCase):
 
     def fingerprint(self, root):
         return {str(path.relative_to(root)): queue.file_digest(path) for path in root.rglob('*') if path.is_file()}
+
+    def test_publisher_defaults_are_read_only_exact_editor_and_all_tests(self):
+        project = self.repository / 'ProjectSettings'
+        project.mkdir()
+        (project / 'ProjectVersion.txt').write_text('m_EditorVersion: 6000.6.3f1\n')
+        editor = self.root / '6000.6.3f1/Editor/Unity.exe'
+        editor.parent.mkdir(parents=True)
+        editor.write_bytes(b'fixture - never executed')
+        before = self.fingerprint(self.repository)
+        result = publisher.settings(queue, self.repository, 'origin', str(editor))
+        self.assertEqual(result['test_filter'], '.*')
+        self.assertEqual(result['unity'], str(editor))
+        self.assertLessEqual(len(result['workspace_root']) + 220, 259)
+        self.assertFalse(Path(result['workspace_root']).exists())
+        self.assertEqual(result, publisher.settings(queue, self.repository, 'origin', str(editor)))
+        self.assertEqual(before, self.fingerprint(self.repository))
+        (project / 'ProjectVersion.txt').write_text('m_EditorVersion: 6000.6.999f1\n')
+        with self.assertRaisesRegex(queue.QueueError, 'Install Unity'):
+            publisher.settings(queue, self.repository, 'origin', str(editor))
+
+    def test_existing_publisher_policy_is_retained_and_stale_runner_refused(self):
+        with tempfile.TemporaryDirectory(prefix='gp_', dir='C:/') as workspace:
+            config = dict(schema=1, remote='origin', remote_url=str(self.remote), workspace_root=workspace,
+                runner=str(Path(queue.__file__).resolve()), runner_hash=queue.runner_hash(),
+                policy=dict(schema=1, version_file='version.txt', checks=[dict(name='compile_project', kind='compilation',
+                    command=[sys.executable, 'CustomGate.py'], inputs=['.'], timeout_seconds=30)]))
+            config['policy_hash'] = queue.digest(config['policy'])
+            queue.durable(Path(workspace) / 'ownership.json', config)
+            control = self.repository / '.git/gameforge_queue/configuration.json'
+            queue.durable(control, config)
+            before = self.fingerprint(self.repository)
+            result = publisher.settings(queue, self.repository, 'origin', '')
+            self.assertEqual(result['state'], 'configured')
+            self.assertEqual(result['test_filter'], '(existing required validation policy)')
+            self.assertEqual(before, self.fingerprint(self.repository))
+            with self.assertRaisesRegex(queue.QueueError, 'existing publisher remote'):
+                publisher.settings(queue, self.repository, 'different', '')
+            config['runner_hash'] = 'stale'
+            queue.durable(control, config)
+            with self.assertRaisesRegex(queue.QueueError, 'stopped-owner'):
+                publisher.settings(queue, self.repository, 'origin', '')
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows publisher process observation')
+    def test_publisher_health_rejects_reused_pid_and_absent_process(self):
+        self.assertEqual(publisher.process_health(None), 'not_started')
+        self.assertEqual(publisher.process_health(dict(pid=os.getpid(), updated_utc=queue.utc())), 'running')
+        self.assertEqual(publisher.process_health(dict(pid=os.getpid(), updated_utc='1970-01-01T00:00:00Z')), 'not_running')
+        self.assertEqual(publisher.process_health(dict(pid=2147483647, updated_utc=queue.utc())), 'not_running')
+        self.assertEqual(publisher.process_health(dict(pid=os.getpid(), updated_utc='malformed')), 'unknown')
 
     def test_large_pages_and_repeated_reads_preserve_selected_checkout_and_remote(self):
         for index in range(140):

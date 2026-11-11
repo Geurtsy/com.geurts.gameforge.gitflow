@@ -976,6 +976,8 @@ def main():
     observation = subcommands.add_parser('inspect')
     observation.add_argument('--offset', type=int, default=0)
     observation.add_argument('--limit', type=int, default=16)
+    defaults = subcommands.add_parser('publisher-settings')
+    defaults.add_argument('--unity', default='')
     subcommands.add_parser('storage')
     for name in ('serve', 'request-stop', 'resume-service'):
         command = subcommands.add_parser(name)
@@ -994,6 +996,9 @@ def main():
         result = dict(state='preview', **inventory(sys.modules[__name__], root, arguments.scope))
     elif arguments.command == 'configure':
         result = configure(root, arguments.remote, arguments.workspace_root, reviewed_policy(arguments.policy, arguments.policy_sha256))
+    elif arguments.command == 'publisher-settings':
+        from GitFlowPublisher import settings
+        result = settings(sys.modules[__name__], root, arguments.remote, arguments.unity)
     elif arguments.command == 'process':
         result = process_once(root, arguments.expected_request, arguments.expected_candidate)
     elif arguments.command == 'serve':

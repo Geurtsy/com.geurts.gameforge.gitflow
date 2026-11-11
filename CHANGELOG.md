@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+- Add Auto-fill fields and start processor: exact installed Unity, stable short workspace, all Edit Mode tests, or reuse the existing required policy without replacement.
+- Add a Queue Panel with every modern queue item and status, complete-empty and local publisher-stopped messages, and opt-in live refresh.
+- Verify local Windows process lifetime so stale/reused PIDs are not shown as running. Preserve legacy ownership, strict gates and manual package updates.
+
 ## 0.3.0 - 2026-11-11
 
 - Remove visual inspection as a release gate at the user's explicit request; retain incomplete visual coverage as a documented limitation. Compiler and functional checks remain mandatory.
@@ -16,7 +22,7 @@
 - Candidate source was pushed and verified at 48a7e07 on codex/queue-reference-batching. That candidate reached main through PR #4; current native evidence and preserved failed stock-dependency runs are recorded separately.
 
 
-## 0.2.0 — Unreleased candidate
+## 0.2.0 â€” Unreleased candidate
 
 Strict reusable integration host with one shared worktree, exact-source idempotent submission, ownership-fenced publication and retained evidence. Failed checks block later requests; no skip or validation bypass exists.
 

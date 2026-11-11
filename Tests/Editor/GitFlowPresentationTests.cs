@@ -53,5 +53,32 @@ namespace Geurts.GameForge.GitFlow.Tests
             Assert.That(history.value.Split('\n').Length, Is.EqualTo(64));
             Assert.That(GitFlowPresentation.Summary(console.LastObservation), Does.Contain("139 outside this page"));
         }
+
+        /// <summary>Empty and stopped messages require complete evidence; every item stays visible across the old display limit.</summary>
+        [Test]
+        public void QueuePanelDistinguishesEmptyPartialStoppedAndAllItemStatuses()
+        {
+            var root = new VisualElement(); var console = new GitFlowQueueConsole(root);
+            var result = new JObject { ["state"] = "observed", ["repository"] = "C:/fixture", ["remote"] = "origin",
+                ["coverage"] = new JObject { ["offset"] = 0, ["advertised"] = 0, ["returned"] = 0, ["failed"] = 0, ["omitted"] = 0 },
+                ["legacy"] = new JObject { ["state"] = "none_advertised" }, ["findings"] = new JArray(), ["requests"] = new JArray(),
+                ["recorded_processor"] = new JObject { ["state"] = "not_started", ["process_health"] = "not_started" } };
+            console.Present(result);
+            Assert.That(root.Q<Label>("queue-count").text, Is.EqualTo("No active items in Queue."));
+            Assert.That(root.Q<Label>("publisher-status").text, Is.EqualTo("Publisher not started."));
+            result["coverage"]["omitted"] = 1;
+            console.Present(result);
+            Assert.That(root.Q<Label>("queue-count").text, Does.Contain("cannot be confirmed"));
+            result["coverage"]["omitted"] = 0; result["coverage"]["advertised"] = 140;
+            result["requests"] = new JArray(Enumerable.Range(0, 140).Select(index => new JObject {
+                ["id"] = "request_" + index, ["title"] = "Queue item " + index, ["state"] = index == 139 ? "validation_failed" : "queued" }));
+            result["recorded_processor"] = new JObject { ["state"] = "idle", ["process_health"] = "not_running" };
+            console.Present(result);
+            VisualElement items = root.Q("queue-items");
+            Assert.That(items.Query<Foldout>().ToList().Count, Is.EqualTo(140));
+            Assert.That(items.Query<Foldout>().ToList().Last().text, Does.Contain("validation failed"));
+            Assert.That(root.Q<Label>("publisher-status").text, Is.EqualTo("Publisher is not running."));
+            Assert.That(console.Panel.text, Does.Contain("Error: blocked items"));
+        }
     }
 }

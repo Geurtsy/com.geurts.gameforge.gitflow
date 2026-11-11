@@ -67,10 +67,21 @@
       "validation": [
         "Focused real-Git and enhanced C# presentation smoke checks passed; see Validation.md. Unity type resolution, rendering and interaction remain unverified."
       ]
+    },
+    {
+      "id": "publisher_quick_start_and_queue_panel",
+      "implemented": true,
+      "provider": "editor",
+      "maturity": "candidate",
+      "operations": [],
+      "description": "Explicit auto-fill/configure/start, full modern queue rows and opt-in view-owned live inspection. Existing policies are retained; local process lifetime is observed without lease takeover.",
+      "validation": [
+        "Fresh 0.5.0 acceptance is pending; consult Documentation~/Validation.md."
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.5.0",
   "prerequisites": [
     {
       "required": true,

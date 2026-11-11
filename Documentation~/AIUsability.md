@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.3.0 has source-bound disposable native validation. Consult the current validation record for exact Editor, dependency, UI and publication coverage. Historical evidence retains its original scope. Consult Validation.md before describing it as ready, installing it into a game, or publishing a catalogue release. The human tutorial is rendered inside Unity by GitFlowHelp; this document defines the separate automation contract.
+Version 0.5.0 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -112,7 +112,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.3.0",
+  "packageVersion": "0.5.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

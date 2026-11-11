@@ -138,7 +138,10 @@ def observe(q, root, remote, offset=0, limit=16):
             if not isinstance(processor, dict):
                 raise ValueError('Unsupported processor shape')
             result['recorded_processor'] = projection(processor)
-            result['recorded_processor']['process_health'] = 'unknown'
+            from GitFlowPublisher import process_health
+            result['recorded_processor']['process_health'] = process_health(processor)
+        else:
+            result['recorded_processor'] = dict(state='not_started', process_health='not_started')
     except (OSError, ValueError, TypeError, q.QueueError):
         result['findings'].append('Recorded processor evidence unavailable; no process probe performed.')
     try:
@@ -158,6 +161,7 @@ def observe(q, root, remote, offset=0, limit=16):
             if legacy_requests or legacy_locks:
                 result['findings'].append('Legacy IntegrationQueue records exist. This adapter does not parse/adopt them; new setup/submission remains blocked by its existing guard.')
             requests = sorted((name, identity) for name, identity in refs.items() if name.startswith(q.PREFIX))
+            result['coverage']['queue_identity'] = q.digest(requests)
             page = requests[offset:offset + limit]
             result['coverage'].update(advertised=len(requests), omitted=len(requests) - len(page), next_offset=offset + limit if offset + limit < len(requests) else None)
             identities = list(dict.fromkeys([identity for _, identity in page] + ([refs[q.LOCK]] if q.LOCK in refs else [])))

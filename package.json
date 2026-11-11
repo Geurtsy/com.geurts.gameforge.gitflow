@@ -1,8 +1,8 @@
 {
   "name": "com.geurts.gameforge.gitflow",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "displayName": "Geurts Game Forge GitFlow",
-  "description": "Editor queue inspection, local Codex model selection and strict deterministic integration host. Candidate release under acceptance; no skip or validation bypass. Requires God, Odin Inspector and Quantum Console.",
+  "description": "Editor queue panel, automatic publisher setup and strict deterministic integration host. No skip or validation bypass. Requires God, Odin Inspector and Quantum Console.",
   "unity": "6000.6",
   "unityRelease": "3f1",
   "dependencies": {
