@@ -1,0 +1,17 @@
+{
+  "state": "observed",
+  "coverage": {
+    "advertised": 1,
+    "failed": 0,
+    "limit": 16,
+    "next_offset": null,
+    "offset": 0,
+    "omitted": 0,
+    "ordering": "Ref name, not execution order. Separate pages are separate observations; changing queues can move page membership.",
+    "queue_identity": "8eaa19ff75c824b0e7d87ee99f2f62b1e9fefb18bbfb140099e4cccbaf0466d5",
+    "returned": 1
+  },
+  "findings": [],
+  "private_https_access": "passed with pre-existing saved Git credentials",
+  "scope": "Read only; no queue write, processor startup or credential disclosure. Private request content omitted."
+}

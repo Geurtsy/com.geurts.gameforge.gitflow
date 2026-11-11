@@ -59,13 +59,13 @@
     },
     {
       "id": "queue_console",
-      "description": "Explicit paged modern-queue observations, selected-repository setup and a bounded embedded operational console. Legacy queues are detected but not adopted. Assistant-readable safe failure stage/cause/evidence/action records reuse this projection.",
+      "description": "Explicit paged modern-queue observations, selected-repository setup and a bounded embedded operational console. Legacy queues are detected but not adopted. Assistant-readable safe failure stage/cause/evidence/action records reuse this projection. Private HTTPS reads borrow saved Git credentials noninteractively.",
       "implemented": true,
       "maturity": "source_only_candidate",
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Four focused Unity presentation tests and nine disposable real-Git/Windows checks passed for 0.5.0. Complete native compiler qualification passed with zero diagnostics. Rendered appearance and physical interaction remain unverified."
+        "Fresh four Unity presentation checks; twelve disposable real-Git/Windows tests; actual private HTTPS queue observation; full native rebuild and 31 assembly default-diagnostic qualification. Earlier broader lease/publisher coverage remains historical."
       ]
     },
     {
@@ -139,24 +139,15 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Exact Git candidate: four focused Unity presentation tests, nine disposable real-Git/Windows observer/default/policy checks, real windowless bound service idle/stop/resume, complete 31-assembly native default-diagnostic qualification with zero diagnostics. All 1858 compiler inputs remain unchanged after tests; installed executable membership/bytes match. Earlier broader queue/lease coverage is historical and is not relabelled.",
+    "scope": "Fresh four Unity presentation checks; twelve disposable real-Git/Windows tests; actual private HTTPS queue observation; full native rebuild and 31 assembly default-diagnostic qualification. Earlier broader lease/publisher coverage remains historical.",
     "unverified": [
-      "No live game, installed consumer, production queue, paid inference or legacy migration was changed. Newer Editor, light/dark skin, narrow docking, high scaling and physical interaction are not freshly certified. Only modern queue pages are combined; unsupported legacy queues remain explicitly unavailable.",
-      "Native visual/interaction checks remain unverified and are explicitly user-waived for this update."
+      "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher."
     ],
     "visualAcceptance": {
       "required": false,
-      "status": "user-waived",
+      "status": "not_performed",
       "passed": false,
-      "date": "2026-11-11",
-      "userInstruction": "Skip the visual checks for this update and publish it.",
-      "scope": "GitFlow 0.5.0 only. Native visual/physical interaction, skins, narrow docking and display scaling remain unverified; no visual pass is claimed. Other required gates remain unchanged."
+      "scope": "Current Commandments prohibit rendered checks."
     }
-  },
-  "visualAcceptance": {
-    "required": false,
-    "status": "not_performed",
-    "passed": false,
-    "scope": "Rendered checks are prohibited by the current project instructions. No visual or physical acceptance is claimed."
   }
 }

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.8975648">
+  <test-suite type="TestSuite" id="1000" name="gfv030" fullname="gfv030" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.897565" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1026" name="Geurts.GameForge.GitFlow.Editor.Tests.dll" fullname="C:/mgqv/Library/ScriptAssemblies/Geurts.GameForge.GitFlow.Editor.Tests.dll" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.886675" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="27696" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1027" name="Geurts" fullname="Geurts" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.885580" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1028" name="GameForge" fullname="Geurts.GameForge" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.884850" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1029" name="GitFlow" fullname="Geurts.GameForge.GitFlow" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.883843" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1030" name="Tests" fullname="Geurts.GameForge.GitFlow.Tests" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.882993" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1014" name="GitFlowPresentationTests" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.880647" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1017" name="ConsolePreservesDatedScopeAndBoundsRepeatedLocalEvents" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests.ConsolePreservesDatedScopeAndBoundsRepeatedLocalEvents" methodname="ConsolePreservesDatedScopeAndBoundsRepeatedLocalEvents" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" seed="1510954488" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:26Z" duration="0.190070" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1016" name="ProjectionBoundsDeepOrLargeEvidenceVisibly" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests.ProjectionBoundsDeepOrLargeEvidenceVisibly" methodname="ProjectionBoundsDeepOrLargeEvidenceVisibly" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" seed="1209749644" result="Passed" start-time="2026-11-11 16:16:26Z" end-time="2026-11-11 16:16:27Z" duration="0.548717" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1015" name="ProjectionWithholdsRawDiagnosticsAndCredentialLikeValues" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests.ProjectionWithholdsRawDiagnosticsAndCredentialLikeValues" methodname="ProjectionWithholdsRawDiagnosticsAndCredentialLikeValues" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" seed="192298737" result="Passed" start-time="2026-11-11 16:16:27Z" end-time="2026-11-11 16:16:27Z" duration="0.001874" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1018" name="QueuePanelDistinguishesEmptyPartialStoppedAndAllItemStatuses" fullname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests.QueuePanelDistinguishesEmptyPartialStoppedAndAllItemStatuses" methodname="QueuePanelDistinguishesEmptyPartialStoppedAndAllItemStatuses" classname="Geurts.GameForge.GitFlow.Tests.GitFlowPresentationTests" runstate="Runnable" seed="1525000790" result="Passed" start-time="2026-11-11 16:16:27Z" end-time="2026-11-11 16:16:27Z" duration="0.123039" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:\mgqev\Native\Results.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
