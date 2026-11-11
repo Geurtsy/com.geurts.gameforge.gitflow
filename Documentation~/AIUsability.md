@@ -30,6 +30,12 @@ The resulting checkpoint is an ordinary commit with the original HEAD as parent.
 
 The optional submit command requires an already clean committed task branch. It accepts title, summary, patch/minor/major size and explicit dependency request IDs. Both routes verify the remote immutable source request. The request ID is derived from the full source commit. A submission response ambiguity triggers one read reconciliation, never a repeated uncertain write. Existing legacy queue refs block new-protocol submission/configuration until an explicitly reviewed migration occurs.
 
+## Publisher defaults and complete queue display
+
+Use the UI's Auto-fill fields and start processor button for combined confirmed setup/start, and Refresh Queue Panel for all modern pages. Live queue updates is default-off, view-owned and read-only. The shared host's `ExecuteQueueAsync(preferences, new[] { "publisher-settings", "--unity", installedUnity }, cancellation: token)` reads defaults or validates/reuses the existing policy. It performs no setup or launch. New defaults require every Edit Mode test (`.*`); existing custom policy commands remain unchanged.
+
+`ConfigureUnityAsync` returns `configuration_identity` after successful new configuration. Existing defaults return that same digest. `StartPublisher(preferences, expectedConfiguration)` is the additive bound-start overload; the original one-argument API remains available. For an existing stopped owner, execute `resume-service --operator --expected-configuration <digest>` before the bound start. Both resume and service startup compare the reviewed identity under the existing exclusive guard; a changed policy preserves the stop marker and cannot start. No runner adoption, legacy migration, model choice or gate reduction is implied. Startup dispatch is not readiness; inspect afterward. Modern `inspect --offset <n> --limit 64` pages expose `coverage.queue_identity`; collect all pages only while that identity agrees, otherwise report partial and refresh again. UI and API use these same commands and guards.
+
 ## Publisher, ownership and recovery
 
 An operator configures one new short root. Ownership markers bind the repository, remote, runner hash and validation policy. One detached Git worktree shares the repository's object database; its Unity Library is reused. Failed/dirty candidates are preserved. There is no skip, bypass or advisory gate.

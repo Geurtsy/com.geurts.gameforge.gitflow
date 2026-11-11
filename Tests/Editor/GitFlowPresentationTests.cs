@@ -64,20 +64,20 @@ namespace Geurts.GameForge.GitFlow.Tests
                 ["legacy"] = new JObject { ["state"] = "none_advertised" }, ["findings"] = new JArray(), ["requests"] = new JArray(),
                 ["recorded_processor"] = new JObject { ["state"] = "not_started", ["process_health"] = "not_started" } };
             console.Present(result);
-            Assert.That(root.Q<Label>("queue-count").text, Is.EqualTo("No active items in Queue."));
-            Assert.That(root.Q<Label>("publisher-status").text, Is.EqualTo("Publisher not started."));
+            Assert.That(root.Q<Label>("queue_count").text, Is.EqualTo("No active items in Queue."));
+            Assert.That(root.Q<Label>("publisher_status").text, Is.EqualTo("Publisher not started on this computer."));
             result["coverage"]["omitted"] = 1;
             console.Present(result);
-            Assert.That(root.Q<Label>("queue-count").text, Does.Contain("cannot be confirmed"));
+            Assert.That(root.Q<Label>("queue_count").text, Does.Contain("cannot be confirmed"));
             result["coverage"]["omitted"] = 0; result["coverage"]["advertised"] = 140;
             result["requests"] = new JArray(Enumerable.Range(0, 140).Select(index => new JObject {
                 ["id"] = "request_" + index, ["title"] = "Queue item " + index, ["state"] = index == 139 ? "validation_failed" : "queued" }));
             result["recorded_processor"] = new JObject { ["state"] = "idle", ["process_health"] = "not_running" };
             console.Present(result);
-            VisualElement items = root.Q("queue-items");
+            VisualElement items = root.Q("queue_items");
             Assert.That(items.Query<Foldout>().ToList().Count, Is.EqualTo(140));
             Assert.That(items.Query<Foldout>().ToList().Last().text, Does.Contain("validation failed"));
-            Assert.That(root.Q<Label>("publisher-status").text, Is.EqualTo("Publisher is not running."));
+            Assert.That(root.Q<Label>("publisher_status").text, Is.EqualTo("Publisher is not running on this computer."));
             Assert.That(console.Panel.text, Does.Contain("Error: blocked items"));
         }
     }

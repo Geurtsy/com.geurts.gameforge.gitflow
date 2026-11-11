@@ -29,9 +29,9 @@ namespace Geurts.GameForge.GitFlow.Editor
             parent.Add(group);
             _summary = new Label("Queue not checked. Select Refresh Queue Panel to show all items and their status.");
             _summary.style.whiteSpace = WhiteSpace.Normal; group.Add(_summary);
-            _publisher = new Label("Publisher: Not checked.") { name = "publisher-status" };
+            _publisher = new Label("Publisher: Not checked.") { name = "publisher_status" };
             _publisher.style.whiteSpace = WhiteSpace.Normal; _publisher.style.marginTop = 8; group.Add(_publisher);
-            _items = new VisualElement { name = "queue-items" }; group.Add(_items);
+            _items = new VisualElement { name = "queue_items" }; group.Add(_items);
             var history = new Foldout { text = "Local action history", value = false }; history.style.marginTop = 16; group.Add(history);
             _history = new TextField("Local action history (UTC)") { multiline = true, isReadOnly = true };
             _history.style.whiteSpace = WhiteSpace.Normal;
@@ -92,7 +92,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             _items.Clear();
             string health = (string)result["recorded_processor"]?["process_health"];
             string phase = (string)result["recorded_processor"]?["state"];
-            _publisher.text = health == "not_started" ? "Publisher not started." : health == "not_running" ? "Publisher is not running." :
+            _publisher.text = health == "not_started" ? "Publisher not started on this computer." : health == "not_running" ? "Publisher is not running on this computer." :
                 health == "running" ? "Publisher running - " + GitFlowPresentation.Text(phase) + " (local process observed)." :
                 phase == "stopped" ? "Publisher stopped." : "Publisher status unavailable. Refresh or inspect the retained processor evidence.";
             var requests = (result["requests"] as JArray ?? new JArray()).OfType<JObject>().ToArray();
@@ -104,7 +104,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             var count = new Label(active == 0 && complete ? "No active items in Queue." :
                 active == 0 ? "Queue unavailable or partially checked. Empty queue cannot be confirmed." :
                 active + " active item(s) in Queue" + (complete ? "." : " - partial observation; refresh for remaining items."));
-            count.name = "queue-count"; count.style.whiteSpace = WhiteSpace.Normal; count.style.marginTop = 8; _items.Add(count);
+            count.name = "queue_count"; count.style.whiteSpace = WhiteSpace.Normal; count.style.marginTop = 8; _items.Add(count);
             // Keep item status in the visible row, rather than hiding it behind raw JSON or a collapsed details section.
             foreach (JObject request in requests.Where(request => (string)request["state"] != "integrated")) Item(_items, request);
             var completed = requests.Where(request => (string)request["state"] == "integrated").ToArray();

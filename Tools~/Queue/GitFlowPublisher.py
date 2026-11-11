@@ -7,14 +7,14 @@ from pathlib import Path
 import re
 
 
-def settings(q, root, remote, active_unity):
+def settings(queue, root, remote, active_unity):
     """Reuse exact existing policy or propose a deterministic short root and all Edit Mode tests."""
-    root = q.plain(root)
-    control = q.common(root) / 'gameforge_queue/configuration.json'
+    root = queue.plain(root)
+    control = queue.common(root) / 'gameforge_queue/configuration.json'
     if control.exists():
-        config = q.configuration(root)
+        config = queue.configuration(root)
         if config['remote'] != remote:
-            raise q.QueueError('Select the existing publisher remote: ' + config['remote'])
+            raise queue.QueueError('Select the existing publisher remote: ' + config['remote'])
         unity, tests = '', ''
         for check in config['policy']['checks']:
             command = check['command']
@@ -25,25 +25,25 @@ def settings(q, root, remote, active_unity):
         return dict(state='configured', workspace_root=config['workspace_root'], unity=unity,
                     test_filter=tests or '(existing required validation policy)',
                     automatic_repair=config['policy'].get('repair', {}).get('enabled', False),
-                    process_health=process_health(q.read_json(control.with_name('state.json'))) if control.with_name('state.json').exists() else 'not_started',
-                    configuration_identity=q.digest(config), detail='Existing policy retained unchanged.')
-    version_file = q.plain(root / 'ProjectSettings/ProjectVersion.txt')
+                    process_health=process_health(queue.read_json(control.with_name('state.json'))) if control.with_name('state.json').exists() else 'not_started',
+                    configuration_identity=queue.digest(config), detail='Existing policy retained unchanged.')
+    version_file = queue.plain(root / 'ProjectSettings/ProjectVersion.txt')
     if not version_file.is_file():
-        raise q.QueueError('Automatic setup requires a Unity project. Use the reviewed-policy controls for other repositories.')
+        raise queue.QueueError('Automatic setup requires a Unity project. Use the reviewed-policy controls for other repositories.')
     match = re.search(r'^m_EditorVersion:\s*(\S+)\s*$', version_file.read_text(encoding='utf-8-sig'), re.M)
     if not match:
-        raise q.QueueError('Cannot determine this project\'s exact Unity Editor version.')
+        raise queue.QueueError('Cannot determine this project\'s exact Unity Editor version.')
     version = match[1]
     # The active Editor is accepted only when its installation directory matches the selected project.
     candidates = [Path(active_unity)] if active_unity else []
     candidates.append(Path(os.environ.get('ProgramFiles', 'C:/Program Files')) / 'Unity/Hub/Editor' / version / 'Editor/Unity.exe')
     unity = next((path for path in candidates if path.is_file() and path.parent.parent.name == version), None)
     if unity is None:
-        raise q.QueueError('Install Unity ' + version + ' or select its executable manually in the publisher fields.')
-    identity = hashlib.sha256(str(q.common(root)).casefold().encode()).hexdigest()[:10]
-    workspace = q.plain(Path(root.anchor) / ('gfq' + identity))
+        raise queue.QueueError('Install Unity ' + version + ' or select its executable manually in the publisher fields.')
+    identity = hashlib.sha256(str(queue.common(root)).casefold().encode()).hexdigest()[:10]
+    workspace = queue.plain(Path(root.anchor) / ('gfq' + identity))
     if len(str(workspace)) + 220 > 259 or workspace.exists():
-        raise q.QueueError('The suggested short workspace is unavailable: ' + str(workspace) + '. Choose a new root manually; existing content is preserved.')
+        raise queue.QueueError('The suggested short workspace is unavailable: ' + str(workspace) + '. Choose a new root manually; existing content is preserved.')
     return dict(state='new_publisher', workspace_root=str(workspace), unity=str(unity), test_filter='.*',
                 automatic_repair=False, detail='All Edit Mode tests are required. No matching tests, skipped tests, warnings or errors block publication.')
 

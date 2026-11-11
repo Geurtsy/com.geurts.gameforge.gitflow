@@ -80,6 +80,15 @@ class ObservationAcceptance(unittest.TestCase):
             self.assertEqual(before, self.fingerprint(self.repository))
             with self.assertRaisesRegex(queue.QueueError, 'existing publisher remote'):
                 publisher.settings(queue, self.repository, 'different', '')
+            stop = control.with_name('stop.json')
+            queue.durable(stop, dict(schema=1, requested_utc=queue.utc()))
+            original_stop = stop.read_bytes()
+            with self.assertRaisesRegex(queue.QueueError, 'reviewed publisher configuration changed'):
+                queue.resume_service(self.repository, '0' * 64)
+            self.assertEqual(stop.read_bytes(), original_stop)
+            with self.assertRaisesRegex(queue.QueueError, 'reviewed publisher configuration changed'):
+                queue.serve(self.repository, '0' * 64)
+            self.assertFalse(control.with_name('state.json').exists())
             config['runner_hash'] = 'stale'
             queue.durable(control, config)
             with self.assertRaisesRegex(queue.QueueError, 'stopped-owner'):
