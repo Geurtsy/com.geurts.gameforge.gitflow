@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.5.0 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.5.1 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -118,7 +118,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.0",
+  "packageVersion": "0.5.1",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

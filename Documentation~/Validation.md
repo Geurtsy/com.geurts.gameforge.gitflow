@@ -1,4 +1,4 @@
-# GitFlow 0.5.0 validation
+# GitFlow 0.5.1 validation
 
 The changed publisher setup and Queue Panel pass the scoped nonvisual checks below; visual checks are explicitly user-waived for this update. This release uses the published 0.3.0 main as its base; the separate 0.4.0 candidate is preserved. No live game, installed package or production publisher is changed by development checks.
 
@@ -16,6 +16,6 @@ Native visual/physical interaction, light/dark skins, narrow docking and display
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.1","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

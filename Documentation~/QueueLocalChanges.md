@@ -38,12 +38,12 @@ Refresh Queue Panel shows every modern queue item and its status. It says No act
 THE BACKGROUND PROGRAM AND COMMON FIXES
 The processor is the background program that checks, combines and publishes changes. Publication means those changes reach the shared accepted version. Inspect reusable queue once shows its recorded computer, owner, current work and latest recorded update. These are dated observations, not a guarantee that it is healthy. Unknown does not mean available. The advanced Details panel retains the complete results for your operator.
 
-Ã¢â‚¬Â¢ No eligible changes: save your scene/assets and check Capture Scope and the preview's excluded list.
-Ã¢â‚¬Â¢ Unsaved or untitled scene: save it first. Save unsaved Prefab Mode work before queueing. Play Mode, compilation and asset import must finish first. If a selected scene and unrelated assets both have unsaved edits, GitFlow stops so Unity cannot save that unrelated work through its scene-save flow.
-Ã¢â‚¬Â¢ Files changed during capture: finish editing or importing, review the preview, then try again. Nothing was discarded.
-Ã¢â‚¬Â¢ Uncertain confirmation: inspect the existing request first. The same unchanged snapshot reuses its original queue entry. Do not repeatedly submit it.
-Ã¢â‚¬Â¢ Failed checks: ask the operator to inspect the recorded failure and continue that same request after a correction. Later requests cannot jump over it.
-Ã¢â‚¬Â¢ Published but not Integrated: your original files may still contain local edits. GitFlow refuses to overwrite them. Ask the operator to reconcile those preserved edits and synchronize through supported Git tooling. Do not discard work merely to clear the message. Recovery does not assign another version or repeat completed checks.
+ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ No eligible changes: save your scene/assets and check Capture Scope and the preview's excluded list.
+ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Unsaved or untitled scene: save it first. Save unsaved Prefab Mode work before queueing. Play Mode, compilation and asset import must finish first. If a selected scene and unrelated assets both have unsaved edits, GitFlow stops so Unity cannot save that unrelated work through its scene-save flow.
+ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Files changed during capture: finish editing or importing, review the preview, then try again. Nothing was discarded.
+ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Uncertain confirmation: inspect the existing request first. The same unchanged snapshot reuses its original queue entry. Do not repeatedly submit it.
+ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Failed checks: ask the operator to inspect the recorded failure and continue that same request after a correction. Later requests cannot jump over it.
+ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Published but not Integrated: your original files may still contain local edits. GitFlow refuses to overwrite them. Ask the operator to reconcile those preserved edits and synchronize through supported Git tooling. Do not discard work merely to clear the message. Recovery does not assign another version or repeat completed checks.
 
 Forge packages and documentation never update automatically through GitFlow. After you deliberately install an update and stop the publisher, the operator can explicitly adopt the already installed runner; that action installs nothing and retains existing work.
 
@@ -58,7 +58,7 @@ An ordinary Git push does not add work to the queue automatically. Direct pushes
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.0",
+  "packageVersion": "0.5.1",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 — 2026-11-12
+
+- Read private HTTPS queue refs with credentials already saved by the selected repository's trusted Git credential helper, without opening a sign-in prompt.
+- Keep credentials in process memory and scoped environment only; object reads retain isolated configuration and disable redirects.
+- Add private-access, anonymous fallback and embedded-credential refusal checks.
+- Make legacy release evidence digests informational, retaining actual native compilation, diagnostic qualification and acceptance requirements.
+
 ## 0.5.0
 
 - Visual checks for this update are explicitly user-waived on 2026-11-11; no visual pass is claimed.

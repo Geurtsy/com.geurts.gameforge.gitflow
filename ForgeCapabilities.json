@@ -81,7 +81,7 @@
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.0",
+  "packageVersion": "0.5.1",
   "prerequisites": [
     {
       "required": true,
@@ -152,5 +152,11 @@
       "userInstruction": "Skip the visual checks for this update and publish it.",
       "scope": "GitFlow 0.5.0 only. Native visual/physical interaction, skins, narrow docking and display scaling remain unverified; no visual pass is claimed. Other required gates remain unchanged."
     }
+  },
+  "visualAcceptance": {
+    "required": false,
+    "status": "not_performed",
+    "passed": false,
+    "scope": "Rendered checks are prohibited by the current project instructions. No visual or physical acceptance is claimed."
   }
 }
