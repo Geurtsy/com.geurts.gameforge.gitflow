@@ -2,6 +2,8 @@
 
 ## 0.5.0
 
+- Visual checks for this update are explicitly user-waived on 2026-11-11; no visual pass is claimed.
+
 - Add Auto-fill fields and start processor: exact installed Unity, stable short workspace, all Edit Mode tests, or reuse the existing required policy without replacement.
 - Add a Queue Panel with every modern queue item and status, complete-empty and local publisher-stopped messages, and opt-in live refresh.
 - Verify local Windows process lifetime so stale/reused PIDs are not shown as running. Preserve legacy ownership, strict gates and manual package updates.
