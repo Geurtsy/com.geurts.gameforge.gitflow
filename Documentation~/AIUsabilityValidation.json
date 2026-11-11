@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.2",
-  "candidate": "See owning release Git commit; executable changes are limited to Python repair/diagnosis and a C# version stamp.",
+  "packageVersion": "0.5.3",
+  "candidate": "pending committed candidate",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -14,8 +14,8 @@
     "passed": false,
     "scope": "Current Commandments prohibit rendered checks."
   },
-  "publicationReady": true,
-  "scope": "Seven focused disposable real-Git/transport checks for larger repair inputs and preserved retry/deadline guards. Native presentation, example compilation and 31-assembly default-diagnostic qualification are reused from the unchanged 0.5.1 C# implementation, apart from the release version string.",
+  "publicationReady": false,
+  "scope": "Presentation update: unchanged queue/authentication/repair evidence is retained; fresh native field controls and compile evidence are pending.",
   "queueAcceptance": {
     "report": "Documentation~/Evidence/0.5.2/RepairAcceptance.log",
     "passed": 7,
@@ -33,12 +33,13 @@
   },
   "additionalEditors": [],
   "integrationRecipes": [],
-  "publicationBlockers": [],
+  "publicationBlockers": [
+    "Fresh native compilation and focused presentation checks are pending."
+  ],
   "limits": "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher.",
   "evidenceReuse": {
-    "sourceCommit": "7302bbffeada8a6ce79698603ddba08a0dc472e0",
-    "nativeCandidate": "2a0dfa6d34dd3ecf2b849b911e2329d6ef088ff3",
-    "reason": "No C# behavior, supported example, assembly definitions, dependencies or native gates changed. Only GitFlowBrick.Version is restamped; Python repair/diagnosis is covered by fresh focused checks.",
+    "sourceCommit": "d81f6715a86b3629bb2b1cfc5c1c8ca6e0965e47",
+    "reason": "Queue, authentication, repair, native adapter, supported example and dependencies are unchanged; only presentation, its focused tests and the version stamp change.",
     "freshPaidInference": false
   }
 }

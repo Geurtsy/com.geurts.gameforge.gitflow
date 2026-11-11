@@ -23,6 +23,14 @@ namespace Geurts.GameForge.GitFlow.Tests
             Assert.That(text, Does.Contain("required_check_exit"));
             Assert.That(text, Does.Contain("\"errors\": 2"));
             Assert.That(value["error"].ToString(), Is.EqualTo("DO_NOT_DISPLAY"));
+            // The structured controls share this policy; replacing JSON must not expose raw or unknown payloads.
+            var root = new VisualElement(); var console = new GitFlowQueueConsole(root);
+            console.Present(new JObject { ["state"] = "observed", ["coverage"] = new JObject(), ["requests"] = new JArray(value.DeepClone()) });
+            TextField title = root.Q<TextField>("queue_field_title");
+            Assert.That(title, Is.Not.Null);
+            Assert.That(title.isReadOnly, Is.True);
+            Assert.That(root.Query<TextField>().ToList().All(field => !field.value.Contains("DO_NOT_DISPLAY")), Is.True);
+            Assert.That(root.Q<TextField>("queue_field_errors").value, Is.EqualTo("2"));
         }
 
         /// <summary>Large evidence remains a visibly partial bounded projection and never changes the source record.</summary>
@@ -75,8 +83,15 @@ namespace Geurts.GameForge.GitFlow.Tests
             result["recorded_processor"] = new JObject { ["state"] = "idle", ["process_health"] = "not_running" };
             console.Present(result);
             VisualElement items = root.Q("queue_items");
-            Assert.That(items.Query<Foldout>().ToList().Count, Is.EqualTo(140));
-            Assert.That(items.Query<Foldout>().ToList().Last().text, Does.Contain("validation failed"));
+            var cards = items.Children().OfType<Foldout>().ToArray();
+            Assert.That(cards.Length, Is.EqualTo(140));
+            Assert.That(cards.Last().Q<TextField>("queue_field_state").value, Is.EqualTo("Validation failed"));
+            Assert.That(cards.Last().Q<TextField>("queue_field_id").value, Is.EqualTo("request_139"));
+            Foldout overview = cards.Last().Children().OfType<Foldout>().First();
+            overview.value = false;
+            console.Present(result);
+            Assert.That(root.Q("queue_items").Children().OfType<Foldout>().Last().Children().OfType<Foldout>().First().value, Is.False,
+                "Live refresh must preserve the user's nested detail expansion.");
             Assert.That(root.Q<Label>("publisher_status").text, Is.EqualTo("Publisher is not running on this computer."));
             Assert.That(console.Panel.text, Does.Contain("Error: blocked items"));
         }

@@ -34,9 +34,12 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Builds a selectable display projection; original provider data remains unchanged and is never copied wholesale.</summary>
         internal static string Format(JToken value)
         {
-            string text = Project(value, 0).ToString(Formatting.Indented);
+            string text = ProjectFields(value).ToString(Formatting.Indented);
             return text.Length > MaximumCharacters ? text.Substring(0, MaximumCharacters) + "\n[Display bound reached. Narrow the page; this is partial evidence.]" : text;
         }
+
+        /// <summary>Shares the same safe field projection with structured GUI controls without exposing original payloads.</summary>
+        internal static JToken ProjectFields(JToken value) => Project(value, 0);
 
         /// <summary>Copies only known operational fields, with bounded depth, lists and strings.</summary>
         private static JToken Project(JToken value, int depth)

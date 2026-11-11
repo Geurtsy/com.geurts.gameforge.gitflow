@@ -1,6 +1,6 @@
 # GitFlow queue console and selected-repository setup
 
-Version 0.5.2 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
+Version 0.5.3 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
 
 ## Private HTTPS repositories
 
@@ -13,7 +13,7 @@ Open Tools > Geurts Game Forge > GitFlow, standalone or embedded in God. Opening
 1. Select the existing Git repository and existing remote name in Queue host and local Codex. Click Find Python and Codex executables to check local PATH and supported installation locations, or choose the paths manually under Local tools. Existing valid manual paths are retained. Discovery executes/installs nothing and does not save; Python version and Codex access remain unverified until checked. Save preferences if wanted. Saving starts no queue or model request.
 2. Select **Refresh Queue Panel** to collect every modern queue page. Every item shows its status, title and request ID. Integrated items remain under Completed items. **No active items in Queue.** appears only after complete successful coverage with no active requests; partial, unavailable and legacy observations have explicit messages.
 3. Optionally enable **Live queue updates (every 15 seconds)**. It starts only from that current explicit toggle, runs while the view is attached, serializes with other actions and stops on closure/reload. It never starts a processor or updates packages. Otherwise refresh manually. Repository, remote and UTC remain visible with each dated observation. Advanced single-page/Previous/Next controls remain available; they do not certify full coverage.
-4. Expand a request to read its source/base/dependencies, reported phase, candidate, version, attempts, recorded required-check results, receipt and synchronization outcomes where supplied. Missing fields remain absent/unknown. Queued is not delivered; Published still needs synchronization. Integrated is a reported outcome, not independent verification of remote ancestry or artifacts by this viewer.
+4. Expand a request to read labelled controls instead of JSON. Overview shows its title, status, full request ID, requested version increase and readable timestamps. Source and dependencies contains complete commit values and dependency entries. Validation and progress groups attempts, required-check results, diagnostics, receipts and pulls. Additional evidence retains the other supported fields. Empty collections say None recorded. Fields are read-only and selectable; nested expansion stays as chosen during live refresh. Missing fields remain absent/unknown. Queued is not delivered; Published still needs synchronization. Integrated is a reported outcome, not independent verification of remote ancestry or artifacts by this viewer.
 
 The console is a selectable read-only panel, not a shell, runtime Quantum Console replacement or new queue service. It shows at most 64 local action events; these report actual dispatch/result/cancellation, not streamed publisher progress. The labelled history field wraps at the available width and scrolls vertically within its existing height limit. Clearing history changes only the display. The underlying publisher remains independent.
 
@@ -63,6 +63,6 @@ Focused disposable regressions cover a 140-request queue, page navigation, repea
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.2","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.3","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

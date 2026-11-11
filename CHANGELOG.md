@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.3 — 2026-11-12
+
+- Replace queue-record JSON blocks with labelled read-only fields, grouped source/dependency details and expandable validation results.
+- Show readable status/version labels and timestamps, retain full selectable identifiers and preserve nested expansion during refresh.
+- Keep the shared redaction/display bounds and existing private-queue and larger-repair behavior.
+
 ## 0.5.2 — 2026-11-12
 
 - Increase complete repair files from 32 to 256 KiB and the shared repair/diagnosis context from 64 KiB to 1 MiB.
