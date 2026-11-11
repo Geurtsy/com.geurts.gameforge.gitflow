@@ -1,13 +1,15 @@
-# GitFlow 0.5.2 validation
+# GitFlow 0.5.3 validation
 
-Seven focused disposable real-Git/transport checks pass for the larger automatic-repair limits and existing no-progress/original-deadline guards. [Acceptance log](Evidence/0.5.2/RepairAcceptance.log) records the actual run. The new cases resolve a real merge conflict in a complete source file larger than the former 32 KiB limit, preserve both cleanup actions and source ancestry, accept the exact 256 KiB file/64 KiB diagnostic boundaries, reject one-byte overflow without inference or source edits, reject aggregate overflow, and exercise the diagnosis transport at its 1 MiB UTF-8 context and 256 KiB proposal boundaries. Multibyte text is counted in bytes. Model replies are controlled fixture proposals; no paid inference or model-capacity certification is claimed.
+The queue-readability update replaces JSON blocks with labelled read-only GUI controls and grouped request/source/validation details. The shared redaction, display limits, full identities, empty/unknown states and nested foldout expansion are preserved. Private queue access and larger repair context from the existing 0.5.1/0.5.2 releases are unchanged.
 
-Native C# behavior, assembly definitions, supported example and dependencies are unchanged from published 0.5.1 at `7302bbffeada8a6ce79698603ddba08a0dc472e0`; only the brick version string is restamped. Its Unity 6000.6.3f1 presentation/example evidence, full script rebuild and complete 31-assembly default-diagnostic qualification remain applicable and are explicitly reused. The native executable candidate was `2a0dfa6d34dd3ecf2b849b911e2329d6ef088ff3`. [Machine-readable acceptance](AIUsabilityValidation.json) retains those exact original reports and separates fresh Python coverage. Broader unchanged publisher/lease results remain historical.
+## Selected checks
 
-The installed configured runner remains unchanged until an explicit consumer Update followed by stopped-owner runner adoption. This source change does not modify a running publisher or its retained requests, candidates, original repair start, model, policy or evidence. Rendered/physical checks are not performed. No live queue, paid inference or legacy migration was exercised for this release.
+The existing focused presentation suite is extended only for the material risk of bypassing redaction while building controls, and to verify read-only fields, all 140 items and nested expansion after refresh. All four focused native checks pass for executable candidate `7a3c2f727e1a1f822dacc054c6b51ffb0a74e6af`. A final Unity 6000.6.3f1 full rebuild and complete default-diagnostic qualification of all 31 native compiler assemblies pass with zero diagnostics. The unchanged supported example is compiled in the same fixture. Actual reports are listed in [AIUsabilityValidation.json](AIUsabilityValidation.json). Broader queue/authentication/repair evidence is reused only for unchanged relevant implementation; no broad suite is restarted for this presentation patch.
+
+No visual checks are performed or required under current Commandments. No live game, installed consumer, queue configuration or publisher is changed. Native testing uses transient non-rendered UI event panels, without opening a window or injecting desktop input. The initial unattached fixture could not dispatch the expected value changes; its failed reports remain in the owner-local evidence and are described in [RetainedFailures.json](Evidence/0.5.3/RetainedFailures.json). No failed run is counted as passing. Exact native reports and remaining limits are recorded in AIUsabilityValidation.json.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.2","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.3","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

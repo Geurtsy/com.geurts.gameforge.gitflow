@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.5.2 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.5.3 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -9,6 +9,8 @@ Version 0.5.2 adds automatic publisher setup and a full modern Queue Panel. Read
 - Legacy observation: GitFlowBrick.Service remains the bounded read-only GitFlowInspection. The lower legacy viewer uses refs/heads/codex/queue; it is separate from the new gameforge queue protocol. Its God operation is inspect_queue. It cannot submit or operate a legacy processor.
 
 ## Queue console and selected repository
+
+Queue records now render as grouped read-only GUI fields. All controls use the same bounded/redacted projection as the supported result formatter. Field grouping is presentation only; identities, queue records, policies, authentication and publisher behavior are unchanged. Exact identifiers remain selectable; timestamps display their recorded offset. Empty collections and display omissions remain explicit.
 
 Read [QueueConsole.md](QueueConsole.md) for explicit modern pages, selected-repository setup, coverage/freshness, safe evidence and legacy non-adoption. Modern inspect now defaults to 16 requests in a temporary bare store, with explicit partial/unavailable results. Opening and repainting remain offline. Validation used a disposable local queue; no production queue action was taken.
 
@@ -118,7 +120,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.2",
+  "packageVersion": "0.5.3",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

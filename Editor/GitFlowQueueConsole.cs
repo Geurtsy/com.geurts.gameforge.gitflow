@@ -1,6 +1,7 @@
 // IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine.UIElements;
@@ -12,6 +13,12 @@ namespace Geurts.GameForge.GitFlow.Editor
     {
         private readonly Queue<string> _events = new Queue<string>();
         private readonly Dictionary<string, bool> _expandedItems = new Dictionary<string, bool>(StringComparer.Ordinal);
+        private static readonly HashSet<string> _overviewFields = new HashSet<string>(new[] {
+            "title", "state", "status", "id", "size", "version", "submitted_utc", "started_utc", "updated_utc", "completed_utc", "finished_utc" }, StringComparer.Ordinal);
+        private static readonly HashSet<string> _sourceFields = new HashSet<string>(new[] {
+            "source", "base", "base_main", "control_commit", "dependencies", "candidate", "main_commit", "verified_main" }, StringComparer.Ordinal);
+        private static readonly HashSet<string> _progressFields = new HashSet<string>(new[] {
+            "attempts", "checks", "diagnostic", "receipt", "pulls", "repair", "failure", "failure_phase", "failure_summary", "next_action" }, StringComparer.Ordinal);
         private readonly TextField _history;
         private readonly VisualElement _snapshot;
         private readonly Label _summary;
@@ -74,16 +81,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                 _snapshot.Add(problems);
                 foreach (JToken finding in findings) problems.Add(new HelpBox(GitFlowPresentation.Text((string)finding), HelpBoxMessageType.Warning));
             }
-            var requests = result["requests"] as JArray ?? new JArray();
-            foreach (var state in requests.OfType<JObject>().GroupBy(request => (string)request["state"] ?? "unknown"))
-            {
-                string severity = state.Key == "blocked" || state.Key == "validation_failed" ? "\u274c Error - " : "";
-                var section = new Foldout { text = severity + GitFlowPresentation.Text(state.Key) + " - " + state.Count() + " returned records", value = false };
-                _snapshot.Add(section);
-                foreach (JObject request in state)
-                    Add(section, GitFlowPresentation.Text((string)request["id"]) + " | " + GitFlowPresentation.Text((string)request["title"]), request, false);
-            }
-            if (requests.Count == 0) _snapshot.Add(new Label("No readable modern requests on this page. Check coverage and legacy findings before treating the queue as empty."));
+            _snapshot.Add(new Label("Expand a queue item above for its labelled request, source, dependency and validation fields."));
         }
 
         /// <summary>Shows every returned item with readable state and keeps empty, stopped and unavailable states distinct.</summary>
@@ -119,27 +117,144 @@ namespace Geurts.GameForge.GitFlow.Editor
             else Panel.text = "Queue Panel - active queue";
         }
 
-        /// <summary>Creates a wrapping status row with selectable details using the existing bounded projection.</summary>
+        /// <summary>Creates a readable status/title card; full identifiers remain in selectable fields inside it.</summary>
         private void Item(VisualElement parent, JObject request)
         {
             string state = (string)request["state"] ?? "unknown";
             string prefix = state == "blocked" || state == "validation_failed" ? "\u274c Error - " : "";
             string identity = (string)request["id"] ?? "unknown";
-            var section = Add(parent, prefix + GitFlowPresentation.Text(state.Replace('_', ' ')) + " | " + GitFlowPresentation.Text((string)request["title"]) +
-                " | " + GitFlowPresentation.Text(identity), request, _expandedItems.TryGetValue(identity, out bool expanded) && expanded);
-            section.RegisterValueChangedCallback(change => { if (change.target == section) _expandedItems[identity] = change.newValue; });
+            var section = Section(parent, prefix + DisplayValue("state", request["state"]) + " | " + GitFlowPresentation.Text((string)request["title"]), false, identity);
+            section.AddToClassList("forge-card");
+            section.style.paddingLeft = section.style.paddingRight = section.style.paddingTop = section.style.paddingBottom = 12;
+            // Project before constructing controls: display labels must never bypass the shared redaction policy.
+            var safe = (JObject)GitFlowPresentation.ProjectFields(request);
+            int remaining = GitFlowPresentation.MaximumCharacters;
+            RecordGroup(section, "Overview", safe.Properties().Where(property => _overviewFields.Contains(property.Name)), true, identity + "/overview", ref remaining);
+            RecordGroup(section, "Source and dependencies", safe.Properties().Where(property => _sourceFields.Contains(property.Name)), false, identity + "/source", ref remaining);
+            RecordGroup(section, "Validation and progress", safe.Properties().Where(property => _progressFields.Contains(property.Name)), false, identity + "/progress", ref remaining);
+            RecordGroup(section, "Additional evidence", safe.Properties().Where(property => !_overviewFields.Contains(property.Name) && !_sourceFields.Contains(property.Name) && !_progressFields.Contains(property.Name)), false, identity + "/evidence", ref remaining);
+            DisplayLimit(section, remaining);
         }
 
-        /// <summary>Adds selectable bounded operational evidence in a labelled collapsible section.</summary>
-        private static Foldout Add(VisualElement parent, string title, JToken value, bool expanded)
+        /// <summary>Adds bounded operational evidence as labelled, read-only controls rather than a JSON block.</summary>
+        private Foldout Add(VisualElement parent, string title, JToken value, bool expanded)
         {
-            var section = new Foldout { text = title, value = expanded }; section.style.marginTop = 16;
-            section.Q<Toggle>().labelElement.style.whiteSpace = WhiteSpace.Normal;
-            section.Q<Toggle>().labelElement.style.flexShrink = 1;
-            var field = new TextField("Reported fields") { multiline = true, isReadOnly = true, value = GitFlowPresentation.Format(value) };
-            field.style.whiteSpace = WhiteSpace.Normal; field.style.flexDirection = FlexDirection.Column;
+            string scope = "snapshot/" + title;
+            var section = Section(parent, title, expanded, scope);
+            int remaining = GitFlowPresentation.MaximumCharacters;
+            Fields(section, GitFlowPresentation.ProjectFields(value), scope, ref remaining);
+            DisplayLimit(section, remaining);
+            return section;
+        }
+
+        /// <summary>Retains both item and nested section expansion across live queue refreshes.</summary>
+        private Foldout Section(VisualElement parent, string title, bool expanded, string scope)
+        {
+            var section = new Foldout { text = title, value = _expandedItems.TryGetValue(scope, out bool saved) ? saved : expanded };
+            section.style.marginTop = 16;
+            Toggle header = section.Q<Toggle>();
+            header.labelElement.style.whiteSpace = WhiteSpace.Normal;
+            header.labelElement.style.flexShrink = 1;
+            // The foldout reports its own value change; descendant sections must not change this section's state.
+            section.RegisterValueChangedCallback(change => { if (change.target == section) _expandedItems[scope] = change.newValue; });
+            parent.Add(section); return section;
+        }
+
+        /// <summary>Groups related request fields without creating empty or duplicated sections.</summary>
+        private void RecordGroup(VisualElement parent, string title, IEnumerable<JProperty> properties, bool expanded, string scope, ref int remaining)
+        {
+            JProperty[] values = properties.ToArray();
+            if (values.Length == 0 || remaining <= 0) return;
+            var section = Section(parent, title, expanded, scope);
+            foreach (JProperty property in values) Field(section, property.Name, property.Value, scope + "/" + property.Name, ref remaining);
+        }
+
+        /// <summary>Renders already-projected objects and collections, preserving explicit empty and omitted values.</summary>
+        private void Fields(VisualElement parent, JToken value, string scope, ref int remaining)
+        {
+            if (remaining <= 0) return;
+            if (value is JObject record)
+            {
+                if (!record.Properties().Any()) parent.Add(new Label("No reported fields."));
+                foreach (JProperty property in record.Properties()) Field(parent, property.Name, property.Value, scope + "/" + property.Name, ref remaining);
+            }
+            else if (value is JArray entries)
+            {
+                if (entries.Count == 0) parent.Add(new Label("None recorded."));
+                for (int index = 0; index < entries.Count && remaining > 0; index++)
+                    Field(parent, "entry_" + (index + 1).ToString(CultureInfo.InvariantCulture), entries[index], scope + "/" + index, ref remaining);
+            }
+            else Field(parent, "value", value, scope + "/value", ref remaining);
+        }
+
+        /// <summary>Creates one wrapping field or nested group, within the existing total display-character bound.</summary>
+        private void Field(VisualElement parent, string name, JToken value, string scope, ref int remaining)
+        {
+            if (remaining <= 0) return;
+            string label = FieldLabel(name);
+            remaining -= label.Length;
+            if (value is JObject || value is JArray)
+            {
+                var section = Section(parent, label, false, scope);
+                Fields(section, value, scope, ref remaining);
+                return;
+            }
+            string text = DisplayValue(name, value);
+            if (text.Length > Math.Max(0, remaining)) text = text.Substring(0, Math.Max(0, remaining)) + " [Further text omitted]";
+            remaining -= text.Length;
+            var field = new TextField(label) { name = "queue_field_" + name, value = text, isReadOnly = true, multiline = true };
+            field.tooltip = "Reported value (read-only). Select and copy the text.";
+            field.style.whiteSpace = WhiteSpace.Normal; field.style.flexDirection = FlexDirection.Column; field.style.marginTop = 8;
             field.labelElement.style.whiteSpace = WhiteSpace.Normal; field.labelElement.style.minWidth = 0;
-            section.Add(field); parent.Add(section); return section;
+            parent.Add(field);
+        }
+
+        /// <summary>Keeps display omissions visible without implying that a field limit makes the queue empty.</summary>
+        private static void DisplayLimit(VisualElement parent, int remaining)
+        {
+            if (remaining <= 0) parent.Add(new HelpBox("Warning: Further reported details exceed the display limit and are omitted. Original queue evidence is unchanged.", HelpBoxMessageType.Warning));
+        }
+
+        /// <summary>Uses familiar labels for common queue fields and readable words for other supported names.</summary>
+        private static string FieldLabel(string name)
+        {
+            switch (name)
+            {
+                case "id": return "Request ID";
+                case "state": case "status": return "Status";
+                case "size": return "Requested version increase";
+                case "source": return "Source commit";
+                case "base": return "Base commit";
+                case "control_commit": return "Queue record commit";
+                case "schema": return "Record format version";
+                case "evidence_scope": return "Evidence limits";
+                case "submitted_utc": return "Submitted";
+                case "started_utc": return "Started";
+                case "updated_utc": return "Last updated";
+                case "completed_utc": return "Completed";
+                case "finished_utc": return "Finished";
+                default: return Sentence(name);
+            }
+        }
+
+        /// <summary>Formats states, booleans and timestamps while retaining exact identifiers and other reported values.</summary>
+        private static string DisplayValue(string name, JToken value)
+        {
+            if (value == null || value.Type == JTokenType.Null) return "Not reported";
+            if (value.Type == JTokenType.Date) return value.ToObject<DateTimeOffset>().ToString("dd MMM yyyy, HH:mm:ss zzz", CultureInfo.InvariantCulture);
+            string text = value.Type == JTokenType.String ? GitFlowPresentation.Text((string)value) : value.ToString(Newtonsoft.Json.Formatting.None);
+            if (value.Type == JTokenType.Boolean) return (bool)value ? "Yes" : "No";
+            if (name == "state" || name == "status" || name == "size") return Sentence(text);
+            if (name.EndsWith("_utc", StringComparison.Ordinal) && DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTimeOffset timestamp))
+                return timestamp.ToString("dd MMM yyyy, HH:mm:ss zzz", CultureInfo.InvariantCulture);
+            return string.IsNullOrEmpty(text) ? "Not reported" : text;
+        }
+
+        /// <summary>Turns supported field/state identifiers into ordinary words without altering the underlying record.</summary>
+        private static string Sentence(string value)
+        {
+            string text = value.Replace('_', ' ');
+            return string.IsNullOrEmpty(text) ? "Not reported" : char.ToUpperInvariant(text[0]) + text.Substring(1);
         }
     }
 }

@@ -1,0 +1,5 @@
+{
+  "scope": "Intermediate event fixtures only; no failure is relabelled as a pass.",
+  "unattachedFixture": "Initial and intermediate native runs passed three checks but failed foldout retention because the control tree had no UI event panel. A transient, non-rendered UIDocument/PanelSettings fixture now attaches the controls and exercises the normal toggle/foldout event path. The final exact candidate passes all four checks.",
+  "privateEvidence": "C:/gfqr-out/Native and C:/gfqr-out/FixedNative retain the failed reports and logs. No visual or desktop test was performed."
+}
