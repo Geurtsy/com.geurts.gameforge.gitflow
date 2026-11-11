@@ -1,4 +1,4 @@
-// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
+// IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.IO;
 using System.Linq;
@@ -32,11 +32,14 @@ namespace Geurts.GameForge.GitFlow.Editor
             _closed = false;
             VisualElement root = rootVisualElement; root.Clear(); ForgeEditorTheme.ApplyToolkit(root);
             root.style.paddingLeft = root.style.paddingRight = root.style.paddingTop = root.style.paddingBottom = 12;
-            var title = new Label("Geurts Game Forge GitFlow"); title.style.fontSize = 20; root.Add(title);
-            root.Add(new Label("Capture saved changes, submit exact source and inspect recorded queue progress."));
+            var title = new Label("Geurts Game Forge GitFlow"); title.style.fontSize = 20; title.style.whiteSpace = WhiteSpace.Normal; root.Add(title);
+            var introduction = new Label("Capture saved changes, submit exact source and inspect recorded queue progress.");
+            introduction.style.whiteSpace = WhiteSpace.Normal; root.Add(introduction);
             root.Add(new Button(GitFlowHelp.Open) { text = "Help - Queue local changes" });
+            var feedback = new ScrollView { name = "gitflow-action-feedback" };
+            feedback.style.maxHeight = 112; feedback.style.flexShrink = 0; root.Add(feedback);
             var scroll = new ScrollView(); scroll.style.flexGrow = 1; root.Add(scroll);
-            _controls?.Dispose(); _controls = new GitFlowControls(scroll);
+            _controls?.Dispose(); _controls = new GitFlowControls(scroll, feedback);
             var scope = Section(scroll, "Legacy queue viewer - Repository and refresh", false);
             _repository = new TextField("Repository") { value = Path.GetFullPath(Path.Combine(Application.dataPath, "..")) };
             _remote = new TextField("Existing remote") { value = "origin" };
@@ -46,7 +49,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             scope.Add(select);
             _refresh = new Button(RefreshClicked) { text = "Refresh queue once" }; scope.Add(_refresh);
             _status = new Label(GitFlowBrick.Service == null ? "Unavailable: enable GitFlow in God, then select Refresh." : "Not checked. Select Refresh to inspect once.");
-            _status.style.whiteSpace = WhiteSpace.Normal; root.Add(_status);
+            _status.style.whiteSpace = WhiteSpace.Normal; scope.Add(_status);
             _results = new VisualElement(); scroll.Add(_results);
             var help = Section(scroll, "Help", false);
             help.Add(new HelpBox("Select a local Git checkout and its existing remote, then Refresh queue once. Opening this window and expanding sections stay offline. Refresh is limited to 45 seconds and 128 requests, with a two-second cooldown. Values remain a dated snapshot until you refresh again.\n\nThis release reads protocol-1 codex/queue control refs, protocol-1 leases, recorded receipts and local integration_processor state. HTTPS without credentials and absolute local remotes are supported. These limits apply only to this legacy viewer. Modern gameforge protocol setup, saved-change submission and explicit publisher controls are in Queue host above; they do not migrate or operate this legacy queue. Package installation remains manual.\n\nA recorded PID does not prove ownership. Lease timestamps never prove expiry. Validation JSON contains the owner's claims; the viewer does not rerun those checks. For unavailable/malformed evidence, preserve it and consult the named queue operator.\n\nCode extensions use GitFlowBrick.Service.RefreshAsync(new GitFlowTarget(repository, remote)); the same snapshot feeds this view. See the package's local Documentation~/AIUsability.md for lifetime and adapter limits.", HelpBoxMessageType.Info));

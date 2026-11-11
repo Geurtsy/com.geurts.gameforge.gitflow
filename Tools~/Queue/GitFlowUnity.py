@@ -40,7 +40,7 @@ def execute(arguments):
     if not log.is_file():
         raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')
     text = log.read_text(encoding='utf-8-sig', errors='replace')
-    diagnostics = [line for line in text.splitlines() if re.search(r'\b(?:warning|error)\s+[A-Z]+\d+|shader (?:warning|error)|scripts have compiler errors|compilation failed', line, re.I)]
+    diagnostics = [line for line in text.splitlines() if re.search(r'\b(?:warning|error)\s+[A-Z]+\d+|shader (?:warning|error)|scripts have compiler errors|compilation failed|Asset .*\.(?:cs|asmdef|asmref|dll|shader|compute|uxml|uss) has no meta file.*immutable folder', line, re.I)]
     if diagnostics:
         existing = json.loads((evidence / 'diagnostics.json').read_text(encoding='utf-8-sig')) if (evidence / 'diagnostics.json').exists() else {}
         durable(evidence / 'diagnostics.json', dict(existing, complete_matching_diagnostics=sorted(set(diagnostics + existing.get('complete_matching_diagnostics', []))), full_log_sha256=file_digest(log)))

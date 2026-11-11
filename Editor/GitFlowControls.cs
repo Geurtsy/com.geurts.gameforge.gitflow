@@ -1,4 +1,4 @@
-// IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
+// IMPORTANT: This script must comply with GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsTechnicalTechnique.md and folder placement rules in GeurtsGameForgeDocumentation/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +75,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         private bool _busy, _disposed;
 
         /// <summary>Creates controls and loads local settings only; no discovery, inference or queue action runs on opening.</summary>
-        internal GitFlowControls(VisualElement parent)
+        internal GitFlowControls(VisualElement parent, VisualElement feedbackParent = null)
         {
             var group = new Foldout { text = "Queue host and local Codex — Not checked", value = false };
             group.AddToClassList("forge-card"); group.style.marginTop = 16; group.style.paddingLeft = group.style.paddingRight = 12; parent.Add(group);
@@ -98,9 +98,9 @@ namespace Geurts.GameForge.GitFlow.Editor
             _configurationView = new IMGUIContainer(() => { if (_theme == null) _theme = new ForgeEditorTheme(); using (_theme.Scope()) _tree.Draw(false); });
             group.Add(_configurationView);
             _status = new Label(failure ?? "Not checked. Model discovery sends no project context and makes no inference request.");
-            _status.style.whiteSpace = WhiteSpace.Normal; parent.Add(_status);
+            _status.style.whiteSpace = WhiteSpace.Normal; (feedbackParent ?? parent).Add(_status);
             _cancel = new Button(() => { _requestCancellation?.Cancel(); _status.text = "Cancellation requested. Awaiting cleanup; dispatched writes may already have completed. The independent publisher is not stopped."; }) { text = "Cancel current panel request" };
-            _cancel.SetEnabled(false); parent.Add(_cancel);
+            _cancel.SetEnabled(false); (feedbackParent ?? parent).Add(_cancel);
             _console = new GitFlowQueueConsole(parent);
             Button(group, "Find Python and Codex executables", async () =>
             {
