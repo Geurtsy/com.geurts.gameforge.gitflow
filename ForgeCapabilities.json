@@ -7,7 +7,7 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Legacy inspection implementation is unchanged from released0.3.0. Fresh0.5.0 native compilation and queue-panel checks passed; complete legacy suite was not repeated."
       ],
       "maturity": "pre_release",
       "provider": "editor",
@@ -18,7 +18,7 @@
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "Focused real-Git batching/selective-read/delivery/failure/recovery checks passed; see Validation.md. Current-source full native acceptance remains unverified."
+        "Fresh disposable bound service startup/idle/stop/resume and policy drift checks passed. Broader integration/lease evidence remains historical0.3.0 scope."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -76,7 +76,7 @@
       "operations": [],
       "description": "Explicit auto-fill/configure/start, full modern queue rows and opt-in view-owned live inspection. Existing policies are retained; local process lifetime is observed without lease takeover.",
       "validation": [
-        "Fresh 0.5.0 acceptance is pending; consult Documentation~/Validation.md."
+        "4 focused Unity checks;9 disposable real-Git/Windows checks; actual bound service idle/stop/resume;31 complete native compiler assemblies with zero diagnostics. Native interaction unverified."
       ]
     }
   ],
@@ -139,20 +139,16 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Disposable native validation at Unity6000.6.3f1 and6000.6.8f1, exact source fingerprint, real-Git queue evidence and complete default-diagnostic compiler-response qualification are bound in Documentation~/AIUsabilityValidation.json. Visual inspection is informational and explicitly user-waived as a release requirement on2026-11-11. No live game, paid inference, player or physical multi-machine certification.",
+    "scope": "Exact Git candidate: four focused Unity presentation tests, nine disposable real-Git/Windows observer/default/policy checks, real windowless bound service idle/stop/resume, complete 31-assembly native default-diagnostic qualification with zero diagnostics. All 1858 compiler inputs remain unchanged after tests; installed executable membership/bytes match. Earlier broader queue/lease coverage is historical and is not relabelled.",
     "unverified": [
-      "Complete rendered/physical interaction, light/dark host-skin and normal/high display-scale matrix (visual release requirement removed by user).",
-      "Live paid-model repair quality and account-specific availability beyond metadata discovery.",
-      "Real elapsed 30-minute lease soak and multiple physical machines.",
-      "Project-specific native derived-identity adapters, player/backend/rendering and arbitrary game dependency graphs."
+      "No live game, installed consumer, production queue, paid inference or legacy migration was changed. Newer Editor, light/dark skin, narrow docking, high scaling and physical interaction are not freshly certified. Only modern queue pages are combined; unsupported legacy queues remain explicitly unavailable.",
+      "Native visual/interaction acceptance remains required and incomplete for this candidate."
     ],
     "visualAcceptance": {
-      "required": false,
-      "status": "user-waived",
+      "required": true,
+      "status": "unverified",
       "passed": false,
-      "userInstruction": "Remove visual checks as a requirement and publish.",
-      "date": "2026-11-11",
-      "scope": "GitFlow0.3.0 release; no change to the generic Forge standards or other owners."
+      "scope": "Changed 0.5.0 native visual/interaction matrix; the prior release-specific waiver is not reused."
     }
   }
 }

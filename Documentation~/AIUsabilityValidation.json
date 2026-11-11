@@ -1,84 +1,55 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.5.0",
-  "candidate": "pending",
-  "sourceFingerprint": "pending",
+  "candidate": "a9f9416dce46b74f7ee2fbdd0426bcac2e334866",
+  "sourceFingerprint": "1f0496569513bcf99056db5d8bef9d96947ce6390fc4cff60266f24bdad018a8",
   "unityVersion": "6000.6.3f1",
-  "passed": 0,
+  "passed": 4,
   "failed": 0,
   "skipped": 0,
-  "examplesCompiled": false,
-  "testResult": "Documentation~/Evidence/0.3.0/ReleaseValidation/MinimumNative.xml",
-  "testResultSha256": "11109b4bc7c8b22e2ac9aca2a04ace370d456141453b37917ca3fadb5f6fb31c",
+  "examplesCompiled": true,
+  "testResult": "Documentation~/Evidence/0.5.0/Native.xml",
+  "testResultSha256": "aedef18b25ce837f04fb8f57268ac2c1194c7eb4898a811bd0ef726f33504f68",
   "nativeVisualAcceptance": "unverified",
   "visualAcceptance": {
     "required": true,
     "status": "unverified",
     "passed": false,
-    "scope": "0.5.0 visual interaction is unverified; prior release waiver is not reused."
+    "scope": "Changed 0.5.0 native visual/interaction matrix; the prior release-specific waiver is not reused."
   },
   "publicationReady": false,
-  "scope": "0.5.0 candidate: fresh native acceptance pending. Historical successful reports retain their original 0.3.0 source.",
+  "scope": "Exact Git candidate: four focused Unity presentation tests, nine disposable real-Git/Windows observer/default/policy checks, real windowless bound service idle/stop/resume, complete 31-assembly native default-diagnostic qualification with zero diagnostics. All 1858 compiler inputs remain unchanged after tests; installed executable membership/bytes match. Earlier broader queue/lease coverage is historical and is not relabelled.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/QueueAcceptance.log",
-    "sha256": "124c6f917d6c04c952b190f2a690f7f41402b1349122a5a1e2d80d898f8fdb4a",
-    "passed": 25,
+    "report": "Documentation~/Evidence/0.5.0/ObservationAcceptance.log",
+    "sha256": "5c10c3da01ddf02c19ee54b0d4e6b68e9a0677591b04230ea0091b2d6ad47dbc",
+    "passed": 9,
     "failed": 0,
-    "scope": "Real-Git suite at base2558ba3; unchanged queue modules/test sources hash-bound in QueueSourceIdentity.json. Changed native adapter has fresh full-compile and negative-control qualification."
+    "scope": "Final candidate observation/default/policy/process-lifetime checks, including 140-request paging, preservation and stale-policy refusal."
   },
-  "affectedQueueAcceptance": {
-    "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/AffectedQueueAcceptance.log",
-    "sha256": "7e0fa50ec150c312b351ea935e105849b1943ffd0c0618d325473290f8b8b9e1",
-    "passed": 5,
-    "failed": 0,
-    "scope": "Five affected real-Git regressions after the native-gate change; subsequent changes only affect C#presentation and settings."
+  "publisherLifecycle": {
+    "report": "Documentation~/Evidence/0.5.0/PublisherLifecycle.json",
+    "sha256": "08011a54b2beeed1765aff458aa6def71b351d06ca31d0d1d09539b0ba28a7d8"
   },
   "compilerGate": {
-    "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/MinimumCompiler.json",
-    "sha256": "b821aa633c4a7adce5f5215618d47d28705b54de7433fe8a58e2c84b797b9ccf",
+    "report": "Documentation~/Evidence/0.5.0/Compiler.json",
+    "sha256": "43b79bb6222b121a1f0f4cf068703361791cc9f2bd97635ed295d817f680e108",
     "status": "passed",
     "warnings": 0,
     "errors": 0
   },
   "compilerQualification": {
-    "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/MinimumQualification.json",
-    "sha256": "e9cfe310733af74fb222520955dc6ae02aa6b260951c682bdd38dfda1fca20aa",
+    "report": "Documentation~/Evidence/0.5.0/CompilerQualification.json",
+    "sha256": "e5b60bd68901e3f21f4a007169d2d22943ac7b4ad3d99f9241d3299d72488194",
     "status": "passed"
   },
-  "additionalEditors": [
-    {
-      "unityVersion": "6000.6.8f1",
-      "candidate": "d99dba8c4320ac8cf214a87559dc40df91b0f817",
-      "compatibilityVersion": "0.2.0",
-      "passed": 20,
-      "failed": 0,
-      "skipped": 0,
-      "compilerAssemblies": 31,
-      "compilerDiagnostics": 0,
-      "installedExecutableFiles": 33,
-      "nativeTests": {
-        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerNative.xml",
-        "sha256": "f7f758522c7037ecce7e7eab2e92ce3b866c3d29742d447738dc9ae22518aac1"
-      },
-      "compilerGate": {
-        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerCompiler.json",
-        "sha256": "c647e9f6627fbfb547aced56241bb4a77981bbb87fa1503bee107489c6770b5e"
-      },
-      "compilerQualification": {
-        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerQualification.json",
-        "sha256": "c8129ec089db744cd3e1e7260e2ff976aede4324c942de215bb99d8c18331734"
-      },
-      "postNativeIntegrity": {
-        "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NewerPostNativeIntegrity.json",
-        "sha256": "ac4b192920fc8a63ed7d1496f44cd84d08ad13ee55613f2e2ee6bffb68881e3d"
-      }
-    }
-  ],
-  "cohorts": {
-    "report": "Documentation~/Evidence/0.3.0/ReleaseValidation/NativeCohorts.json",
-    "sha256": "fa595c60bab3da83aba67263eed22d2a39d382d0963c48b7b8d053c1e76a2474"
+  "postNativeIntegrity": {
+    "report": "Documentation~/Evidence/0.5.0/PostNativeIntegrity.json",
+    "sha256": "30fd14cdba30c7f362d57c9f25ba1d4573ff978c9b1e5a7153f32d22faa35ca2"
   },
+  "additionalEditors": [],
   "integrationRecipes": [],
-  "publicationBlockers": [],
-  "limits": "Standalone normal and God normal/narrow views, Odin controls, restored target, tool discovery/save, scoped inspection/history, controlled local TLS cancellation/timeout and domain reload were observed on predecessor candidates. Final full visual/physical matrix remains incomplete; Computer Use was stopped by the user. No visual pass is claimed. Live paid inference, physical multiple-machine/30-minute soak and project-specific native identity adapters remain outside this scoped acceptance."
+  "publicationBlockers": [
+    "Native visual/interaction acceptance is unverified. The applicable Forge UI standard requires it; desktop testing needs explicit current user authorization."
+  ],
+  "limits": "No live game, installed consumer, production queue, paid inference or legacy migration was changed. Newer Editor, light/dark skin, narrow docking, high scaling and physical interaction are not freshly certified. Only modern queue pages are combined; unsupported legacy queues remain explicitly unavailable."
 }

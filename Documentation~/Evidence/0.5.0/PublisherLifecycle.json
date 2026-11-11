@@ -1,0 +1,6 @@
+{
+  "candidate": "a9f9416dce46b74f7ee2fbdd0426bcac2e334866",
+  "passed": true,
+  "scope": "Actual CREATE_NO_WINDOW service child, reviewed configuration, no queued work, idle/lifetime observation, graceful stop, guarded resume, unchanged configuration/source/main. Local disposable bare remote only; no live publisher.",
+  "processExit": 0
+}

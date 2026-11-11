@@ -13,7 +13,8 @@
   "historicalDocuments": [
     "Documentation~/History/Validation-0.2.0.md",
     "Documentation~/History/Validation-0.3.0-source-only.md",
-    "Documentation~/History/Validation-0.3.0-release.md"
+    "Documentation~/History/Validation-0.3.0-release.md",
+    "Documentation~/History/AIUsabilityValidation-0.3.0-release.json"
   ],
   "examples": [
     {

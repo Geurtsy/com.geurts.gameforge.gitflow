@@ -1,6 +1,6 @@
 # GitFlow 0.3.0 release validation
 
-The final executable candidate `d99dba8c4320ac8cf214a87559dc40df91b0f817` has fingerprint `16e0ffd1407d31e620c19d667d9d262a0f62b1cde691354a178f2479f07cf5a9`. Later release-documentation commits retain those exact executable bytes. [Machine-readable acceptance](AIUsabilityValidation.json) binds the actual reports and checksums. Remote publication/catalogue and consumer installation are separate operations.
+The final executable candidate `d99dba8c4320ac8cf214a87559dc40df91b0f817` has fingerprint `16e0ffd1407d31e620c19d667d9d262a0f62b1cde691354a178f2479f07cf5a9`. Later release-documentation commits retain those exact executable bytes. [Machine-readable acceptance](AIUsabilityValidation-0.3.0-release.json) binds the actual reports and checksums. Remote publication/catalogue and consumer installation are separate operations.
 
 ## Required nonvisual acceptance
 
@@ -11,19 +11,19 @@ The final executable candidate `d99dba8c4320ac8cf214a87559dc40df91b0f817` has fi
 
 Both fixtures resolve GitFlow and God 0.44.4 from immutable Git commits. The supported InspectionExample source is copied byte-for-byte into Assets/_Project/Scripts/Editor/InspectionExample.cs and compiled in the actual Assembly-CSharp-Editor response. Native tests cover shared viewer/API results, real-Git preservation, malformed/future/stale/failed records, operation discovery and consent, bounded HTTPS cancellation, actual saved dirty-asset capture and cleanup, executable discovery and saved preferences before host startup. Run the owning suite with `GitFlowUnity.py run-tests --test-filter Geurts.GameForge.GitFlow.Tests`; exact run/candidate identities are retained in the reports.
 
-The [cohort receipt](Evidence/0.3.0/ReleaseValidation/NativeCohorts.json) records exact dependencies and post-test input integrity. Licensed Odin and QC 2.6.7 archives were privately acquired and hash-bound. The Compatibility owner's exact approved private preparation profiles preserve originals and notices. The Unity-derived uGUI/Input/Test Framework snapshots were explicitly selected through private immutable Git sources for these fixtures. No paid sources, transforms, full private inventories or compiled dependency binaries are redistributed here. This is Editor-tool validation, not a whole-game/player/render-pipeline or Steam certification.
+The [cohort receipt](../Evidence/0.3.0/ReleaseValidation/NativeCohorts.json) records exact dependencies and post-test input integrity. Licensed Odin and QC 2.6.7 archives were privately acquired and hash-bound. The Compatibility owner's exact approved private preparation profiles preserve originals and notices. The Unity-derived uGUI/Input/Test Framework snapshots were explicitly selected through private immutable Git sources for these fixtures. No paid sources, transforms, full private inventories or compiled dependency binaries are redistributed here. This is Editor-tool validation, not a whole-game/player/render-pipeline or Steam certification.
 
 Native full rebuilds and complete logs contain zero compiler/shader warning/error diagnostics. Unity still supplies immutable-package warning filters; they are not edited. The installed Compatibility qualifier independently compiles every actual source-bearing response using private copies with warning 4/warnings-as-errors and default compiler/analyzer severities. Sources, references, analyzers, defines, output identities and native policy inputs remain unchanged. All recorded inputs remain unchanged after native testing. Native success alone cannot satisfy this gate.
 
-The actual synthetic hidden-warning negative control used native-generated metadata, was compiled by Unity with warn0, and was rejected by the unsuppressed gate on CS0169. A first metadata-free control was ignored by Unity and is explicitly not negative coverage. The adapter now refuses ignored immutable code assets too. [Retained failures and corrections](Evidence/0.3.0/ReleaseValidation/RetainedFailures.json) preserve the stock eleven-warning graphs, initial newer CS1701, fixture timing/interference failures and intermediate encoding regression without rebinding them as passes.
+The actual synthetic hidden-warning negative control used native-generated metadata, was compiled by Unity with warn0, and was rejected by the unsuppressed gate on CS0169. A first metadata-free control was ignored by Unity and is explicitly not negative coverage. The adapter now refuses ignored immutable code assets too. [Retained failures and corrections](../Evidence/0.3.0/ReleaseValidation/RetainedFailures.json) preserve the stock eleven-warning graphs, initial newer CS1701, fixture timing/interference failures and intermediate encoding regression without rebinding them as passes.
 
-The complete real-Git suite passes 25 checks in 883.972 seconds; five affected regressions pass in 625.490 seconds. These are two separate runs, not 30 unique tests. [Queue source identities](Evidence/0.3.0/ReleaseValidation/QueueSourceIdentity.json) prove the queue implementations/tests remain unchanged from the full run; the changed native adapter is covered by the fresh native/qualification and negative-control evidence. No production queue or publisher was changed.
+The complete real-Git suite passes 25 checks in 883.972 seconds; five affected regressions pass in 625.490 seconds. These are two separate runs, not 30 unique tests. [Queue source identities](../Evidence/0.3.0/ReleaseValidation/QueueSourceIdentity.json) prove the queue implementations/tests remain unchanged from the full run; the changed native adapter is covered by the fresh native/qualification and negative-control evidence. No production queue or publisher was changed.
 
 ## Visual requirement removed by user
 
 On 2026-11-11 the user instructed: "Remove visual checks as a requirement and publish." Visual inspection is informational and is no longer enforced by this owner's release validator. It is user-waived, never marked passed. Compiler, functional, metadata, source and publication gates remain required. This exception applies only to this GitFlow release and does not edit generic Forge policy.
 
-Predecessor candidates were physically observed in standalone normal and God normal/narrow views, with editable Odin groups, saved target restoration, executable discovery/save, dated queue failure/history, controlled local TLS cancel/timeout and a real domain reload. Computer Use was stopped by the user. The complete final physical/skin/scaling matrix, standalone narrow resizing and all final lifecycle interactions are incomplete. [Exact waiver and scope](Evidence/0.3.0/ReleaseValidation/VisualAcceptance.json).
+Predecessor candidates were physically observed in standalone normal and God normal/narrow views, with editable Odin groups, saved target restoration, executable discovery/save, dated queue failure/history, controlled local TLS cancel/timeout and a real domain reload. Computer Use was stopped by the user. The complete final physical/skin/scaling matrix, standalone narrow resizing and all final lifecycle interactions are incomplete. [Exact waiver and scope](../Evidence/0.3.0/ReleaseValidation/VisualAcceptance.json).
 
 ## Limits and delivery boundary
 
@@ -33,7 +33,7 @@ Initial work used the user-selected authoritative GeurtsGameForgeDocumentation 0
 
 ## Historical evidence
 
-[Previous source-only 0.3 report](History/Validation-0.3.0-source-only.md) and [0.2 report](History/Validation-0.2.0.md) retain their original identities and limitations. No historical result is relabelled as current acceptance.
+[Previous source-only 0.3 report](Validation-0.3.0-source-only.md) and [0.2 report](Validation-0.2.0.md) retain their original identities and limitations. No historical result is relabelled as current acceptance.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json

@@ -1,0 +1,12 @@
+{
+  "candidate": "a9f9416dce46b74f7ee2fbdd0426bcac2e334866",
+  "compiler_qualification_sha256": "e5b60bd68901e3f21f4a007169d2d22943ac7b4ad3d99f9241d3299d72488194",
+  "errors": 0,
+  "full_log_sha256": "8d2c4dd4428e3d901a80fa6b0d122af0a2a9bfc2b6a2c016c87d31e245a4bad7",
+  "full_script_rebuild": true,
+  "native_report_sha256": "1bdcd77ca58b57c24cb2ce45dc3dfe21d13cc950360bcb9b4478cebdc302677e",
+  "run": "gitflow050-final-compile",
+  "skipped": 0,
+  "status": "passed",
+  "warnings": 0
+}
