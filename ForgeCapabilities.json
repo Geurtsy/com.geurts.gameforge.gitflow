@@ -142,13 +142,15 @@
     "scope": "Exact Git candidate: four focused Unity presentation tests, nine disposable real-Git/Windows observer/default/policy checks, real windowless bound service idle/stop/resume, complete 31-assembly native default-diagnostic qualification with zero diagnostics. All 1858 compiler inputs remain unchanged after tests; installed executable membership/bytes match. Earlier broader queue/lease coverage is historical and is not relabelled.",
     "unverified": [
       "No live game, installed consumer, production queue, paid inference or legacy migration was changed. Newer Editor, light/dark skin, narrow docking, high scaling and physical interaction are not freshly certified. Only modern queue pages are combined; unsupported legacy queues remain explicitly unavailable.",
-      "Native visual/interaction acceptance remains required and incomplete for this candidate."
+      "Native visual/interaction checks remain unverified and are explicitly user-waived for this update."
     ],
     "visualAcceptance": {
-      "required": true,
-      "status": "unverified",
+      "required": false,
+      "status": "user-waived",
       "passed": false,
-      "scope": "Changed 0.5.0 native visual/interaction matrix; the prior release-specific waiver is not reused."
+      "date": "2026-11-11",
+      "userInstruction": "Skip the visual checks for this update and publish it.",
+      "scope": "GitFlow 0.5.0 only. Native visual/physical interaction, skins, narrow docking and display scaling remain unverified; no visual pass is claimed. Other required gates remain unchanged."
     }
   }
 }

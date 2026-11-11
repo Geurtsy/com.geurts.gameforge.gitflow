@@ -1,0 +1,8 @@
+{
+  "required": false,
+  "status": "user-waived",
+  "passed": false,
+  "date": "2026-11-11",
+  "userInstruction": "Skip the visual checks for this update and publish it.",
+  "scope": "GitFlow 0.5.0 only. Native visual/physical interaction, skins, narrow docking and display scaling remain unverified; no visual pass is claimed. Other required gates remain unchanged."
+}

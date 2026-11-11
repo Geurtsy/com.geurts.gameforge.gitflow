@@ -1,6 +1,6 @@
 # GitFlow 0.5.0 validation
 
-The changed publisher setup and Queue Panel pass the scoped nonvisual checks below; native visual acceptance remains pending. This release uses the published 0.3.0 main as its base; the separate 0.4.0 candidate is preserved. No live game, installed package or production publisher is changed by development checks.
+The changed publisher setup and Queue Panel pass the scoped nonvisual checks below; visual checks are explicitly user-waived for this update. This release uses the published 0.3.0 main as its base; the separate 0.4.0 candidate is preserved. No live game, installed package or production publisher is changed by development checks.
 
 ## Changed behavior and checks
 
@@ -12,7 +12,7 @@ The changed defaults, exact existing-policy preservation, stale/reused PID handl
 
 ## Limits and delivery
 
-Native visual/physical interaction, light/dark skins, narrow docking and display scaling remain unverified for this change. The 0.3.0 visual waiver was specific to that release and is not a new visual pass. No computer control, live project changes, model inference, legacy migration or live publisher start was performed. A new release remains blocked on the changed native visual/interaction acceptance; source checks do not waive it. The authoritative catalogue/central usage update must wait for the actual immutable release, and no consumer update is implied. Consumer updates remain explicit and separate from source publication.
+Native visual/physical interaction, light/dark skins, narrow docking and display scaling remain unverified for this change. On 2026-11-11 the user instructed: "Skip the visual checks for this update and publish it." The [0.5.0 waiver](Evidence/0.5.0/VisualAcceptance.json) removes only this update's visual requirement; no visual pass is claimed. No computer control, live project changes, model inference, legacy migration or live publisher start was performed. The visual requirement is user-waived; compiler, functional, source, metadata and publication checks remain required. The authoritative catalogue/central usage update must wait for the actual immutable release, and no consumer update is implied. Consumer updates remain explicit and separate from source publication.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
