@@ -88,10 +88,25 @@ namespace Geurts.GameForge.GitFlow.Tests
             Assert.That(cards.Last().Q<TextField>("queue_field_state").value, Is.EqualTo("Validation failed"));
             Assert.That(cards.Last().Q<TextField>("queue_field_id").value, Is.EqualTo("request_139"));
             Foldout overview = cards.Last().Children().OfType<Foldout>().First();
-            overview.value = false;
-            console.Present(result);
-            Assert.That(root.Q("queue_items").Children().OfType<Foldout>().Last().Children().OfType<Foldout>().First().value, Is.False,
-                "Live refresh must preserve the user's nested detail expansion.");
+            // An unattached tree does not dispatch normal panel events. Use a transient event panel without rendering or a window.
+            var settings = UnityEngine.ScriptableObject.CreateInstance<PanelSettings>();
+            settings.hideFlags = UnityEngine.HideFlags.HideAndDontSave;
+            var owner = new UnityEngine.GameObject("SYS_GitFlow_QueueEvents") { hideFlags = UnityEngine.HideFlags.HideAndDontSave };
+            try
+            {
+                UIDocument document = owner.AddComponent<UIDocument>(); document.panelSettings = settings;
+                document.rootVisualElement.Add(root);
+                Assert.That(root.panel, Is.Not.Null, "The event fixture must attach the controls before testing a value change.");
+                overview.Q<Toggle>().value = false;
+                console.Present(result);
+                Assert.That(root.Q("queue_items").Children().OfType<Foldout>().Last().Children().OfType<Foldout>().First().value, Is.False,
+                    "Live refresh must preserve the user's nested detail expansion.");
+            }
+            finally
+            {
+                root.RemoveFromHierarchy();
+                UnityEngine.Object.DestroyImmediate(owner); UnityEngine.Object.DestroyImmediate(settings);
+            }
             Assert.That(root.Q<Label>("publisher_status").text, Is.EqualTo("Publisher is not running on this computer."));
             Assert.That(console.Panel.text, Does.Contain("Error: blocked items"));
         }
