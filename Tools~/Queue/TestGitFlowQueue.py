@@ -279,6 +279,110 @@ class QueueAcceptance(unittest.TestCase):
         self.assertEqual(value['repair']['first_started_utc'], started)
         self.assertIn('speed = 5', (self.repository / 'Assets/Game.cs').read_text())
 
+    def test_repair_resolves_complete_large_conflict_without_truncation(self):
+        import GitFlowRepair as repair
+        (self.repository / 'Assets').mkdir()
+        padding = '// unchanged context\n' * 2200
+        original = 'class Game { void Cleanup() { BaseCleanup(); } }\n' + padding
+        (self.repository / 'Assets/Game.cs').write_text(original)
+        queue.git(self.repository, 'add', 'Assets/Game.cs')
+        queue.git(self.repository, 'commit', '-m', 'Base source')
+        value = self.source('Assets/Game.cs', original.replace('BaseCleanup();', 'HoverCleanup();'))
+        queue.git(self.repository, 'switch', 'main')
+        (self.repository / 'Assets/Game.cs').write_text(original.replace('BaseCleanup();', 'LogoCleanup();'))
+        queue.git(self.repository, 'add', 'Assets/Game.cs')
+        queue.git(self.repository, 'commit', '-m', 'Independent cleanup')
+        self.assertRaises(queue.QueueError, queue.git, self.repository, 'merge', '--no-ff', '--no-edit', value['source'])
+        path = self.repository / 'Assets/Game.cs'
+        before = path.read_bytes()
+        self.assertGreater(len(before), 32768)
+        text = before.decode('utf-8')
+        start, end = text.index('<<<<<<<'), text.index('\n', text.index('>>>>>>>')) + 1
+        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
+        def transport(executable, model, effort, context, **options):
+            item = json.loads(context)['allowed_files']['Assets/Game.cs']
+            self.assertEqual(item['text'], text)
+            self.assertEqual(item['sha256'], queue.digest(before))
+            return dict(model_invoked=False, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'],
+                old_text=text[start:end], new_text='class Game { void Cleanup() { LogoCleanup(); HoverCleanup(); } }\n')]))
+        candidate = repair.repair(queue, self.repository, value, policy, queue.QueueError('Real merge conflict'),
+            self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
+        queue.clean(self.repository)
+        self.assertTrue(queue.ancestor(self.repository, value['source'], candidate))
+        self.assertEqual(path.read_text(), 'class Game { void Cleanup() { LogoCleanup(); HoverCleanup(); } }\n' + padding)
+
+    def test_repair_file_and_diagnostics_byte_boundaries(self):
+        import copy
+        import GitFlowRepair as repair
+        (self.repository / 'Assets').mkdir()
+        # Multibyte UTF-8 must be counted as bytes, with complete text retained.
+        payload = b'// ' + ('\u00e9' * 100).encode() + b'x' * (repair.MAXIMUM_FILE_BYTES - 204) + b'\n'
+        self.assertEqual(len(payload), repair.MAXIMUM_FILE_BYTES)
+        value = self.source('Assets/Game.cs', payload.decode())
+        path = self.repository / 'Assets/Game.cs'
+        path.write_bytes(payload)
+        folder = self.root / 'Diagnostics'
+        folder.mkdir()
+        diagnostics = folder / 'output.log'
+        diagnostics.write_bytes(b'd' * repair.MAXIMUM_DIAGNOSTIC_BYTES)
+        failure = queue.GateFailure('Compiler failure', folder)
+        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
+        def inspect(executable, model, effort, context, **options):
+            content = json.loads(context)
+            self.assertEqual(content['allowed_files']['Assets/Game.cs']['text'].encode(), payload)
+            self.assertEqual(len(content['diagnostics']['output.log']), repair.MAXIMUM_DIAGNOSTIC_BYTES)
+            self.assertGreater(len(context.encode()), 65536)
+            raise LookupError('Accepted complete context')
+        self.assertRaisesRegex(LookupError, 'Accepted complete context', repair.repair, queue, self.repository, copy.deepcopy(value),
+            policy, failure, self.workspace_root / 'Evidence', lambda: None, mock.Mock(), inspect)
+        transport = mock.Mock(side_effect=AssertionError('Oversize context must not invoke inference'))
+        diagnostics.write_bytes(b'd' * (repair.MAXIMUM_DIAGNOSTIC_BYTES + 1))
+        self.assertRaisesRegex(queue.QueueError, '65537 bytes; limit 65536', repair.repair, queue, self.repository, copy.deepcopy(value),
+            policy, failure, self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
+        path.write_bytes(payload + b'x')
+        self.assertRaisesRegex(queue.QueueError, '262145 bytes; limit 262144', repair.repair, queue, self.repository, copy.deepcopy(value),
+            policy, failure, self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
+        self.assertEqual(path.read_bytes(), payload + b'x')
+        transport.assert_not_called()
+
+    def test_repair_rejects_aggregate_context_before_inference(self):
+        import GitFlowRepair as repair
+        (self.repository / 'Assets').mkdir()
+        for index in range(5):
+            (self.repository / ('Assets/Game' + str(index) + '.cs')).write_bytes(b'/' * repair.MAXIMUM_FILE_BYTES)
+        queue.git(self.repository, 'add', 'Assets')
+        queue.git(self.repository, 'commit', '-m', 'Large source task')
+        value = dict(id='aggregate', base=self.base, source=queue.git(self.repository, 'rev-parse', 'HEAD'))
+        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
+        transport = mock.Mock(side_effect=AssertionError('Aggregate limit must apply before inference'))
+        self.assertRaisesRegex(queue.QueueError, 'limit 1048576 bytes', repair.repair, queue, self.repository, value,
+            policy, queue.QueueError('Failure'), self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
+        transport.assert_not_called()
+        queue.clean(self.repository)
+
+    def test_diagnosis_transport_accepts_larger_context_and_bounded_reply(self):
+        import GitFlowModels as models
+        context = '\u00e9' * (models.MAXIMUM_CONTEXT_BYTES // 2)
+        catalogue = dict(account_state='signed_in', models=[dict(model='selected-model', efforts=['high'])])
+        response = dict(diagnosis='', proposal='', limitations='', edits=[])
+        baseline = json.dumps(response).encode()
+        response['diagnosis'] = 'd' * (models.MAXIMUM_PROPOSAL_BYTES - len(baseline))
+        encoded = json.dumps(response).encode()
+        self.assertEqual(len(encoded), models.MAXIMUM_PROPOSAL_BYTES)
+        outputs = [encoded, encoded + b' ']
+        def run(arguments, **options):
+            self.assertIn(context.encode(), options['input'])
+            Path(arguments[arguments.index('-o') + 1]).write_bytes(outputs.pop(0))
+            return subprocess.CompletedProcess(arguments, 0)
+        with mock.patch.object(models, 'discover', return_value=catalogue), mock.patch.object(models, 'executable', return_value='fixture'), mock.patch.object(models, 'process_run', side_effect=run) as transport:
+            result = models.diagnose('fixture', 'selected-model', 'high', context, propose_edits=True)
+            self.assertEqual(result['proposal'], response)
+            self.assertRaisesRegex(queue.QueueError, '262145 bytes; limit 262144', models.diagnose,
+                'fixture', 'selected-model', 'high', context, propose_edits=True)
+            self.assertRaisesRegex(queue.QueueError, '1048577 bytes; limit 1048576', models.diagnose,
+                'fixture', 'selected-model', 'high', context + 'x', propose_edits=True)
+            self.assertEqual(transport.call_count, 2)
+
     def test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner(self):
         self.source()
         prior = queue.configuration(self.repository)

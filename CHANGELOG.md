@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.2 — 2026-11-12
+
+- Increase complete repair files from 32 to 256 KiB and the shared repair/diagnosis context from 64 KiB to 1 MiB.
+- Increase complete diagnostics from 16 to 64 KiB and proposal responses from 64 to 256 KiB; report exact required/allowed bytes without truncating files.
+- Preserve exact-edit, protected-path, original-deadline and independent validation guards.
+
 ## 0.5.1 — 2026-11-12
 
 - Read private HTTPS queue refs with credentials already saved by the selected repository's trusted Git credential helper, without opening a sign-in prompt.
