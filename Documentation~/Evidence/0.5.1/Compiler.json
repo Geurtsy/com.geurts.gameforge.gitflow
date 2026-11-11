@@ -1,0 +1,12 @@
+{
+  "candidate": "2a0dfa6d34dd3ecf2b849b911e2329d6ef088ff3",
+  "compiler_qualification_sha256": "fa712666489c00345fce21a1ff677f1e28309bb478af3a369a196e03b04d4d6e",
+  "errors": 0,
+  "full_log_sha256": "73cb8c6409fb00693c8de297ba48de0671b6a97ac65a8544f78b98e046eadec5",
+  "full_script_rebuild": true,
+  "native_report_sha256": "8203344021ed7326ca34a7ecb76207e324450e82c0d6bf90ce0720bf1b89f82e",
+  "run": "private-queue-051",
+  "skipped": 0,
+  "status": "passed",
+  "warnings": 0
+}

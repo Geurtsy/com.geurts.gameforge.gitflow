@@ -1,6 +1,10 @@
 # GitFlow queue console and selected-repository setup
 
-Version 0.5.0 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
+Version 0.5.1 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
+
+## Private HTTPS repositories
+
+Use the existing repository remote and saved Git sign-in. Refresh Queue Panel borrows credentials through Git's normal credential helper with terminal and GUI prompts disabled. Object reads still run in an isolated temporary store. The authorization header is scoped to the selected HTTPS authority, passed through the child environment and never written to a URL, command line, report or configuration file. HTTP redirects and SSH remain disabled. If no credential is stored, public reads still work; a failed private read explains that saved HTTPS access must be fixed before Refresh. Opening the panel starts no lookup.
 
 ## Editor workflow
 
@@ -37,7 +41,7 @@ Publisher queue reads advertise the request refs once, verify cached commit iden
 
 Modern inspect defaults to 16 requests; the direct CLI accepts --offset and --limit 1 through 64. Coverage reports advertised modern refs, returned records, failed records, records outside this page and a next offset. A nonzero omission, unsupported record or independent finding produces Partial. An interrupted remote read produces Unavailable, retaining independent setup findings. Empty readable results are not proof that an unsupported/failed queue is empty.
 
-The adapter uses a temporary bare object store and fixed Git reads, with hooks, credential helpers, external/SSH transports and caller GIT_* overrides disabled. It supports public HTTPS without embedded credentials and absolute local remotes. Selected checkout HEAD, index, working files, FETCH_HEAD and object store are not changed by observation. It queries Windows process lifetime without ownership lock acquisition, lease renewal or takeover. A PID created after the recorded observation is stale/reused. Access denial or malformed evidence remains Unknown. This verifies only the observed local process, never shared lease ownership or expiry. A single lease object does not prove continued ownership.
+The adapter uses a temporary bare object store and fixed Git reads, with hooks, external/SSH transports, HTTP redirects and caller GIT_* overrides disabled. A separate noninteractive credential lookup uses the selected repositoryÃ¢â‚¬â„¢s normal Git helper; credentials are scoped to the selected HTTPS authority in child-process memory and never stored in URLs, reports or temporary configuration. It supports public/private HTTPS using existing saved Git credentials, without embedded credentials or sign-in prompts, and absolute local remotes. Selected checkout HEAD, index, working files, FETCH_HEAD and object store are not changed by observation. It queries Windows process lifetime without ownership lock acquisition, lease renewal or takeover. A PID created after the recorded observation is stale/reused. Access denial or malformed evidence remains Unknown. This verifies only the observed local process, never shared lease ownership or expiry. A single lease object does not prove continued ownership.
 
 There is one 45-second observation deadline. Declared control blobs are preflighted to one MiB before reading. Displayed request details are limited to 24 KiB each, nested lists to the latest 16 entries, string values to 512 characters and the aggregate JSON response to 768 KiB. The UI applies an independent 49,152-character projection bound and visible omission markers. These are display/control limits, not network pack/memory quotas: subprocess output is buffered before its post-read one-MiB check, and a remote can send a large Git pack before the deadline. Large or untrusted remote-resource acceptance remains unverified.
 
@@ -59,6 +63,6 @@ Focused disposable regressions cover a 140-request queue, page navigation, repea
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.1","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

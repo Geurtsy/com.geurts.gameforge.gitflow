@@ -1,21 +1,15 @@
-# GitFlow 0.5.0 validation
+# GitFlow 0.5.1 validation
 
-The changed publisher setup and Queue Panel pass the scoped nonvisual checks below; visual checks are explicitly user-waived for this update. This release uses the published 0.3.0 main as its base; the separate 0.4.0 candidate is preserved. No live game, installed package or production publisher is changed by development checks.
+The private HTTPS observation fix passed twelve disposable real-Git/Windows checks, four native Unity presentation checks and an actual read of the existing private project queue using saved credentials. The selected repository was not configured or changed by that observation. Credentials are withheld from arguments, reports and temporary configuration.
 
-## Changed behavior and checks
+The executable candidate is `2a0dfa6d34dd3ecf2b849b911e2329d6ef088ff3`. Unity 6000.6.3f1 performed a full script rebuild, compiled the unchanged supported example, and completed default-diagnostic qualification for all 31 native C# assemblies with zero diagnostics. [Machine-readable acceptance](AIUsabilityValidation.json) points to the actual reports. Legacy evidence digests are informational; native results, exact Git candidate identity and complete input/policy qualification remain required.
 
-Automatic defaults are read-only until the user's combined configure/start confirmation. Existing policy identity, required gates, repair budget, workspace ownership and legacy refusal stay with the existing host. New defaults select the exact installed project Editor and every Edit Mode test. Queue collection visits all advertised pages; each row has a visible status, while failed or partial inspection cannot claim an empty queue. Local Windows process creation times distinguish running and stale/reused PIDs. Live reads are explicitly opted in and view-owned.
+The observer suite includes private saved-credential access, anonymous fallback, embedded-credential refusal, 140-request paging, selected-file/ref preservation, partial reads and existing publisher policy/process checks. The four native tests verify bounded safe presentation and unchanged default setup behavior. Unchanged broader queue/lease algorithms retain their historical acceptance; this patch does not relabel that evidence as fresh.
 
-Executable candidate `a9f9416dce46b74f7ee2fbdd0426bcac2e334866` has source fingerprint `1f0496569513bcf99056db5d8bef9d96947ce6390fc4cff60266f24bdad018a8`. [Machine-readable evidence](AIUsabilityValidation.json) binds 4 focused Unity tests, 9 disposable real-Git/Windows checks and an actual windowless processor idle/stop/resume check. Native compilation at Unity 6000.6.3f1 and complete default-diagnostic replay passed 31 assemblies with 0 diagnostics. All 1858 native inputs remain unchanged after testing, and all 34 installed executable source files match the Git candidate. The supported example is included unchanged in the actual compiler response.
-
-The changed defaults, exact existing-policy preservation, stale/reused PID handling, stale-confirmation refusal, 140-item rendering, complete-empty versus partial messages and original-file/ref preservation are covered. The existing broader native/queue/lease suites were not rerun because these narrow changes do not change their algorithms; prior results retain their exact historical scope. Previous release reports remain [historical](History/Validation-0.3.0-release.md).
-
-## Limits and delivery
-
-Native visual/physical interaction, light/dark skins, narrow docking and display scaling remain unverified for this change. On 2026-11-11 the user instructed: "Skip the visual checks for this update and publish it." The [0.5.0 waiver](Evidence/0.5.0/VisualAcceptance.json) removes only this update's visual requirement; no visual pass is claimed. No computer control, live project changes, model inference, legacy migration or live publisher start was performed. The visual requirement is user-waived; compiler, functional, source, metadata and publication checks remain required. The authoritative catalogue/central usage update must wait for the actual immutable release, and no consumer update is implied. Consumer updates remain explicit and separate from source publication.
+Rendered and physical checks were not performed, as required by current Commandments. Source publication installs nothing in consumers. Actual consumer installation, configuration and integration require their own evidence. No paid inference or legacy migration was exercised.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.1","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

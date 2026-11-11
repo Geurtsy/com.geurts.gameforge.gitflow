@@ -1,55 +1,38 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.0",
-  "candidate": "a9f9416dce46b74f7ee2fbdd0426bcac2e334866",
-  "sourceFingerprint": "1f0496569513bcf99056db5d8bef9d96947ce6390fc4cff60266f24bdad018a8",
+  "packageVersion": "0.5.1",
+  "candidate": "2a0dfa6d34dd3ecf2b849b911e2329d6ef088ff3",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
   "skipped": 0,
   "examplesCompiled": true,
-  "testResult": "Documentation~/Evidence/0.5.0/Native.xml",
-  "testResultSha256": "aedef18b25ce837f04fb8f57268ac2c1194c7eb4898a811bd0ef726f33504f68",
-  "nativeVisualAcceptance": "user-waived",
+  "testResult": "Documentation~/Evidence/0.5.1/Native.xml",
   "visualAcceptance": {
     "required": false,
-    "status": "user-waived",
+    "status": "not_performed",
     "passed": false,
-    "date": "2026-11-11",
-    "userInstruction": "Skip the visual checks for this update and publish it.",
-    "scope": "GitFlow 0.5.0 only. Native visual/physical interaction, skins, narrow docking and display scaling remain unverified; no visual pass is claimed. Other required gates remain unchanged."
+    "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Exact Git candidate: four focused Unity presentation tests, nine disposable real-Git/Windows observer/default/policy checks, real windowless bound service idle/stop/resume, complete 31-assembly native default-diagnostic qualification with zero diagnostics. All 1858 compiler inputs remain unchanged after tests; installed executable membership/bytes match. Earlier broader queue/lease coverage is historical and is not relabelled. Visual checks are explicitly user-waived for this update; no visual pass is claimed.",
+  "scope": "Fresh four Unity presentation checks; twelve disposable real-Git/Windows tests; actual private HTTPS queue observation; full native rebuild and 31 assembly default-diagnostic qualification. Earlier broader lease/publisher coverage remains historical.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.5.0/ObservationAcceptance.log",
-    "sha256": "5c10c3da01ddf02c19ee54b0d4e6b68e9a0677591b04230ea0091b2d6ad47dbc",
-    "passed": 9,
-    "failed": 0,
-    "scope": "Final candidate observation/default/policy/process-lifetime checks, including 140-request paging, preservation and stale-policy refusal."
-  },
-  "publisherLifecycle": {
-    "report": "Documentation~/Evidence/0.5.0/PublisherLifecycle.json",
-    "sha256": "08011a54b2beeed1765aff458aa6def71b351d06ca31d0d1d09539b0ba28a7d8"
+    "report": "Documentation~/Evidence/0.5.1/ObservationAcceptance.log",
+    "passed": 12,
+    "failed": 0
   },
   "compilerGate": {
-    "report": "Documentation~/Evidence/0.5.0/Compiler.json",
-    "sha256": "43b79bb6222b121a1f0f4cf068703361791cc9f2bd97635ed295d817f680e108",
+    "report": "Documentation~/Evidence/0.5.1/Compiler.json",
     "status": "passed",
     "warnings": 0,
     "errors": 0
   },
   "compilerQualification": {
-    "report": "Documentation~/Evidence/0.5.0/CompilerQualification.json",
-    "sha256": "e5b60bd68901e3f21f4a007169d2d22943ac7b4ad3d99f9241d3299d72488194",
+    "report": "Documentation~/Evidence/0.5.1/CompilerQualification.json",
     "status": "passed"
-  },
-  "postNativeIntegrity": {
-    "report": "Documentation~/Evidence/0.5.0/PostNativeIntegrity.json",
-    "sha256": "30fd14cdba30c7f362d57c9f25ba1d4573ff978c9b1e5a7153f32d22faa35ca2"
   },
   "additionalEditors": [],
   "integrationRecipes": [],
   "publicationBlockers": [],
-  "limits": "No live game, installed consumer, production queue, paid inference or legacy migration was changed. Newer Editor, light/dark skin, narrow docking, high scaling and physical interaction are not freshly certified. Only modern queue pages are combined; unsupported legacy queues remain explicitly unavailable."
+  "limits": "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher."
 }

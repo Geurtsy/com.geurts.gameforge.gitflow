@@ -1,5 +1,6 @@
 """Explicit bounded GitFlow observations. No ownership, PID probes or checkout writes."""
 import json
+import base64
 import os
 from pathlib import Path
 import re
@@ -74,9 +75,10 @@ def observe(q, root, remote, offset=0, limit=16):
     root = q.plain(root)
     started = q.utc()
     deadline = __import__('time').monotonic() + 45
-    # Ignore caller Git overrides and user/system configuration. No hooks, credential
-    # helper, external transport or project code runs through this inspection route.
-    env = {key: value for key, value in os.environ.items() if not key.upper().startswith('GIT_')}
+    # Object reads remain isolated. Only the selected repository's normal credential
+    # lookup uses trusted user configuration, with all interactive prompts disabled.
+    user_environment = {key: value for key, value in os.environ.items() if not key.upper().startswith('GIT_')}
+    env = dict(user_environment)
     env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='Never', GIT_OPTIONAL_LOCKS='0')
 
     def read(directory, *arguments):
@@ -84,7 +86,8 @@ def observe(q, root, remote, offset=0, limit=16):
         if remaining <= 0:
             raise q.QueueError('Inspection deadline exceeded.')
         command = ['git', '--no-optional-locks', '-c', 'credential.helper=', '-c', 'credential.interactive=never',
-                   '-c', 'core.hooksPath=', '-c', 'protocol.ext.allow=never', '-c', 'protocol.ssh.allow=never', '-c', 'gc.auto=0', *map(str, arguments)]
+                   '-c', 'core.hooksPath=', '-c', 'protocol.ext.allow=never', '-c', 'protocol.ssh.allow=never',
+                   '-c', 'http.followRedirects=false', '-c', 'gc.auto=0', *map(str, arguments)]
         result = q.process_run(command, cwd=directory, env=env, capture_output=True, timeout=min(remaining, 40), **q.console_options())
         if result.returncode:
             raise q.QueueError('Read failed: ' + str(arguments[0]) + ' (exit ' + str(result.returncode) + '). Check access using the repository owner workflow.')
@@ -96,7 +99,16 @@ def observe(q, root, remote, offset=0, limit=16):
     url = read(root, 'config', '--get', 'remote.' + remote + '.url').strip()
     address = urlsplit(url)
     if not (os.path.isabs(url) or address.scheme == 'https' and address.hostname and not address.username and not address.password and not address.query and not address.fragment):
-        raise q.QueueError('Safe inspection supports public HTTPS without embedded credentials or absolute local remotes. Other transports are not observed.')
+        raise q.QueueError('Safe inspection supports HTTPS without embedded credentials or absolute local remotes. Other transports are not observed.')
+    if address.scheme == 'https':
+        credentials = saved_https_credentials(q, root, address, user_environment, deadline)
+        if credentials is not None:
+            username, password = credentials
+            authorization = base64.b64encode((username + ':' + password).encode('utf-8')).decode('ascii')
+            # The token is child-process environment only, scoped to this exact HTTPS
+            # authority. It is never written to a config file, URL, report or command line.
+            env.update(GIT_CONFIG_COUNT='1', GIT_CONFIG_KEY_0='http.https://' + address.netloc + '/.extraHeader',
+                       GIT_CONFIG_VALUE_0='Authorization: Basic ' + authorization)
     result = dict(schema=1, state='observed', repository=str(root), remote=remote, started_utc=started,
                   requests=[], findings=[], observation='Dated read only; no live health or expiry proof. Refresh explicitly.',
                   coverage=dict(offset=offset, limit=limit, advertised=0, returned=0, failed=0, omitted=0, next_offset=None),
@@ -207,7 +219,7 @@ def observe(q, root, remote, offset=0, limit=16):
                 except (OSError, ValueError, TypeError, q.QueueError, q.leases.LeaseError, subprocess.TimeoutExpired):
                     result['findings'].append('Lease metadata unavailable or unsupported; ownership remains unknown.')
     except (OSError, ValueError, TypeError, q.QueueError, subprocess.TimeoutExpired):
-        result['findings'].append('Remote inspection incomplete. Check selected remote access and refresh explicitly. Prior observations are not current.')
+        result['findings'].append('Remote inspection incomplete. Check HTTPS access and saved Git credentials for the selected remote, then refresh explicitly. No sign-in prompt was opened. Prior observations are not current.')
         result['state'] = 'unavailable'
     coverage = result['coverage']
     coverage['returned'] = len(result['requests'])
@@ -227,3 +239,23 @@ def observe(q, root, remote, offset=0, limit=16):
         result['state'] = 'partial'
         coverage.update(returned=0, omitted=coverage['advertised'], next_offset=None)
     return result
+
+
+def saved_https_credentials(q, root, address, user_environment, deadline):
+    """Borrow existing Git HTTPS credentials without prompting, logging or persisting their values."""
+    remaining = deadline - __import__('time').monotonic()
+    if remaining <= 0:
+        raise q.QueueError('Inspection deadline exceeded before credential lookup.')
+    environment = dict(user_environment, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='Never', GCM_GUI_PROMPT='0', GIT_OPTIONAL_LOCKS='0')
+    request = ('protocol=https\nhost=' + address.netloc + '\npath=' + address.path.lstrip('/') + '\n\n').encode('utf-8')
+    try:
+        response = q.process_run(['git', '--no-optional-locks', '-c', 'credential.interactive=never',
+                                  '-c', 'core.hooksPath=', 'credential', 'fill'], cwd=root, env=environment,
+                                 input=request, capture_output=True, timeout=min(remaining, 10), **q.console_options())
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if response.returncode or len(response.stdout) > 65536:
+        return None
+    fields = dict(line.split('=', 1) for line in response.stdout.decode('utf-8', errors='strict').splitlines() if '=' in line)
+    username, password = fields.get('username'), fields.get('password')
+    return (username, password) if username is not None and password else None

@@ -1,0 +1,13 @@
+{
+  "assemblies": 31,
+  "candidate": "2a0dfa6d34dd3ecf2b849b911e2329d6ef088ff3",
+  "diagnostic_policy_version": "native-default-diagnostics-v1",
+  "diagnostics": 0,
+  "inputs_unchanged": true,
+  "policy_copies_unchanged": true,
+  "private_evidence_scope": "Owner-local sibling folder; source/reference inventory and derived binaries are not portable artifacts.",
+  "private_report_sha256": "f17bdda5140bcdea655d3b6127bfbed74ee6e67f7807cfcd0502731f541acfa3",
+  "qualifier_sha256": "02c453fa02de1ecb71df2bde0ab262fb1b6a041c4f60e4ca7f688c8a8d16439d",
+  "run": "private-queue-051",
+  "status": "passed"
+}

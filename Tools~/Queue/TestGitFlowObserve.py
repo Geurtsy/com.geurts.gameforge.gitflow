@@ -1,5 +1,6 @@
 """Focused observation regressions: bounds, preservation and unknown/partial state are material UI risks."""
 import json
+import base64
 import os
 from pathlib import Path
 import subprocess
@@ -43,6 +44,70 @@ class ObservationAcceptance(unittest.TestCase):
 
     def fingerprint(self, root):
         return {str(path.relative_to(root)): queue.file_digest(path) for path in root.rglob('*') if path.is_file()}
+
+    def test_private_https_borrows_saved_credentials_without_exposing_or_storing_them(self):
+        self.request(1)
+        url = 'https://example.invalid/team/private.git'
+        queue.git(self.repository, 'remote', 'set-url', 'origin', url)
+        before = self.fingerprint(self.repository)
+        native = queue.process_run
+        calls = []
+        token = 'disposable_secret_not_for_reports'
+        header = 'Authorization: Basic ' + base64.b64encode(('fixture:' + token).encode()).decode()
+
+        def transport(arguments, **keywords):
+            calls.append(arguments)
+            if arguments[-2:] == ['credential', 'fill']:
+                self.assertEqual(Path(keywords['cwd']), self.repository)
+                self.assertEqual(keywords['env']['GCM_INTERACTIVE'], 'Never')
+                self.assertEqual(keywords['env']['GIT_TERMINAL_PROMPT'], '0')
+                self.assertNotIn('GIT_CONFIG_GLOBAL', keywords['env'])
+                self.assertIn(b'host=example.invalid\npath=team/private.git\n', keywords['input'])
+                return subprocess.CompletedProcess(arguments, 0, ('username=fixture\npassword=' + token + '\n\n').encode(), b'')
+            if url in arguments:
+                self.assertEqual(keywords['env']['GIT_CONFIG_KEY_0'], 'http.https://example.invalid/.extraHeader')
+                self.assertEqual(keywords['env']['GIT_CONFIG_VALUE_0'], header)
+                self.assertIn('http.followRedirects=false', arguments)
+                arguments = [str(self.remote) if argument == url else argument for argument in arguments]
+            return native(arguments, **keywords)
+
+        with mock.patch.dict(os.environ, {'GIT_CONFIG_GLOBAL': 'untrusted_override', 'GIT_CONFIG_COUNT': '99'}), mock.patch.object(queue, 'process_run', side_effect=transport):
+            result = observation.observe(queue, self.repository, 'origin')
+        self.assertEqual(result['state'], 'observed')
+        self.assertEqual(result['coverage']['returned'], 1)
+        self.assertNotIn(token, queue.encoded(result) + repr(calls))
+        self.assertNotIn(header, queue.encoded(result) + repr(calls))
+        self.assertEqual(before, self.fingerprint(self.repository))
+
+    def test_https_without_saved_credentials_retains_anonymous_reads(self):
+        self.request(2)
+        url = 'https://example.invalid/public.git'
+        queue.git(self.repository, 'remote', 'set-url', 'origin', url)
+        native = queue.process_run
+
+        def transport(arguments, **keywords):
+            if arguments[-2:] == ['credential', 'fill']:
+                return subprocess.CompletedProcess(arguments, 1, b'', b'No saved credential')
+            if url in arguments:
+                self.assertNotIn('GIT_CONFIG_VALUE_0', keywords['env'])
+                arguments = [str(self.remote) if argument == url else argument for argument in arguments]
+            return native(arguments, **keywords)
+
+        with mock.patch.object(queue, 'process_run', side_effect=transport):
+            result = observation.observe(queue, self.repository, 'origin')
+        self.assertEqual(result['state'], 'observed')
+        self.assertEqual(result['coverage']['returned'], 1)
+
+    def test_embedded_credentials_are_rejected_before_a_helper_is_called(self):
+        queue.git(self.repository, 'remote', 'set-url', 'origin', 'https://fixture:secret@example.invalid/private.git')
+        native = queue.process_run
+
+        def transport(arguments, **keywords):
+            self.assertNotEqual(arguments[-2:], ['credential', 'fill'])
+            return native(arguments, **keywords)
+
+        with mock.patch.object(queue, 'process_run', side_effect=transport), self.assertRaises(queue.QueueError):
+            observation.observe(queue, self.repository, 'origin')
 
     def test_publisher_defaults_are_read_only_exact_editor_and_all_tests(self):
         project = self.repository / 'ProjectSettings'
