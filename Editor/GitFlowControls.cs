@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Geurts.GameForge.God.Editor;
+using Geurts.GameForge.God;
 using Newtonsoft.Json.Linq;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
@@ -83,7 +84,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             string failure = null;
             try
             {
-                var saved = GitFlowBrick.Host?.Load();
+                var saved = GitFlowBrick.Host?.Load() ?? ReadSavedPreferences(_configuration.Repository);
                 if (saved != null)
                 {
                     _configuration.PythonExecutable = saved.PythonExecutable; _configuration.CodexExecutable = saved.CodexExecutable;
@@ -233,6 +234,13 @@ namespace Geurts.GameForge.GitFlow.Editor
             help.Add(new HelpBox("Select installed Python and Codex, discover models, choose a model and supported reasoning effort, then save. Choices come from local Codex and may be cached; only an actual completed request verifies access. Sign in through Codex itself. Credentials never belong in project settings.\n\nSubmit once from a clean task branch. One configured background publisher owns validation and publication. Required failures block the queue; there is no skip action. Published means main changed; Integrated additionally proves required pulls. Storage measurement is read-only and never deletes workspaces.\n\nThe embedded console observes the selected repository's gameforge queue in explicit pages of 16. It shows exact scope/timestamps, coverage, reported owner/lease, processor, setup and request evidence. Health, expiry, artifact validation and current-main ancestry remain unknown. Previous/Next require the same selected repository and do not merge snapshots. Legacy IntegrationQueue is detected but not adopted; use its existing operator and preserve all records. The lower legacy viewer remains separate and may reject large/unknown legacy schemas. Automatic repair requires separate operator configuration and explicit consent; selecting a model alone never enables it.", HelpBoxMessageType.Info));
             foreach (var child in group.Children()) child.style.marginBottom = 8;
             group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex — " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
+        }
+
+        /// <summary>Reads only existing God-owned preferences while lifecycle startup is pending; creates no settings or project folders.</summary>
+        internal static GitFlowPreferences ReadSavedPreferences(string projectRoot)
+        {
+            string folder = Path.Combine(projectRoot, "ProjectSettings", "GeurtsGameForge");
+            return Directory.Exists(folder) ? new BrickSettingsStore(folder).Load<GitFlowPreferences>(GitFlowBrick.PackageId) : null;
         }
 
         /// <summary>Returns the enabled lifecycle service and exposes a useful unavailable state otherwise.</summary>

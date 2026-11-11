@@ -288,6 +288,26 @@ namespace Geurts.GameForge.GitFlow.Tests
             }
         }
 
+        /// <summary>Restored or disabled-host panels read existing preferences without changing their bytes or provisioning a missing project.</summary>
+        [Test]
+        public void RestoredPanelPreferencesPreserveOwnedBytesWithoutStartingHost()
+        {
+            string settings = Path.Combine(_checkout, "ProjectSettings", "GeurtsGameForge");
+            var store = new BrickSettingsStore(settings);
+            var selected = new GitFlowPreferences { Repository = _checkout, PythonExecutable = Path.Combine(_root, "selected-python.exe"), CaptureScope = "Assets/Task" };
+            store.Save(GitFlowBrick.PackageId, selected);
+            string file = Path.Combine(settings, GitFlowBrick.PackageId + ".json");
+            byte[] before = File.ReadAllBytes(file);
+            GitFlowPreferences loaded = GitFlowControls.ReadSavedPreferences(_checkout);
+            Assert.That(loaded.Repository, Is.EqualTo(selected.Repository));
+            Assert.That(loaded.PythonExecutable, Is.EqualTo(selected.PythonExecutable));
+            Assert.That(loaded.CaptureScope, Is.EqualTo(selected.CaptureScope));
+            CollectionAssert.AreEqual(before, File.ReadAllBytes(file));
+            string missing = Path.Combine(_root, "UnconfiguredProject");
+            Assert.That(GitFlowControls.ReadSavedPreferences(missing), Is.Null);
+            Assert.That(Directory.Exists(missing), Is.False);
+        }
+
         /// <summary>Waits for this disposable fixture's native imports without saving or clearing unrelated dirty state.</summary>
         private static async Task WaitForFixtureImports()
         {
