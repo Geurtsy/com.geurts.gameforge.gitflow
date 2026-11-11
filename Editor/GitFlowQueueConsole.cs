@@ -152,9 +152,11 @@ namespace Geurts.GameForge.GitFlow.Editor
         {
             var section = new Foldout { text = title, value = _expandedItems.TryGetValue(scope, out bool saved) ? saved : expanded };
             section.style.marginTop = 16;
-            section.Q<Toggle>().labelElement.style.whiteSpace = WhiteSpace.Normal;
-            section.Q<Toggle>().labelElement.style.flexShrink = 1;
-            section.RegisterValueChangedCallback(change => { if (change.target == section) _expandedItems[scope] = change.newValue; });
+            Toggle header = section.Q<Toggle>();
+            header.labelElement.style.whiteSpace = WhiteSpace.Normal;
+            header.labelElement.style.flexShrink = 1;
+            // Foldout delegates its value to this toggle. Listening here also excludes nested sections' events.
+            header.RegisterValueChangedCallback(change => _expandedItems[scope] = change.newValue);
             parent.Add(section); return section;
         }
 
