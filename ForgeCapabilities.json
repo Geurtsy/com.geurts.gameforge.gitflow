@@ -7,7 +7,7 @@
       ],
       "id": "queue_inspection",
       "validation": [
-        "Legacy inspection implementation is unchanged from released0.3.0. Fresh0.5.0 native compilation and queue-panel checks passed; complete legacy suite was not repeated."
+        "Legacy inspection implementation is unchanged from released 0.3.0. Fresh 0.5.0 native compilation and queue-panel checks passed; complete legacy suite was not repeated."
       ],
       "maturity": "pre_release",
       "provider": "editor",
@@ -18,7 +18,7 @@
       "operations": [],
       "id": "submission_and_publisher",
       "validation": [
-        "Fresh disposable bound service startup/idle/stop/resume and policy drift checks passed. Broader integration/lease evidence remains historical0.3.0 scope."
+        "Fresh disposable bound service startup/idle/stop/resume and policy drift checks passed. Broader integration/lease evidence remains historical 0.3.0 scope."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -29,7 +29,7 @@
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
       ],
       "maturity": "candidate",
       "provider": "editor",
@@ -43,7 +43,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
       ]
     },
     {
@@ -54,7 +54,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Historical 0.2.0 evidence is retained in Documentation~/History/Validation-0.2.0.md; changed 0.3.0 native sources have not been compiled or exercised in Unity."
+        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
       ]
     },
     {
@@ -65,7 +65,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Focused real-Git and enhanced C# presentation smoke checks passed; see Validation.md. Unity type resolution, rendering and interaction remain unverified."
+        "Four focused Unity presentation tests and nine disposable real-Git/Windows checks passed for 0.5.0. Complete native compiler qualification passed with zero diagnostics. Rendered appearance and physical interaction remain unverified."
       ]
     },
     {
@@ -76,7 +76,7 @@
       "operations": [],
       "description": "Explicit auto-fill/configure/start, full modern queue rows and opt-in view-owned live inspection. Existing policies are retained; local process lifetime is observed without lease takeover.",
       "validation": [
-        "4 focused Unity checks;9 disposable real-Git/Windows checks; actual bound service idle/stop/resume;31 complete native compiler assemblies with zero diagnostics. Native interaction unverified."
+        "4 focused Unity checks; 9 disposable real-Git/Windows checks; actual bound service idle/stop/resume; 31 complete native compiler assemblies with zero diagnostics. Native interaction unverified."
       ]
     }
   ],
