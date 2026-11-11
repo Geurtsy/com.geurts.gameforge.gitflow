@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.5.3 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.5.4 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -40,7 +40,7 @@ Use the UI's Auto-fill fields and start processor button for combined confirmed 
 
 ## Publisher, ownership and recovery
 
-An operator configures one new short root. Ownership markers bind the repository, remote, runner hash and validation policy. One detached Git worktree shares the repository's object database; its Unity Library is reused. Failed/dirty candidates are preserved. There is no skip, bypass or advisory gate.
+An operator configures one new short root. Ownership markers bind the repository, remote, runner hash and validation policy. Configuration and explicit stopped-owner adoption copy the complete GitFlow Python module family into a new immutable `<workspace>/Runner/<identity>/` directory and relocate only the owning GitFlowUnity.py policy arguments there. The manifest and owner record bind the complete copy. Long-lived `process` and `serve` CLI entry points forward into that reviewed copy in the same PID before acquiring ownership; repair/native helpers remain available if Unity removes the original package-cache folder. Use the CLI or configured runner for production processing; direct Python imports from an ephemeral package cache do not provide this startup boundary. Failed/tampered copies are preserved and refused, never overwritten or silently rebuilt. Old copies are retained; no automatic cleanup is introduced. One detached Git worktree shares the repository's object database; its Unity Library is reused. Failed/dirty candidates are preserved. There is no skip, bypass or advisory gate.
 
 The publisher serializes the oldest request, verifies dependencies, combines source with main, assigns one semantic version, and calls the native version adapter through PlayerSettings.bundleVersion. Protocol-1 version proof is explicitly requested and required. Legacy helper invocations without that flag retain their older behavior. Project-specific native derived identities require their own project adapter and required gate; this generic helper does not claim to implement them.
 
@@ -120,7 +120,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.3",
+  "packageVersion": "0.5.4",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

@@ -453,10 +453,15 @@ def configure(root, remote, workspace_root, policy):
         if not main:
             raise QueueError('Remote main is missing.')
         next_version(git(root, 'show', main + ':' + policy['version_file']).strip(), 'patch')
+        workspace_root.mkdir()
+        from GitFlowDeployment import deploy, bind_native
+        deployment = deploy(sys.modules[__name__], workspace_root)
+        policy = json.loads(encoded(policy))
+        bind_native(policy, {Path(__file__).resolve().parent}, Path(deployment['runner']).parent)
+        validate_policy(policy)
         config = dict(schema=SCHEMA, repository=str(root), remote=remote, workspace_root=str(workspace_root),
                       remote_url=git(root, 'remote', 'get-url', remote), policy=policy, policy_hash=digest(policy),
-                      runner=str(Path(__file__).resolve()), runner_hash=runner_hash(), created_utc=utc())
-        workspace_root.mkdir()
+                      **deployment, created_utc=utc())
         durable(workspace_root / 'ownership.json', config)
         durable(control / 'configuration.json', config)
         return config
@@ -470,7 +475,8 @@ def configuration(root):
     config = read_json(common(root) / 'gameforge_queue/configuration.json')
     if config.get('schema') != SCHEMA or config.get('policy_hash') != digest(config.get('policy')):
         raise QueueError('Damaged or unsupported processor configuration; preserve its bytes.')
-    if config['runner_hash'] != runner_hash() or config['runner'] != str(Path(__file__).resolve()):
+    from GitFlowDeployment import current
+    if not current(sys.modules[__name__], config):
         raise QueueError('Configured runner differs. A stopped-owner reviewed upgrade is required.')
     owner = read_json(plain(config['workspace_root']) / 'ownership.json')
     if owner != config:
@@ -499,14 +505,13 @@ def upgrade_runner(root, expected_configuration):
             raise QueueError('Shared owner is not verifiably released. A stale or unknown observation is not upgrade authorization.')
         revised = dict(prior)
         revised['policy'] = json.loads(encoded(prior['policy']))
-        old_folder = Path(prior['runner']).parent
-        new_folder = Path(__file__).resolve().parent
-        for command in [item['command'] for item in revised['policy']['checks']] + [revised['policy'].get('native_version_command', [])]:
-            for index, argument in enumerate(command):
-                if Path(argument).parent == old_folder and Path(argument).name == 'GitFlowUnity.py':
-                    command[index] = str(new_folder / 'GitFlowUnity.py')
+        from GitFlowDeployment import deploy, bind_native
+        deployment = deploy(sys.modules[__name__], plain(prior['workspace_root']))
+        old_folders = {Path(prior['runner']).parent, Path(prior.get('runner_source', prior['runner'])).parent,
+                       Path(__file__).resolve().parent}
+        bind_native(revised['policy'], old_folders, Path(deployment['runner']).parent)
         validate_policy(revised['policy'])
-        revised.update(runner=str(Path(__file__).resolve()), runner_hash=runner_hash(), policy_hash=digest(revised['policy']), upgraded_utc=utc())
+        revised.update(**deployment, policy_hash=digest(revised['policy']), upgraded_utc=utc())
         revised['runner_history'] = [*prior.get('runner_history', []), dict(runner=prior['runner'], runner_hash=prior['runner_hash'], policy_hash=prior['policy_hash'])]
         journal = control / ('upgrade_' + uuid.uuid4().hex + '.json')
         durable(journal, dict(state='prepared', prior=prior, revised=revised))
@@ -993,6 +998,9 @@ def main():
     upgrade.add_argument('--expected-configuration', required=True)
     arguments = parser.parse_args()
     root = plain(arguments.repository)
+    from GitFlowDeployment import forward
+    if forward(sys.modules[__name__], root, arguments.command):
+        return
     if arguments.command == 'submit':
         result = submit(root, arguments.remote, arguments.title, arguments.size, arguments.summary, arguments.dependency)
     elif arguments.command == 'queue-local-changes':

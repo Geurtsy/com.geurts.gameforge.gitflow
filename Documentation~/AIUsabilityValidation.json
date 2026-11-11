@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.3",
-  "candidate": "7a3c2f727e1a1f822dacc054c6b51ffb0a74e6af",
+  "packageVersion": "0.5.4",
+  "candidate": "v0.5.4",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Four focused native presentation checks passed on the exact candidate, including redaction through structured controls, read-only values, 140 item/status/ID fields, empty/partial messages and attached nonvisual foldout events across refresh. Final full rebuild and 31 native default-diagnostic compiler closures passed with zero diagnostics. Broader unchanged queue/authentication/repair evidence is reused at its original scope.",
+  "scope": "Twelve focused real-Git/Windows checks cover preserved runner deployment, package-cache deletion during validation followed by a guarded large-file repair, native helper survival, restart, same-PID service startup, stop/resume, adoption/lease ownership, publication/pull recovery, original repair deadlines and read-only observation. Model proposals are controlled fixtures; no paid inference was used.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.5.2/RepairAcceptance.log",
-    "passed": 7,
+    "report": "Documentation~/Evidence/0.5.4/DeploymentAcceptance.log",
+    "passed": 12,
     "failed": 0,
-    "scope": "Reused seven successful 0.5.2 repair/diagnosis checks; all queue Python modules, the supported example and dependency declarations are unchanged by this C# presentation patch."
+    "scope": "Fresh focused deployment/lifecycle and affected queue regressions; no consumer mutation during source tests."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.5.3/Compiler.json",
@@ -37,8 +37,9 @@
   "publicationBlockers": [],
   "limits": "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher.",
   "evidenceReuse": {
-    "sourceCommit": "d81f6715a86b3629bb2b1cfc5c1c8ca6e0965e47",
-    "reason": "Queue/authentication/repair algorithms, native adapter, supported example and dependencies are unchanged. Existing broader reports retain their original source/environment scope; no broad regression suite is rerun.",
+    "sourceCommit": "1692edbaca9c95e32c05bd645c38fede7d4b2673",
+    "nativeCandidate": "7a3c2f727e1a1f822dacc054c6b51ffb0a74e6af",
+    "reason": "C# implementation, assembly definitions, dependencies and supported example are unchanged except the brick version string; reuse 0.5.3 native presentation/example, full rebuild and 31-assembly default-diagnostic results.",
     "freshPaidInference": false
   }
 }
