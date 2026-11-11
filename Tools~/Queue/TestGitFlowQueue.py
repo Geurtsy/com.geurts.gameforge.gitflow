@@ -401,6 +401,95 @@ class QueueAcceptance(unittest.TestCase):
         self.assertEqual(revised['runner_history'][0]['runner_hash'], prior['runner_hash'])
         self.assertRaisesRegex(queue.QueueError, 'Configuration changed', queue.upgrade_runner, self.repository, identity)
 
+    def test_deployed_repair_and_native_helper_survive_package_cache_removal(self):
+        cache = self.root / 'PackageCache'
+        cache.mkdir()
+        for path in Path(queue.__file__).parent.glob('GitFlow*.py'):
+            (cache / path.name).write_bytes(path.read_bytes())
+        # A controlled proposal transport exercises the real late import and exact-edit
+        # guard without paid inference. Every other runner/gate path remains real.
+        models = cache / 'GitFlowModels.py'
+        with models.open('a', encoding='utf-8') as output:
+            output.write('\ndef diagnose(program, model, effort, context, **options):\n'
+                '    content=json.loads(context); item=content["allowed_files"]["Assets/Game.cs"]\n'
+                '    return dict(model_invoked=False, proposal=dict(edits=[dict(path="Assets/Game.cs", expected_sha256=item["sha256"], old_text="speed = 3", new_text="speed = 4")]))\n')
+        gate = self.repository / 'Gate.py'
+        (self.repository / '.gitattributes').write_bytes(b'*.cs text eol=crlf\n')
+        gate.write_text('import json,sys,shutil,subprocess\nfrom pathlib import Path\n'
+            'cache=Path(' + repr(str(cache)) + ').resolve()\n'
+            'assert cache.parent==Path.cwd().parent.parent and cache.name=="PackageCache"\n'
+            'if cache.exists(): shutil.rmtree(cache)\n'
+            'subprocess.run([sys.executable,sys.argv[4],"--help"],check=True,stdout=subprocess.DEVNULL)\n'
+            'if "speed = 3" in Path("Assets/Game.cs").read_text(): raise SystemExit("Source correction required")\n'
+            'folder=Path(sys.argv[1]); report=dict(run=sys.argv[3],candidate=sys.argv[2],status="passed",warnings=0,errors=0,skipped=0)\n'
+            '(folder/"result.json").write_text(json.dumps(report))\n')
+        queue.git(self.repository, 'add', 'Gate.py', '.gitattributes')
+        queue.git(self.repository, 'commit', '-m', 'Independent cache-removal gate fixture')
+        queue.git(self.repository, 'push', 'origin', 'main')
+        self.base = queue.git(self.repository, 'rev-parse', 'HEAD')
+        config = queue.configuration(self.repository)
+        config['policy']['checks'][0]['command'].append(str(cache / 'GitFlowUnity.py'))
+        config['policy']['repair'] = dict(enabled=True, executable='fixture', model='selected-model', effort='high', window_seconds=10800)
+        config['policy_hash'] = queue.digest(config['policy'])
+        control = self.repository / '.git/gameforge_queue/configuration.json'
+        queue.durable(control, config)
+        queue.durable(self.workspace_root / 'ownership.json', config)
+        cli = [sys.executable, str(cache / 'GitFlowQueue.py'), '--repository', str(self.repository)]
+        queue.run([*cli, 'upgrade-runner', '--operator', '--expected-configuration', queue.digest(config)], self.root)
+        deployed = queue.read_json(control)
+        self.assertEqual(deployed['workspace_root'], config['workspace_root'])
+        self.assertEqual(deployed['policy']['repair'], config['policy']['repair'])
+        self.assertEqual(Path(deployed['policy']['checks'][0]['command'][-1]).parent, Path(deployed['runner']).parent)
+        (self.repository / 'Assets').mkdir()
+        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n' + '// complete source\n' * 2200)
+        result = json.loads(queue.run([*cli, 'process', '--operator'], self.root))
+        self.assertEqual(result['state'], 'integrated')
+        self.assertFalse(cache.exists())
+        self.assertEqual(len(result['repair']['attempts']), 1)
+        self.assertFalse(result['repair']['attempts'][0]['model_invoked'])
+        self.assertTrue(queue.ancestor(self.repository, value['source'], result['main_commit']))
+        self.assertIn('speed = 4', (self.workspace_root / 'Workspace/Assets/Game.cs').read_text())
+        self.assertTrue(Path(deployed['runner']).is_file())
+        # A direct restart from the preserved owner needs no original package folder.
+        idle = json.loads(queue.run([sys.executable, deployed['runner'], '--repository', str(self.repository), 'process', '--operator'], self.root))
+        self.assertEqual(idle['state'], 'idle')
+
+    def test_incomplete_or_changed_deployment_is_refused_before_claim(self):
+        config = queue.configuration(self.repository)
+        repair = Path(config['runner']).with_name('GitFlowRepair.py')
+        repair.write_bytes(repair.read_bytes() + b'\n# changed after adoption\n')
+        before = queue.remote_ref(self.repository, 'origin', 'refs/heads/main')
+        self.assertRaisesRegex(queue.QueueError, 'Configured runner differs', queue.process_once, self.repository)
+        self.assertEqual(queue.remote_ref(self.repository, 'origin', 'refs/heads/main'), before)
+        self.assertEqual(queue.inspect_owner(self.repository, 'origin')['state'], 'not_configured')
+
+    def test_deployed_service_keeps_pid_and_explicit_stop_resume_guards(self):
+        import time
+        from GitFlowProcess import child_process
+        config = queue.configuration(self.repository)
+        control = self.repository / '.git/gameforge_queue'
+        cli = [sys.executable, str(Path(queue.__file__)), '--repository', str(self.repository)]
+        with child_process([*cli, 'serve', '--operator', '--expected-configuration', queue.digest(config)],
+                cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+            deadline = time.monotonic() + 30
+            while time.monotonic() < deadline:
+                if (control / 'state.json').exists():
+                    state = queue.read_json(control / 'state.json')
+                    if state['state'] == 'idle': break
+                if process.poll() is not None: self.fail('Deployed service exited before idle')
+                time.sleep(0.1)
+            else: self.fail('Deployed service never reported idle')
+            self.assertEqual(state['pid'], process.pid, 'Startup forwarding must retain the real owner PID')
+            queue.run([*cli, 'request-stop', '--operator'], self.root)
+            process.communicate(timeout=20)
+            self.assertEqual(process.returncode, 0)
+        stopped = (control / 'stop.json').read_bytes()
+        self.assertRaisesRegex(queue.QueueError, 'reviewed publisher configuration changed',
+            queue.resume_service, self.repository, '0' * 64)
+        self.assertEqual((control / 'stop.json').read_bytes(), stopped)
+        self.assertEqual(queue.resume_service(self.repository, queue.digest(config))['state'], 'ready_to_start')
+        self.assertFalse((control / 'stop.json').exists())
+
     def test_repair_stops_when_changed_source_has_same_independent_failure(self):
         import GitFlowRepair as repair
         (self.repository / '.gitattributes').write_bytes(b'*.cs text eol=crlf\n')

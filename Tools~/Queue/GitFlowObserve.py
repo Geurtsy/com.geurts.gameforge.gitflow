@@ -126,7 +126,8 @@ def observe(q, root, remote, offset=0, limit=16):
             if not isinstance(policy.get('repair', {}), dict) or not isinstance(policy.get('checks', []), list) or not all(isinstance(item, dict) for item in policy.get('checks', [])):
                 raise ValueError('Unsupported policy shape')
             valid = type(config.get('schema')) is int and config.get('schema') == q.SCHEMA and config.get('policy_hash') == q.digest(config.get('policy'))
-            runner_current = config.get('runner_hash') == q.runner_hash() and config.get('runner') == str(Path(q.__file__).resolve())
+            from GitFlowDeployment import current
+            runner_current = current(q, config)
             if not valid:
                 result['findings'].append('Recorded configuration schema/policy identity is invalid. Preserve its bytes for owner reconciliation.')
             if not runner_current:

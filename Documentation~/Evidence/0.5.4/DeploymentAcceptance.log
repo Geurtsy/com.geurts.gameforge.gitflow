@@ -1,0 +1,17 @@
+test_deployed_repair_and_native_helper_survive_package_cache_removal (TestGitFlowQueue.QueueAcceptance.test_deployed_repair_and_native_helper_survive_package_cache_removal) ... ok
+test_incomplete_or_changed_deployment_is_refused_before_claim (TestGitFlowQueue.QueueAcceptance.test_incomplete_or_changed_deployment_is_refused_before_claim) ... ok
+test_deployed_service_keeps_pid_and_explicit_stop_resume_guards (TestGitFlowQueue.QueueAcceptance.test_deployed_service_keeps_pid_and_explicit_stop_resume_guards) ... ok
+test_exact_source_is_idempotent_and_delivery_retains_ancestry (TestGitFlowQueue.QueueAcceptance.test_exact_source_is_idempotent_and_delivery_retains_ancestry) ... ok
+test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner (TestGitFlowQueue.QueueAcceptance.test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner) ... ok
+test_published_pull_failure_resumes_without_retest_or_second_version (TestGitFlowQueue.QueueAcceptance.test_published_pull_failure_resumes_without_retest_or_second_version) ... ok
+test_dirty_user_checkout_preserved_and_record_stays_published (TestGitFlowQueue.QueueAcceptance.test_dirty_user_checkout_preserved_and_record_stays_published) ... ok
+test_repair_resolves_complete_large_conflict_without_truncation (TestGitFlowQueue.QueueAcceptance.test_repair_resolves_complete_large_conflict_without_truncation) ... ok
+test_repair_no_progress_stops_and_original_three_hour_window_survives (TestGitFlowQueue.QueueAcceptance.test_repair_no_progress_stops_and_original_three_hour_window_survives) ... ok
+test_publisher_defaults_are_read_only_exact_editor_and_all_tests (TestGitFlowObserve.ObservationAcceptance.test_publisher_defaults_are_read_only_exact_editor_and_all_tests) ... ok
+test_existing_publisher_policy_is_retained_and_stale_runner_refused (TestGitFlowObserve.ObservationAcceptance.test_existing_publisher_policy_is_retained_and_stale_runner_refused) ... ok
+test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup (TestGitFlowObserve.ObservationAcceptance.test_actual_cli_dispatch_pages_and_refuses_changed_review_without_setup) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 215.703s
+
+OK

@@ -15,7 +15,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         public const string PackageId = "com.geurts.gameforge.gitflow";
         public string Id => PackageId;
         public string DisplayName => "Geurts Game Forge GitFlow";
-        public string Version => "0.5.3";
+        public string Version => "0.5.4";
         public string[] Dependencies => new[] { "com.geurts.gameforge.god" };
         public static GitFlowInspection Service { get; private set; }
         public static GitFlowHost Host { get; private set; }
