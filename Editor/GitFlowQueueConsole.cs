@@ -13,11 +13,11 @@ namespace Geurts.GameForge.GitFlow.Editor
     {
         private readonly Queue<string> _events = new Queue<string>();
         private readonly Dictionary<string, bool> _expandedItems = new Dictionary<string, bool>(StringComparer.Ordinal);
-        private static readonly HashSet<string> OverviewFields = new HashSet<string>(new[] {
+        private static readonly HashSet<string> _overviewFields = new HashSet<string>(new[] {
             "title", "state", "status", "id", "size", "version", "submitted_utc", "started_utc", "updated_utc", "completed_utc", "finished_utc" }, StringComparer.Ordinal);
-        private static readonly HashSet<string> SourceFields = new HashSet<string>(new[] {
+        private static readonly HashSet<string> _sourceFields = new HashSet<string>(new[] {
             "source", "base", "base_main", "control_commit", "dependencies", "candidate", "main_commit", "verified_main" }, StringComparer.Ordinal);
-        private static readonly HashSet<string> ProgressFields = new HashSet<string>(new[] {
+        private static readonly HashSet<string> _progressFields = new HashSet<string>(new[] {
             "attempts", "checks", "diagnostic", "receipt", "pulls", "repair", "failure", "failure_phase", "failure_summary", "next_action" }, StringComparer.Ordinal);
         private readonly TextField _history;
         private readonly VisualElement _snapshot;
@@ -129,10 +129,10 @@ namespace Geurts.GameForge.GitFlow.Editor
             // Project before constructing controls: display labels must never bypass the shared redaction policy.
             var safe = (JObject)GitFlowPresentation.ProjectFields(request);
             int remaining = GitFlowPresentation.MaximumCharacters;
-            RecordGroup(section, "Overview", safe.Properties().Where(property => OverviewFields.Contains(property.Name)), true, identity + "/overview", ref remaining);
-            RecordGroup(section, "Source and dependencies", safe.Properties().Where(property => SourceFields.Contains(property.Name)), false, identity + "/source", ref remaining);
-            RecordGroup(section, "Validation and progress", safe.Properties().Where(property => ProgressFields.Contains(property.Name)), false, identity + "/progress", ref remaining);
-            RecordGroup(section, "Additional evidence", safe.Properties().Where(property => !OverviewFields.Contains(property.Name) && !SourceFields.Contains(property.Name) && !ProgressFields.Contains(property.Name)), false, identity + "/evidence", ref remaining);
+            RecordGroup(section, "Overview", safe.Properties().Where(property => _overviewFields.Contains(property.Name)), true, identity + "/overview", ref remaining);
+            RecordGroup(section, "Source and dependencies", safe.Properties().Where(property => _sourceFields.Contains(property.Name)), false, identity + "/source", ref remaining);
+            RecordGroup(section, "Validation and progress", safe.Properties().Where(property => _progressFields.Contains(property.Name)), false, identity + "/progress", ref remaining);
+            RecordGroup(section, "Additional evidence", safe.Properties().Where(property => !_overviewFields.Contains(property.Name) && !_sourceFields.Contains(property.Name) && !_progressFields.Contains(property.Name)), false, identity + "/evidence", ref remaining);
             DisplayLimit(section, remaining);
         }
 
