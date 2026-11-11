@@ -78,7 +78,7 @@ namespace Geurts.GameForge.GitFlow.Editor
         /// <summary>Creates controls and loads local settings only; no discovery, inference or queue action runs on opening.</summary>
         internal GitFlowControls(VisualElement parent, VisualElement feedbackParent = null)
         {
-            var group = new Foldout { text = "Queue host and local Codex â€” Not checked", value = false };
+            var group = new Foldout { text = "Queue host and local Codex — Not checked", value = false };
             group.AddToClassList("forge-card"); group.style.marginTop = 16; group.style.paddingLeft = group.style.paddingRight = 12; parent.Add(group);
             _configuration = new Configuration { Repository = Path.GetFullPath(Path.Combine(Application.dataPath, "..")) };
             string failure = null;
@@ -152,7 +152,7 @@ namespace Geurts.GameForge.GitFlow.Editor
                     "--title", string.IsNullOrWhiteSpace(captureTitle.value) ? "Saved Unity project changes" : captureTitle.value,
                     "--summary", string.IsNullOrWhiteSpace(captureSummary.value) ? "Saved first-party changes in the configured task scope." : captureSummary.value }, 300, _requestCancellation.Token);
             });
-            var publisher = new Foldout { text = "Operator â€” Configure and start publisher", value = false }; group.Add(publisher);
+            var publisher = new Foldout { text = "Operator — Configure and start publisher", value = false }; group.Add(publisher);
             var workspace = new TextField("New short workspace root"); var unity = new TextField("Installed Unity executable");
             var tests = new TextField("Required project test filter"); var repair = new Toggle("Authorize automatic source repair for up to three hours");
             publisher.Add(workspace); publisher.Add(unity); publisher.Add(tests); publisher.Add(repair);
@@ -230,10 +230,10 @@ namespace Geurts.GameForge.GitFlow.Editor
             });
             var details = new Foldout { text = "Details - bounded result projection", value = false }; group.Add(details);
             _output = new TextField("Last reported fields (raw/unknown data withheld)") { multiline = true, isReadOnly = true }; details.Add(_output);
-            var help = new Foldout { text = "Help â€” local Codex and queue boundaries", value = false }; group.Add(help);
+            var help = new Foldout { text = "Help — local Codex and queue boundaries", value = false }; group.Add(help);
             help.Add(new HelpBox("Select installed Python and Codex, discover models, choose a model and supported reasoning effort, then save. Choices come from local Codex and may be cached; only an actual completed request verifies access. Sign in through Codex itself. Credentials never belong in project settings.\n\nSubmit once from a clean task branch. One configured background publisher owns validation and publication. Required failures block the queue; there is no skip action. Published means main changed; Integrated additionally proves required pulls. Storage measurement is read-only and never deletes workspaces.\n\nThe embedded console observes the selected repository's gameforge queue in explicit pages of 16. It shows exact scope/timestamps, coverage, reported owner/lease, processor, setup and request evidence. Health, expiry, artifact validation and current-main ancestry remain unknown. Previous/Next require the same selected repository and do not merge snapshots. Legacy IntegrationQueue is detected but not adopted; use its existing operator and preserve all records. The lower legacy viewer remains separate and may reject large/unknown legacy schemas. Automatic repair requires separate operator configuration and explicit consent; selecting a model alone never enables it.", HelpBoxMessageType.Info));
             foreach (var child in group.Children()) child.style.marginBottom = 8;
-            group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex â€” " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
+            group.RegisterCallback<GeometryChangedEvent>(_ => group.text = "Queue host and local Codex — " + (_busy ? "Working" : failure != null ? "Error: settings retained" : "Explicit actions"));
         }
 
         /// <summary>Reads only existing God-owned preferences while lifecycle startup is pending; creates no settings or project folders.</summary>
