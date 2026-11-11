@@ -9,6 +9,28 @@ WINDOW_SECONDS = 10800
 NO_PROGRESS_LIMIT = 3
 MAXIMUM_FILE_BYTES = 256 * 1024
 MAXIMUM_DIAGNOSTIC_BYTES = 64 * 1024
+MAXIMUM_NATIVE_LOG_BYTES = 8 * 1024 * 1024
+
+
+def native_diagnostics(q, folder):
+    """Collect every native exception/assertion/compiler diagnostic line, never an arbitrary log tail."""
+    path = q.plain(folder / 'Unity.log')
+    if not path.is_file():
+        return None
+    size = path.stat().st_size
+    if size > MAXIMUM_NATIVE_LOG_BYTES:
+        raise q.QueueError(f'Native Unity.log requires {size} bytes to inspect; limit {MAXIMUM_NATIVE_LOG_BYTES}. The owner must supply diagnostics.json before repair.')
+    text = path.read_text(encoding='utf-8-sig')
+    pattern = re.compile(r'^.*(?:\b(?:warning|error)\s+[A-Z]+\d+\b|(?:[A-Za-z_]\w*\.)*[A-Za-z_]\w*Exception:|[A-Z][A-Z0-9_]*_FAIL(?:ED)?:).*$', re.M)
+    matches = [match.group(0).rstrip('\r') for match in pattern.finditer(text)]
+    if not matches:
+        raise q.QueueError('Native Unity.log has no supported complete failure diagnostics; the owner must supply diagnostics.json before paid repair.')
+    result = dict(source='Unity.log', complete_matching_diagnostics=matches,
+                  scope='Every matching native exception, assertion marker and compiler warning/error line; the full log remains in owner evidence.')
+    required = len(q.encoded(result).encode('utf-8'))
+    if required > MAXIMUM_DIAGNOSTIC_BYTES:
+        raise q.QueueError(f'Complete native failure diagnostics require {required} bytes; limit {MAXIMUM_DIAGNOSTIC_BYTES}. No diagnostic list was truncated.')
+    return result
 
 
 class RetryableNoProgress(Exception):
@@ -73,6 +95,7 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
     if record['attempts'] and record['attempts'][-1]['state'] in {'requesting', 'applying'}:
         raise q.QueueError('Interrupted repair has an uncertain outcome. Preserve its exact proposal/candidate and reconcile before continuation.')
     failure_content = str(failure)
+    native = None
     if getattr(failure, 'folder', None):
         folder = q.plain(failure.folder)
         diagnostics_path = folder / 'diagnostics.json'
@@ -81,6 +104,10 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
             failure_content = q.encoded(diagnostics.get('complete_matching_diagnostics', diagnostics))
         elif (folder / 'output.log').is_file():
             failure_content = (folder / 'output.log').read_text(encoding='utf-8-sig', errors='replace')
+        if not diagnostics_path.is_file():
+            native = native_diagnostics(q, folder)
+            if native:
+                failure_content = q.encoded(native['complete_matching_diagnostics'])
     failure_identity = q.digest(failure_content.replace(str(workspace), '{workspace}').encode())
     if record['attempts'] and record['attempts'][-1]['state'] == 'applied_pending_validation':
         previous = record['attempts'][-1]
@@ -117,6 +144,8 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         raise q.QueueError('No complete supported repair scope, or conflicts include protected/native files: ' + ', '.join(sorted(conflicts - set(files))))
     before = fingerprint(files)
     diagnostics = {}
+    if native:
+        diagnostics['Unity.log diagnostics'] = q.encoded(native)
     if getattr(failure, 'folder', None):
         folder = q.plain(failure.folder)
         selected = folder / 'diagnostics.json'

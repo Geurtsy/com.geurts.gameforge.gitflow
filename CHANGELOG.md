@@ -4,6 +4,7 @@
 
 - Preserve the complete publisher module family and native Unity helper under the owned workspace at explicit configuration or stopped-owner adoption. Package-cache replacement no longer removes active repair imports or adapter paths.
 - Forward process/serve CLI startup into the exact reviewed preserved copy before claiming ownership. Retain required gates, policy/model, original repair deadlines, candidates and receipts.
+- Supply complete bounded native Unity failure messages alongside wrapper output when diagnostics.json is absent; refuse unsupported/oversized native evidence before paid repair.
 - Validate preserved copies before use; changed/incomplete deployments and unreviewed installed runners remain blocked. No automatic package Update or runner adoption.
 
 ## 0.5.3 — 2026-11-12

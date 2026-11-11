@@ -360,6 +360,36 @@ class QueueAcceptance(unittest.TestCase):
         transport.assert_not_called()
         queue.clean(self.repository)
 
+    def test_repair_includes_complete_native_failures_instead_of_wrapper_only(self):
+        import GitFlowRepair as repair
+        (self.repository / 'Assets').mkdir()
+        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
+        folder = self.root / 'NativeEvidence'; folder.mkdir()
+        (folder / 'output.log').write_text('CalledProcessError: native process exited with status 1\n')
+        native = folder / 'Unity.log'
+        # A large ordinary log must not obscure the actual assertion or send an arbitrary tail.
+        native.write_text('ordinary import progress\n' * 10000 + 'MERCHANT_MENU_FUNCTIONAL_FAIL: System.InvalidOperationException: expected settings are absent\nerror CS1234: complete compiler diagnostic\n')
+        policy = dict(self.policy, repair=dict(enabled=True, executable='fixture', model='selected-model', effort='high', window_seconds=10800))
+        def transport(executable, model, effort, context, **options):
+            record = json.loads(context)
+            messages = json.loads(record['diagnostics']['Unity.log diagnostics'])['complete_matching_diagnostics']
+            self.assertEqual(len(messages), 2)
+            self.assertIn('expected settings are absent', messages[0])
+            self.assertIn('error CS1234', messages[1])
+            self.assertNotIn('ordinary import progress', context)
+            self.assertIn('CalledProcessError', record['diagnostics']['output.log'])
+            raise LookupError('Complete native context verified')
+        self.assertRaisesRegex(LookupError, 'Complete native context verified', repair.repair, queue, self.repository, value,
+            policy, queue.GateFailure('Native gate failed', folder), self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
+
+    def test_unactionable_or_oversized_native_logs_stop_before_paid_attempt(self):
+        import GitFlowRepair as repair
+        folder = self.root / 'NativeEvidence'; folder.mkdir()
+        native = folder / 'Unity.log'; native.write_text('No recognized failure message\n')
+        self.assertRaisesRegex(queue.QueueError, 'owner must supply diagnostics.json', repair.native_diagnostics, queue, folder)
+        native.write_bytes(b'x' * (repair.MAXIMUM_NATIVE_LOG_BYTES + 1))
+        self.assertRaisesRegex(queue.QueueError, 'limit 8388608', repair.native_diagnostics, queue, folder)
+
     def test_diagnosis_transport_accepts_larger_context_and_bounded_reply(self):
         import GitFlowModels as models
         context = '\u00e9' * (models.MAXIMUM_CONTEXT_BYTES // 2)
