@@ -75,7 +75,7 @@
     {
       "required": true,
       "kind": "package",
-      "minimumVersion": "0.39.3",
+      "minimumVersion": "0.44.4",
       "id": "com.geurts.gameforge.god",
       "detail": "Exact minimum declared in package.json."
     },

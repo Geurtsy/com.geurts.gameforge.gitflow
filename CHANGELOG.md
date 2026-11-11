@@ -2,6 +2,8 @@
 
 ## 0.3.0 - unreleased source-only candidate
 
+- Finish native validation against the released God 0.44.4 / Compatibility 0.1.1 prerequisite graph, with licensed inputs prepared explicitly and originals preserved. Keep the capture import guard and wait for disposable fixture imports before testing saved-change capture.
+
 - Wrap action history with a stacked label and vertical scrolling. Add explicit local Python/Codex executable discovery with editable manual paths and useful missing-tool preflight. Both current assemblies compile strictly and six focused discovery checks pass outside Unity; updated native acceptance and package release remain pending.
 
 - Add an embedded bounded queue console with explicit pages, scope/time/coverage, recorded owner/setup/lease/processor and request validation/publication/sync fields.

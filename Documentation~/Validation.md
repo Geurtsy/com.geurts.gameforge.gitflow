@@ -59,6 +59,6 @@ The previous candidate report is preserved at [Validation-0.2.0.md](History/Vali
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.3.0","dependencies":{"com.geurts.gameforge.god":"0.39.3","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.3.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->
