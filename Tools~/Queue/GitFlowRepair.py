@@ -3,8 +3,12 @@ import datetime
 from pathlib import Path
 import re
 
+from GitFlowModels import MAXIMUM_CONTEXT_BYTES
+
 WINDOW_SECONDS = 10800
 NO_PROGRESS_LIMIT = 3
+MAXIMUM_FILE_BYTES = 256 * 1024
+MAXIMUM_DIAGNOSTIC_BYTES = 64 * 1024
 
 
 class RetryableNoProgress(Exception):
@@ -104,8 +108,10 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         if not target.is_file():
             continue
         raw = target.read_bytes()
-        if len(raw) > 32768 or b'\0' in raw:
-            raise q.QueueError('Repair context cannot include the entire required file within 32768 bytes: ' + relative)
+        if len(raw) > MAXIMUM_FILE_BYTES:
+            raise q.QueueError(f'Complete repair file {relative} requires {len(raw)} bytes; limit {MAXIMUM_FILE_BYTES} bytes. No partial file was sent.')
+        if b'\0' in raw:
+            raise q.QueueError('Repair context requires a supported text file: ' + relative)
         files[relative] = dict(sha256=q.digest(raw), text=raw.decode('utf-8-sig'), bom=raw.startswith(b'\xef\xbb\xbf'))
     if not files or conflicts - set(files):
         raise q.QueueError('No complete supported repair scope, or conflicts include protected/native files: ' + ', '.join(sorted(conflicts - set(files))))
@@ -117,16 +123,18 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         if not selected.exists():
             selected = folder / 'output.log'
         if selected.is_file():
-            if selected.stat().st_size > 16384:
-                raise q.QueueError('Complete failure diagnostics exceed the bounded repair context; retain them for operator review.')
+            diagnostic_bytes = selected.stat().st_size
+            if diagnostic_bytes > MAXIMUM_DIAGNOSTIC_BYTES:
+                raise q.QueueError(f'Complete failure diagnostics {selected.name} require {diagnostic_bytes} bytes; limit {MAXIMUM_DIAGNOSTIC_BYTES} bytes. Retain them for operator review.')
             diagnostics[selected.name] = selected.read_text(encoding='utf-8-sig')
     context = q.encoded(dict(request=value['id'], source=value['source'], candidate=q.git(workspace, 'rev-parse', 'HEAD'),
                             failure=str(failure), diagnostics=diagnostics, allowed_files=files,
                             recent_attempts=[{key: attempt.get(key) for key in ('state', 'failure_evidence', 'no_progress_reason', 'paths')}
                                              for attempt in record['attempts'][-NO_PROGRESS_LIMIT:]],
                             rule='Complete file text is provided. Learn from the recorded unsuccessful attempts and try a different supported correction. Change only a unique necessary fragment; no whole-file replacement, test edits or policy edits.'))
-    if len(context.encode()) > 65536:
-        raise q.QueueError('Complete repair context exceeds 65536 bytes; no partial conflict context was sent.')
+    context_bytes = len(context.encode('utf-8'))
+    if context_bytes > MAXIMUM_CONTEXT_BYTES:
+        raise q.QueueError(f'Complete repair context requires {context_bytes} bytes; limit {MAXIMUM_CONTEXT_BYTES} bytes. No partial conflict context was sent.')
     if before not in record['seen']:
         record['seen'].append(before)
     attempt = dict(started_utc=now.isoformat(), before=before, failure=q.digest(str(failure).encode()),

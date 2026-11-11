@@ -29,11 +29,11 @@
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
+        "Seven focused real-Git/transport checks cover large complete conflicts, byte boundaries, overflow preservation and existing no-progress/original-deadline behavior. Model replies are fixtures; no paid inference was exercised."
       ],
       "maturity": "candidate",
       "provider": "editor",
-      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported."
+      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported. Complete source files up to 256 KiB, diagnostic files up to 64 KiB, a 1 MiB encoded context and 256 KiB proposals; oversized inputs are rejected without truncation."
     },
     {
       "id": "local_codex_selection",
@@ -43,7 +43,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
+        "Fresh diagnosis transport boundary checks accept 1 MiB UTF-8 context and 256 KiB proposals, rejecting one-byte overflow. Native model discovery behavior is unchanged. No paid inference was exercised."
       ]
     },
     {
@@ -81,7 +81,7 @@
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.1",
+  "packageVersion": "0.5.2",
   "prerequisites": [
     {
       "required": true,
@@ -139,7 +139,7 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Fresh four Unity presentation checks; twelve disposable real-Git/Windows tests; actual private HTTPS queue observation; full native rebuild and 31 assembly default-diagnostic qualification. Earlier broader lease/publisher coverage remains historical.",
+    "scope": "Seven focused disposable real-Git/transport checks for larger repair inputs and preserved retry/deadline guards. Native presentation, example compilation and 31-assembly default-diagnostic qualification are reused from the unchanged 0.5.1 C# implementation, apart from the release version string.",
     "unverified": [
       "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher."
     ],

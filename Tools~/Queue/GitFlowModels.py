@@ -17,6 +17,9 @@ import time
 from GitFlowQueue import QueueError, console_options, encoded, plain
 from GitFlowProcess import child_process, process_run
 
+MAXIMUM_CONTEXT_BYTES = 1024 * 1024
+MAXIMUM_PROPOSAL_BYTES = 256 * 1024
+
 
 def environment():
     return {key: value for key, value in os.environ.items()
@@ -134,8 +137,9 @@ def diagnose(program, model, effort, context, propose_edits=False, maximum_secon
     selected = next((item for item in catalogue['models'] if item['model'] == model), None)
     if catalogue['account_state'] != 'signed_in' or not selected or effort not in selected['efforts']:
         raise QueueError('Sign in through Codex and select a currently listed model/effort. No automatic fallback is used.')
-    if len(context.encode('utf-8')) > 65536:
-        raise QueueError('Diagnosis context exceeds 64 KiB; select a smaller exact failure context.')
+    context_bytes = len(context.encode('utf-8'))
+    if context_bytes > MAXIMUM_CONTEXT_BYTES:
+        raise QueueError(f'Diagnosis context requires {context_bytes} bytes; limit {MAXIMUM_CONTEXT_BYTES} bytes. Select a smaller complete failure context.')
     with tempfile.TemporaryDirectory(prefix='gitflow_diagnosis_') as directory:
         schema = Path(directory) / 'schema.json'
         output = Path(directory) / 'proposal.json'
@@ -166,8 +170,11 @@ def diagnose(program, model, effort, context, propose_edits=False, maximum_secon
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=min(600, maximum_seconds), **console_options())
         except subprocess.TimeoutExpired as error:
             raise QueueError('Diagnosis timed out; no retry or source change was performed.') from error
-        if result.returncode or not output.is_file() or output.stat().st_size > 65536:
+        if result.returncode or not output.is_file():
             raise QueueError('Diagnosis failed or returned unsupported output. Inspect Codex access; no retry was performed.')
+        output_bytes = output.stat().st_size
+        if output_bytes > MAXIMUM_PROPOSAL_BYTES:
+            raise QueueError(f'Diagnosis proposal requires {output_bytes} bytes; limit {MAXIMUM_PROPOSAL_BYTES} bytes. No source change was performed.')
         proposal = json.loads(output.read_text(encoding='utf-8'))
         expected = {'diagnosis', 'proposal', 'limitations', *(['edits'] if propose_edits else [])}
         if set(proposal) != expected or not all(isinstance(proposal[name], str) for name in ['diagnosis', 'proposal', 'limitations']):

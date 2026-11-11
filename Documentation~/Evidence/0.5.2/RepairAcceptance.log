@@ -1,0 +1,12 @@
+test_repair_resolves_complete_large_conflict_without_truncation (TestGitFlowQueue.QueueAcceptance.test_repair_resolves_complete_large_conflict_without_truncation) ... ok
+test_repair_file_and_diagnostics_byte_boundaries (TestGitFlowQueue.QueueAcceptance.test_repair_file_and_diagnostics_byte_boundaries) ... ok
+test_repair_rejects_aggregate_context_before_inference (TestGitFlowQueue.QueueAcceptance.test_repair_rejects_aggregate_context_before_inference) ... ok
+test_diagnosis_transport_accepts_larger_context_and_bounded_reply (TestGitFlowQueue.QueueAcceptance.test_diagnosis_transport_accepts_larger_context_and_bounded_reply) ... ok
+test_repair_no_progress_stops_and_original_three_hour_window_survives (TestGitFlowQueue.QueueAcceptance.test_repair_no_progress_stops_and_original_three_hour_window_survives) ... ok
+test_repair_retries_empty_proposals_and_resets_stall_counter_after_validation_progress (TestGitFlowQueue.QueueAcceptance.test_repair_retries_empty_proposals_and_resets_stall_counter_after_validation_progress) ... ok
+test_repair_stops_when_changed_source_has_same_independent_failure (TestGitFlowQueue.QueueAcceptance.test_repair_stops_when_changed_source_has_same_independent_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 31.044s
+
+OK
