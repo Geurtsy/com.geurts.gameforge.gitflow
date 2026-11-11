@@ -256,6 +256,7 @@ namespace Geurts.GameForge.GitFlow.Tests
                 AssetDatabase.CreateFolder(folder, "Plugins");
                 AssetDatabase.CreateAsset(owned, folder + "/Owned.mat");
                 AssetDatabase.CreateAsset(excluded, folder + "/Plugins/Excluded.mat");
+                await WaitForFixtureImports();
                 owned.name = "Owned change"; excluded.name = "Preserved unrelated change";
                 EditorUtility.SetDirty(owned); EditorUtility.SetDirty(excluded);
                 Assert.That(EditorUtility.IsDirty(excluded), Is.True, "Fixture must begin with an unsaved excluded asset.");
@@ -284,6 +285,17 @@ namespace Geurts.GameForge.GitFlow.Tests
                 EditorSceneManager.CloseScene(scene, true);
                 if (savedInitial) EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
                 AssetDatabase.DeleteAsset(folder);
+            }
+        }
+
+        /// <summary>Waits for this disposable fixture's native imports without saving or clearing unrelated dirty state.</summary>
+        private static async Task WaitForFixtureImports()
+        {
+            var timer = Stopwatch.StartNew();
+            while (EditorApplication.isUpdating || EditorApplication.isCompiling)
+            {
+                Assert.That(timer.Elapsed.TotalSeconds, Is.LessThan(15), "Disposable fixture imports did not settle; capture safety remains enforced.");
+                await Task.Delay(50);
             }
         }
 
