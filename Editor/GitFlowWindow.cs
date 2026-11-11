@@ -37,7 +37,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             introduction.style.whiteSpace = WhiteSpace.Normal; root.Add(introduction);
             root.Add(new Button(GitFlowHelp.Open) { text = "Help - Queue local changes" });
             var feedback = new ScrollView { name = "gitflow-action-feedback" };
-            feedback.style.maxHeight = 112; feedback.style.flexShrink = 0; root.Add(feedback);
+            feedback.style.maxHeight = 176; feedback.style.flexShrink = 0; root.Add(feedback);
             var scroll = new ScrollView(); scroll.style.flexGrow = 1; root.Add(scroll);
             _controls?.Dispose(); _controls = new GitFlowControls(scroll, feedback);
             var scope = Section(scroll, "Legacy queue viewer - Repository and refresh", false);
@@ -45,7 +45,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             _remote = new TextField("Existing remote") { value = "origin" };
             _repository.isDelayed = true; _remote.isDelayed = true;
             scope.Add(_repository); scope.Add(_remote);
-            var select = new Button(() => { string chosen = EditorUtility.OpenFolderPanel("Select a Git checkout to inspect", _repository.value, ""); if (!string.IsNullOrEmpty(chosen)) _repository.value = chosen; }) { text = "Choose repository…" };
+            var select = new Button(() => { string chosen = EditorUtility.OpenFolderPanel("Select a Git checkout to inspect", _repository.value, ""); if (!string.IsNullOrEmpty(chosen)) _repository.value = chosen; }) { text = "Choose repositoryâ€¦" };
             scope.Add(select);
             _refresh = new Button(RefreshClicked) { text = "Refresh queue once" }; scope.Add(_refresh);
             _status = new Label(GitFlowBrick.Service == null ? "Unavailable: enable GitFlow in God, then select Refresh." : "Not checked. Select Refresh to inspect once.");
@@ -84,14 +84,14 @@ namespace Geurts.GameForge.GitFlow.Editor
             Value(health, "Processor observation", snapshot.ProcessorState + ". Recorded evidence only; process health and current ownership are unverified."); Value(health, "Lease observation", snapshot.LeaseState + ". Lease timestamps do not prove expiry or permit takeover.");
             if (snapshot.Issues.Count > 0)
             {
-                var failures = Section(_results, "⚠ Warning — inspection findings (" + snapshot.Issues.Count + ")", true);
+                var failures = Section(_results, "âš  Warning â€” inspection findings (" + snapshot.Issues.Count + ")", true);
                 foreach (string issue in snapshot.Issues) failures.Add(new HelpBox("Inspection finding: " + (issue.Contains("128-request") ? "Legacy queue exceeds its 128-request bound. Use an owning paged legacy adapter; this is not an empty queue." : "Evidence is partial or unavailable. Consult the owning operator with this dated snapshot; raw diagnostics are withheld."), HelpBoxMessageType.Warning));
                 StyleRows(failures);
             }
             foreach (string state in new[] { "Queued", "Processing", "Validating", "Delivered", "Failed", "Unknown" })
             {
                 var requests = snapshot.Requests.Where(value => value.State == state).ToArray();
-                var group = Section(_results, (state == "Failed" ? "✖ Error — " : "") + state + " (" + requests.Length + ")", state == "Failed");
+                var group = Section(_results, (state == "Failed" ? "âœ– Error â€” " : "") + state + " (" + requests.Length + ")", state == "Failed");
                 if (requests.Length == 0) group.Add(new Label("No " + state.ToLowerInvariant() + " records observed in this snapshot."));
                 foreach (var request in requests)
                 {
