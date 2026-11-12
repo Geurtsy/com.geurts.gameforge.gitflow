@@ -325,6 +325,7 @@ class QueueAcceptance(unittest.TestCase):
         queue.git(self.repository, 'switch', '-c', 'audio_task')
         check.write_text(check.read_text().replace('BasePolicy()', 'PooledAudioFeedback()'))
         attributes.write_text(attributes.read_text() + '# audio\naudio.cs text eol=crlf\n')
+        (self.repository / 'Scene.unity').write_text('GameObject:\n  m_Name: \n')
         queue.git(self.repository, 'add', '.')
         queue.git(self.repository, 'commit', '-m', 'Incoming pooled audio')
         value = queue.submit(self.repository, 'origin', 'Audio', 'minor', 'Real protected-file merge')
@@ -366,6 +367,14 @@ class QueueAcceptance(unittest.TestCase):
         self.assertIn('PooledAudioFeedback()', check.read_text())
         self.assertIn('interaction.cs text eol=crlf', attributes.read_text())
         self.assertIn('audio.cs text eol=crlf', attributes.read_text())
+        self.assertEqual(queue.git(self.repository, 'rev-parse', candidate + ':Scene.unity'),
+                         queue.git(self.repository, 'rev-parse', value['source'] + ':Scene.unity'))
+        # Native payload exclusions must not excuse authored code outside a proposal.
+        (self.repository / 'Other.cs').write_text('class Other { } \n')
+        queue.git(self.repository, 'add', 'Other.cs')
+        self.assertRaises(queue.QueueError, repair.check_authored_whitespace, queue, self.repository)
+        queue.git(self.repository, 'restore', '--staged', 'Other.cs')
+        (self.repository / 'Other.cs').unlink()
         # Permission is not a standing license to edit a resolved test file.
         resolved = dict(value)
         resolved.pop('repair')

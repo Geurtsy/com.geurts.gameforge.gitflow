@@ -81,7 +81,7 @@
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.6.0",
+  "packageVersion": "0.6.1",
   "prerequisites": [
     {
       "required": true,

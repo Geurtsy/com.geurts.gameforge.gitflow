@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1 — 2026-11-12
+
+- Preserve native Unity serialized payload whitespace during repair commits while retaining the staged authored-text guard, including source outside the proposal.
+
 ## 0.6.0 — 2026-11-12
 
 - Add stopped-owner exact conflict-file scope with configuration journaling and unchanged checks, model and original repair clocks.
