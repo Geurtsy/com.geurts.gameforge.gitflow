@@ -1,6 +1,6 @@
 # GitFlow queue console and selected-repository setup
 
-Version 0.6.1 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
+Version 0.7.0 retains the queue console and selected-repository setup and adds [project-wide reviewed repair](AIUsability.md#project-repair-and-remaining-safeguards). Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
 
 ## Private HTTPS repositories
 
@@ -37,7 +37,7 @@ The lower legacy viewer and GitFlowBrick.Service retain their separate 45-second
 
 ## Bounds and truthful evidence
 
-Publisher queue reads advertise the request refs once, verify cached commit identities/types, fetch all absent exact commits in one transport and read control blobs in batches of sixteen after checking each size. Ref names and request identities still must agree; malformed or unavailable records remain blockers. Individual sensitive ref/lease observations still query the remote freshly. This reuses immutable objects, never cached ref values, and leaves FETCH_HEAD, local refs, HEAD, index and working edits unchanged. It does not change a live configured runner: stopped-owner adoption remains explicit. Modern viewer reads already batch their page fetch into an isolated temporary store; this publisher improvement neither adopts nor accelerates an existing legacy processor automatically.
+Publisher queue reads advertise the request refs once, verify cached commit identities/types, fetch all absent exact commits in one transport and read complete control blobs in batches of sixteen. Publisher control records and portable gate evidence have no application-imposed size ceiling; the viewer display bounds below remain separate. Ref names and request identities still must agree; malformed or unavailable records remain blockers. Individual sensitive ref/lease observations still query the remote freshly. This reuses immutable objects, never cached ref values, and leaves FETCH_HEAD, local refs, HEAD, index and working edits unchanged. It does not change a live configured runner: stopped-owner adoption remains explicit. Modern viewer reads already batch their page fetch into an isolated temporary store; this publisher improvement neither adopts nor accelerates an existing legacy processor automatically.
 
 Modern inspect defaults to 16 requests; the direct CLI accepts --offset and --limit 1 through 64. Coverage reports advertised modern refs, returned records, failed records, records outside this page and a next offset. A nonzero omission, unsupported record or independent finding produces Partial. An interrupted remote read produces Unavailable, retaining independent setup findings. Empty readable results are not proof that an unsupported/failed queue is empty.
 
@@ -63,6 +63,6 @@ Focused disposable regressions cover a 140-request queue, page navigation, repea
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.6.1","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.7.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

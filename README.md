@@ -1,10 +1,10 @@
 # Geurts Game Forge GitFlow
 
-Version 0.6.1 adds explicit conflict-file repair scope to the reusable strict integration queue.
+Version 0.7.0 adds project-wide disk-backed automatic repair with independent review and no application-imposed repair size limits.
 
 In Unity, Queue local changes captures saved task-owned work into a recorded checkpoint and confirms its waiting-list entry while preserving the live branch, staging and working edits. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
-One shared Git store and one reusable publisher workspace avoid per-request Unity caches. Optional explicitly authorized local Codex repair uses a discovered model and reasoning effort, retains its original three-hour budget, and stops on no meaningful progress. Owner observations distinguish recorded ownership from unknown process health.
+One shared Git store and one reusable publisher workspace avoid per-request Unity caches. Optional explicitly authorized local Codex repair uses a configured available model and reasoning effort, retains its original three-hour budget, and reviews isolated project changes before applying them. The former three-attempt and ten-minute model-call cutoffs are removed. Owner observations distinguish recorded ownership from unknown process health.
 
 Forge package and documentation updates remain manual. Opening, refreshing and queue activity never install or update Forge. Dreadvault migration and the live game queue are outside this package change.
 
@@ -18,7 +18,7 @@ Install from the authoritative released catalogue. Publication and consumer inst
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.6.1",
+  "packageVersion": "0.7.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

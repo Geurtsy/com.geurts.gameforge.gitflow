@@ -225,163 +225,9 @@ class QueueAcceptance(unittest.TestCase):
         self.assertEqual(queue.remote_ref(self.repository, 'origin', 'refs/heads/main'), moved[0])
         self.assertEqual(queue.entries(self.repository, 'origin')[0][2]['state'], 'validation_failed')
 
-    def test_repair_no_progress_stops_and_original_three_hour_window_survives(self):
-        import GitFlowRepair as repair
-        (self.repository / 'Assets').mkdir()
-        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
-        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
-        before = (self.repository / 'Assets/Game.cs').read_bytes()
-        def transport(executable, model, effort, context, **kwargs):
-            content = json.loads(context)
-            item = content['allowed_files']['Assets/Game.cs']
-            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'], old_text=' }', new_text=' }  ')]))
-        lease = mock.Mock()
-        self.assertRaisesRegex(queue.QueueError, 'No meaningful progress', repair.repair, queue, self.repository, value,
-            policy, queue.QueueError('compile failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
-        self.assertEqual((self.repository / 'Assets/Game.cs').read_bytes(), before)
-        self.assertEqual(len(value['repair']['attempts']), 3)
-        self.assertEqual(value['repair']['consecutive_no_progress'], 3)
-        started = value['repair']['first_started_utc']
-        policy['repair']['model'] = 'different-model'
-        self.assertRaisesRegex(queue.QueueError, 'No meaningful progress', repair.repair, queue, self.repository, value,
-            policy, queue.QueueError('same failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
-        self.assertEqual(value['repair']['first_started_utc'], started)
-        start = datetime.datetime.fromisoformat(started)
-        self.assertEqual(repair.remaining(value['repair'], start + datetime.timedelta(hours=3)), 0)
 
-    def test_repair_retries_empty_proposals_and_resets_stall_counter_after_validation_progress(self):
-        import GitFlowRepair as repair
-        (self.repository / '.gitattributes').write_bytes(b'*.cs text eol=crlf\n')
-        queue.git(self.repository, 'add', '.gitattributes')
-        queue.git(self.repository, 'commit', '-m', 'Declare native source line endings')
-        (self.repository / 'Assets').mkdir()
-        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
-        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
-        contexts = []
-        def transport(executable, model, effort, context, **kwargs):
-            content = json.loads(context)
-            contexts.append(content)
-            if len(contexts) <= 2:
-                return dict(model_invoked=True, proposal=dict(edits=[]))
-            item = content['allowed_files']['Assets/Game.cs']
-            speed = len(contexts)
-            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'],
-                old_text='speed = ' + str(speed), new_text='speed = ' + str(speed + 1))]))
-        lease = mock.Mock()
-        repair.repair(queue, self.repository, value, policy, queue.QueueError('first failure'),
-            self.workspace_root / 'Evidence', lambda: None, lease, transport)
-        self.assertEqual(len(contexts), 3)
-        self.assertEqual(value['repair']['consecutive_no_progress'], 2)
-        self.assertEqual(len(contexts[-1]['recent_attempts']), 2)
-        started = value['repair']['first_started_utc']
-        repair.repair(queue, self.repository, value, policy, queue.QueueError('different independent failure'),
-            self.workspace_root / 'Evidence', lambda: None, lease, transport)
-        self.assertEqual(value['repair']['consecutive_no_progress'], 0)
-        self.assertEqual(value['repair']['first_started_utc'], started)
-        self.assertIn('speed = 5', (self.repository / 'Assets/Game.cs').read_text())
 
-    def test_repair_resolves_complete_large_conflict_without_truncation(self):
-        import GitFlowRepair as repair
-        (self.repository / 'Assets').mkdir()
-        padding = '// unchanged context\n' * 2200
-        original = 'class Game { void Cleanup() { BaseCleanup(); } }\n' + padding
-        (self.repository / 'Assets/Game.cs').write_text(original)
-        queue.git(self.repository, 'add', 'Assets/Game.cs')
-        queue.git(self.repository, 'commit', '-m', 'Base source')
-        value = self.source('Assets/Game.cs', original.replace('BaseCleanup();', 'HoverCleanup();'))
-        queue.git(self.repository, 'switch', 'main')
-        (self.repository / 'Assets/Game.cs').write_text(original.replace('BaseCleanup();', 'LogoCleanup();'))
-        queue.git(self.repository, 'add', 'Assets/Game.cs')
-        queue.git(self.repository, 'commit', '-m', 'Independent cleanup')
-        self.assertRaises(queue.QueueError, queue.git, self.repository, 'merge', '--no-ff', '--no-edit', value['source'])
-        path = self.repository / 'Assets/Game.cs'
-        before = path.read_bytes()
-        self.assertGreater(len(before), 32768)
-        text = before.decode('utf-8')
-        start, end = text.index('<<<<<<<'), text.index('\n', text.index('>>>>>>>')) + 1
-        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
-        def transport(executable, model, effort, context, **options):
-            item = json.loads(context)['allowed_files']['Assets/Game.cs']
-            self.assertEqual(item['text'], text)
-            self.assertEqual(item['sha256'], queue.digest(before))
-            return dict(model_invoked=False, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'],
-                old_text=text[start:end], new_text='class Game { void Cleanup() { LogoCleanup(); HoverCleanup(); } }\n')]))
-        candidate = repair.repair(queue, self.repository, value, policy, queue.QueueError('Real merge conflict'),
-            self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
-        queue.clean(self.repository)
-        self.assertTrue(queue.ancestor(self.repository, value['source'], candidate))
-        self.assertEqual(path.read_text(), 'class Game { void Cleanup() { LogoCleanup(); HoverCleanup(); } }\n' + padding)
 
-    def test_explicit_editor_and_attribute_conflicts_preserve_both_features(self):
-        import GitFlowRepair as repair
-        relative = 'Assets/Editor/Check.cs'
-        check = self.repository / relative
-        check.parent.mkdir(parents=True)
-        check.write_text('// shared header\nclass Check { void Run() { Require(BasePolicy()); } }\n// shared footer\n')
-        attributes = self.repository / '.gitattributes'
-        attributes.write_text('# shared rules\n* text=auto\n*.cs text\n')
-        queue.git(self.repository, 'add', '.')
-        queue.git(self.repository, 'commit', '-m', 'Independent test and attribute baseline')
-        queue.git(self.repository, 'switch', '-c', 'audio_task')
-        check.write_text(check.read_text().replace('BasePolicy()', 'PooledAudioFeedback()'))
-        attributes.write_text(attributes.read_text() + '# audio\naudio.cs text eol=crlf\n')
-        (self.repository / 'Scene.unity').write_text('GameObject:\n  m_Name: \n')
-        queue.git(self.repository, 'add', '.')
-        queue.git(self.repository, 'commit', '-m', 'Incoming pooled audio')
-        value = queue.submit(self.repository, 'origin', 'Audio', 'minor', 'Real protected-file merge')
-        queue.git(self.repository, 'switch', 'main')
-        check.write_text(check.read_text().replace('BasePolicy()', 'CurrentMousePolicy()'))
-        attributes.write_text(attributes.read_text() + '# interaction\ninteraction.cs text eol=crlf\n')
-        queue.git(self.repository, 'add', '.')
-        queue.git(self.repository, 'commit', '-m', 'Current mouse controls and interaction rules')
-        self.assertRaises(queue.QueueError, queue.git, self.repository, 'merge', '--no-ff', '--no-edit', value['source'])
-        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
-        transport = mock.Mock(side_effect=AssertionError('Default protected scope must not invoke inference'))
-        with self.assertRaisesRegex(queue.QueueError, 'No complete supported repair scope'):
-            repair.repair(queue, self.repository, value, policy, queue.QueueError('Merge conflict'), self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
-        transport.assert_not_called()
-        started = value['repair']['first_started_utc']
-        policy['repair']['conflict_paths'] = ['.gitattributes', relative]
-        def proposal(executable, model, effort, context, **options):
-            files = json.loads(context)['allowed_files']
-            self.assertEqual(set(files), {relative, '.gitattributes'})
-            edits = []
-            for name, item in files.items():
-                self.assertTrue(item['conflict_only'])
-                text = item['text']
-                start, end = text.index('<<<<<<<'), text.index('\n', text.index('>>>>>>>')) + 1
-                block = text[start:end]
-                if name == '.gitattributes':
-                    ours, theirs = re.split(r'=======\r?\n', block.split('\n', 1)[1])
-                    replacement = ours + theirs[:theirs.index('>>>>>>>')]
-                else:
-                    replacement = 'class Check { void Run() { Require(CurrentMousePolicy()); Require(PooledAudioFeedback()); } }' + ('\r\n' if '\r\n' in text else '\n')
-                edits.append(dict(path=name, expected_sha256=item['sha256'], old_text=block, new_text=replacement))
-            return dict(model_invoked=False, proposal=dict(edits=edits))
-        candidate = repair.repair(queue, self.repository, value, policy, queue.QueueError('Merge conflict'),
-            self.workspace_root / 'Evidence', lambda: None, mock.Mock(), proposal)
-        queue.clean(self.repository)
-        self.assertTrue(queue.ancestor(self.repository, value['source'], candidate))
-        self.assertEqual(value['repair']['first_started_utc'], started)
-        self.assertIn('CurrentMousePolicy()', check.read_text())
-        self.assertIn('PooledAudioFeedback()', check.read_text())
-        self.assertIn('interaction.cs text eol=crlf', attributes.read_text())
-        self.assertIn('audio.cs text eol=crlf', attributes.read_text())
-        self.assertEqual(queue.git(self.repository, 'rev-parse', candidate + ':Scene.unity'),
-                         queue.git(self.repository, 'rev-parse', value['source'] + ':Scene.unity'))
-        # Native payload exclusions must not excuse authored code outside a proposal.
-        (self.repository / 'Other.cs').write_text('class Other { } \n')
-        queue.git(self.repository, 'add', 'Other.cs')
-        self.assertRaises(queue.QueueError, repair.check_authored_whitespace, queue, self.repository)
-        queue.git(self.repository, 'restore', '--staged', 'Other.cs')
-        (self.repository / 'Other.cs').unlink()
-        # Permission is not a standing license to edit a resolved test file.
-        resolved = dict(value)
-        resolved.pop('repair')
-        with self.assertRaisesRegex(queue.QueueError, 'No complete supported repair scope'):
-            repair.repair(queue, self.repository, resolved, policy, queue.QueueError('Later failure'),
-                self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
-        transport.assert_not_called()
 
     def test_conflict_only_guard_refuses_outside_edits_assertion_removal_and_attribute_loss(self):
         import GitFlowRepair as repair
@@ -414,94 +260,25 @@ class QueueAcceptance(unittest.TestCase):
             with self.assertRaises(queue.QueueError):
                 queue.validate_policy(dict(self.policy, repair=dict(conflict_paths=[path])))
 
-    def test_repair_file_and_diagnostics_byte_boundaries(self):
-        import copy
-        import GitFlowRepair as repair
-        (self.repository / 'Assets').mkdir()
-        # Multibyte UTF-8 must be counted as bytes, with complete text retained.
-        payload = b'// ' + ('\u00e9' * 100).encode() + b'x' * (repair.MAXIMUM_FILE_BYTES - 204) + b'\n'
-        self.assertEqual(len(payload), repair.MAXIMUM_FILE_BYTES)
-        value = self.source('Assets/Game.cs', payload.decode())
-        path = self.repository / 'Assets/Game.cs'
-        path.write_bytes(payload)
-        folder = self.root / 'Diagnostics'
-        folder.mkdir()
-        diagnostics = folder / 'output.log'
-        diagnostics.write_bytes(b'd' * repair.MAXIMUM_DIAGNOSTIC_BYTES)
-        failure = queue.GateFailure('Compiler failure', folder)
-        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
-        def inspect(executable, model, effort, context, **options):
-            content = json.loads(context)
-            self.assertEqual(content['allowed_files']['Assets/Game.cs']['text'].encode(), payload)
-            self.assertEqual(len(content['diagnostics']['output.log']), repair.MAXIMUM_DIAGNOSTIC_BYTES)
-            self.assertGreater(len(context.encode()), 65536)
-            raise LookupError('Accepted complete context')
-        self.assertRaisesRegex(LookupError, 'Accepted complete context', repair.repair, queue, self.repository, copy.deepcopy(value),
-            policy, failure, self.workspace_root / 'Evidence', lambda: None, mock.Mock(), inspect)
-        transport = mock.Mock(side_effect=AssertionError('Oversize context must not invoke inference'))
-        diagnostics.write_bytes(b'd' * (repair.MAXIMUM_DIAGNOSTIC_BYTES + 1))
-        self.assertRaisesRegex(queue.QueueError, '65537 bytes; limit 65536', repair.repair, queue, self.repository, copy.deepcopy(value),
-            policy, failure, self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
-        path.write_bytes(payload + b'x')
-        self.assertRaisesRegex(queue.QueueError, '262145 bytes; limit 262144', repair.repair, queue, self.repository, copy.deepcopy(value),
-            policy, failure, self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
-        self.assertEqual(path.read_bytes(), payload + b'x')
-        transport.assert_not_called()
 
-    def test_repair_rejects_aggregate_context_before_inference(self):
-        import GitFlowRepair as repair
-        (self.repository / 'Assets').mkdir()
-        for index in range(5):
-            (self.repository / ('Assets/Game' + str(index) + '.cs')).write_bytes(b'/' * repair.MAXIMUM_FILE_BYTES)
-        queue.git(self.repository, 'add', 'Assets')
-        queue.git(self.repository, 'commit', '-m', 'Large source task')
-        value = dict(id='aggregate', base=self.base, source=queue.git(self.repository, 'rev-parse', 'HEAD'))
-        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
-        transport = mock.Mock(side_effect=AssertionError('Aggregate limit must apply before inference'))
-        self.assertRaisesRegex(queue.QueueError, 'limit 1048576 bytes', repair.repair, queue, self.repository, value,
-            policy, queue.QueueError('Failure'), self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
-        transport.assert_not_called()
-        queue.clean(self.repository)
 
-    def test_repair_includes_complete_native_failures_instead_of_wrapper_only(self):
-        import GitFlowRepair as repair
-        (self.repository / 'Assets').mkdir()
-        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
-        folder = self.root / 'NativeEvidence'; folder.mkdir()
-        (folder / 'output.log').write_text('CalledProcessError: native process exited with status 1\n')
-        native = folder / 'Unity.log'
-        # A large ordinary log must not obscure the actual assertion or send an arbitrary tail.
-        native.write_text('ordinary import progress\n' * 10000 + 'MERCHANT_MENU_FUNCTIONAL_FAIL: System.InvalidOperationException: expected settings are absent\nerror CS1234: complete compiler diagnostic\n')
-        policy = dict(self.policy, repair=dict(enabled=True, executable='fixture', model='selected-model', effort='high', window_seconds=10800))
-        def transport(executable, model, effort, context, **options):
-            record = json.loads(context)
-            messages = json.loads(record['diagnostics']['Unity.log diagnostics'])['complete_matching_diagnostics']
-            self.assertEqual(len(messages), 2)
-            self.assertIn('expected settings are absent', messages[0])
-            self.assertIn('error CS1234', messages[1])
-            self.assertNotIn('ordinary import progress', context)
-            self.assertIn('CalledProcessError', record['diagnostics']['output.log'])
-            raise LookupError('Complete native context verified')
-        self.assertRaisesRegex(LookupError, 'Complete native context verified', repair.repair, queue, self.repository, value,
-            policy, queue.GateFailure('Native gate failed', folder), self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
 
-    def test_unactionable_or_oversized_native_logs_stop_before_paid_attempt(self):
+    def test_native_diagnostics_require_actionable_messages_without_a_size_ceiling(self):
         import GitFlowRepair as repair
         folder = self.root / 'NativeEvidence'; folder.mkdir()
         native = folder / 'Unity.log'; native.write_text('No recognized failure message\n')
         self.assertRaisesRegex(queue.QueueError, 'owner must supply diagnostics.json', repair.native_diagnostics, queue, folder)
-        native.write_bytes(b'x' * (repair.MAXIMUM_NATIVE_LOG_BYTES + 1))
-        self.assertRaisesRegex(queue.QueueError, 'limit 8388608', repair.native_diagnostics, queue, folder)
+        native.write_bytes(b'x' * (9 * 1024 * 1024) + b'\nCompiler.cs(1): error CS1234: actual failure\n')
+        self.assertIn('error CS1234', repair.native_diagnostics(queue, folder)['complete_matching_diagnostics'][0])
 
     def test_diagnosis_transport_accepts_larger_context_and_bounded_reply(self):
         import GitFlowModels as models
-        context = '\u00e9' * (models.MAXIMUM_CONTEXT_BYTES // 2)
+        context = '\u00e9' * (1024 * 1024)
         catalogue = dict(account_state='signed_in', models=[dict(model='selected-model', efforts=['high'])])
         response = dict(diagnosis='', proposal='', limitations='', edits=[])
         baseline = json.dumps(response).encode()
-        response['diagnosis'] = 'd' * (models.MAXIMUM_PROPOSAL_BYTES - len(baseline))
+        response['diagnosis'] = 'd' * (300 * 1024)
         encoded = json.dumps(response).encode()
-        self.assertEqual(len(encoded), models.MAXIMUM_PROPOSAL_BYTES)
         outputs = [encoded, encoded + b' ']
         def run(arguments, **options):
             self.assertIn(context.encode(), options['input'])
@@ -510,10 +287,7 @@ class QueueAcceptance(unittest.TestCase):
         with mock.patch.object(models, 'discover', return_value=catalogue), mock.patch.object(models, 'executable', return_value='fixture'), mock.patch.object(models, 'process_run', side_effect=run) as transport:
             result = models.diagnose('fixture', 'selected-model', 'high', context, propose_edits=True)
             self.assertEqual(result['proposal'], response)
-            self.assertRaisesRegex(queue.QueueError, '262145 bytes; limit 262144', models.diagnose,
-                'fixture', 'selected-model', 'high', context, propose_edits=True)
-            self.assertRaisesRegex(queue.QueueError, '1048577 bytes; limit 1048576', models.diagnose,
-                'fixture', 'selected-model', 'high', context + 'x', propose_edits=True)
+            self.assertEqual(models.diagnose('fixture', 'selected-model', 'high', context + 'x', propose_edits=True)['proposal'], response)
             self.assertEqual(transport.call_count, 2)
 
     def test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner(self):
@@ -543,9 +317,10 @@ class QueueAcceptance(unittest.TestCase):
         # guard without paid inference. Every other runner/gate path remains real.
         models = cache / 'GitFlowModels.py'
         with models.open('a', encoding='utf-8') as output:
-            output.write('\ndef diagnose(program, model, effort, context, **options):\n'
-                '    content=json.loads(context); item=content["allowed_files"]["Assets/Game.cs"]\n'
-                '    return dict(model_invoked=False, proposal=dict(edits=[dict(path="Assets/Game.cs", expected_sha256=item["sha256"], old_text="speed = 3", new_text="speed = 4")]))\n')
+            output.write('\ndef repair_project(settings, context, workspace, evidence, maximum_seconds, review=False):\n'
+                '    if review: return dict(model_invoked=False, proposal=dict(approved=True, reason="Source defect fixed; gate intact", limitations=""))\n'
+                '    path=workspace/"Assets/Game.cs"; path.write_bytes(path.read_bytes().replace(b"speed = 3", b"speed = 4"))\n'
+                '    return dict(model_invoked=False, proposal=dict(status="changed", summary="Corrected speed", limitations=""))\n')
         gate = self.repository / 'Gate.py'
         (self.repository / '.gitattributes').write_bytes(b'*.cs text eol=crlf\n')
         gate.write_text('import json,sys,shutil,subprocess\nfrom pathlib import Path\n'
@@ -623,38 +398,6 @@ class QueueAcceptance(unittest.TestCase):
         self.assertEqual(queue.resume_service(self.repository, queue.digest(config))['state'], 'ready_to_start')
         self.assertFalse((control / 'stop.json').exists())
 
-    def test_repair_stops_when_changed_source_has_same_independent_failure(self):
-        import GitFlowRepair as repair
-        (self.repository / '.gitattributes').write_bytes(b'*.cs text eol=crlf\n')
-        queue.git(self.repository, 'add', '.gitattributes')
-        queue.git(self.repository, 'commit', '-m', 'Declare native source line endings')
-        (self.repository / 'Assets').mkdir()
-        value = self.source('Assets/Game.cs', 'class Game { int speed = 3; }\n')
-        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
-        calls = []
-        def transport(executable, model, effort, context, **kwargs):
-            calls.append(1)
-            item = json.loads(context)['allowed_files']['Assets/Game.cs']
-            old = 'speed = ' + str(2 + len(calls))
-            new = 'speed = ' + str(3 + len(calls))
-            return dict(model_invoked=True, proposal=dict(edits=[dict(path='Assets/Game.cs', expected_sha256=item['sha256'], old_text=old, new_text=new)]))
-        lease = mock.Mock()
-        repair.repair(queue, self.repository, value, policy, queue.QueueError('same independent compiler failure'),
-            self.workspace_root / 'Evidence', lambda: None, lease, transport)
-        self.assertIn('speed = 4', (self.repository / 'Assets/Game.cs').read_text())
-        started = value['repair']['first_started_utc']
-        value = json.loads(json.dumps(value))  # Rehydrate the durable request as a restart would.
-        policy['repair']['model'] = 'another-selected-model'
-        for expected_speed in [5, 6]:
-            repair.repair(queue, self.repository, value, policy, queue.QueueError('same independent compiler failure'),
-                self.workspace_root / 'Evidence', lambda: None, lease, transport)
-            self.assertIn('speed = ' + str(expected_speed), (self.repository / 'Assets/Game.cs').read_text())
-            self.assertEqual(value['repair']['first_started_utc'], started)
-        self.assertRaisesRegex(queue.QueueError, 'same failure', repair.repair, queue, self.repository, value, policy,
-            queue.QueueError('same independent compiler failure'), self.workspace_root / 'Evidence', lambda: None, lease, transport)
-        self.assertEqual(len(calls), 3)
-        self.assertEqual(value['repair']['consecutive_no_progress'], 3)
-        self.assertEqual(value['repair']['attempts'][-1]['state'], 'no_progress_after_validation')
 
     def test_concurrent_claims_have_one_winner_and_renewal_resets_observation(self):
         queue.git(self.repository, 'update-ref', 'refs/remotes/origin/main', self.base)
@@ -822,12 +565,12 @@ class ReferenceReadAcceptance(unittest.TestCase):
         self.assertEqual(queue.git(self.reader, 'rev-parse', 'HEAD'), self.base)
         self.assertEqual(queue.git(self.reader, 'show-ref'), references)
 
-    def test_batch_refuses_invalid_objects_and_preflights_blob_sizes(self):
+    def test_batch_refuses_invalid_objects_without_a_control_blob_size_ceiling(self):
         identity, _ = self.records(1)[0]
         queue.commit_objects(self.reader, 'origin', [identity])
         with mock.patch.object(queue, 'MAXIMUM_BYTES', 8), mock.patch.object(queue, 'run', wraps=queue.run) as calls:
-            self.assertRaisesRegex(queue.QueueError, 'exceeds one MiB', queue.entries, self.reader, 'origin')
-        self.assertFalse(any(call.args[0][1:] == ['cat-file', '--batch'] for call in calls.call_args_list))
+            self.assertEqual(len(queue.entries(self.reader, 'origin')), 1)
+        self.assertTrue(any(call.args[0][1:] == ['cat-file', '--batch'] for call in calls.call_args_list))
         blob = queue.git(self.reader, 'rev-parse', 'HEAD:tracked.txt')
         with mock.patch.object(queue, 'run', wraps=queue.run) as calls:
             self.assertRaisesRegex(queue.QueueError, 'not a commit', queue.commit_objects, self.reader, 'origin', [blob])
