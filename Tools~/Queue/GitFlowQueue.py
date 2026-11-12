@@ -161,8 +161,6 @@ def durable(path, value):
 
 def read_json(path):
     path = plain(path)
-    if path.stat().st_size > MAXIMUM_BYTES:
-        raise QueueError('Control record exceeds one MiB: ' + str(path))
     return json.loads(path.read_text(encoding='utf-8-sig'))
 
 
@@ -170,9 +168,7 @@ def reviewed_policy(path, expected):
     """Bind a selected policy to one bounded raw read; changed review bytes never reach setup."""
     path = plain(path)
     with path.open('rb') as source:
-        content = source.read(MAXIMUM_BYTES + 1)
-    if len(content) > MAXIMUM_BYTES:
-        raise QueueError('Policy exceeds one MiB; review a bounded required policy.')
+        content = source.read()
     if expected and (not re.fullmatch('[0-9a-f]{64}', expected) or digest(content) != expected):
         raise QueueError('Reviewed policy bytes changed. Preserve existing state and review the policy again.')
     return json.loads(content.decode('utf-8-sig'))
@@ -231,8 +227,6 @@ def object_commit(root, parent, value, message, artifacts=None, inherited=None):
 
 def read_request(root, identity):
     data = run(['git', 'show', identity + ':' + REQUEST], root)
-    if len(data) > MAXIMUM_BYTES:
-        raise QueueError('Remote control record exceeds one MiB.')
     return json.loads(data)
 
 
@@ -275,8 +269,6 @@ def read_requests(root, identities):
         rows = run(['git', 'cat-file', '--batch-check'], root, data=supplied).decode('ascii').splitlines()
         if len(rows) != len(selected) or any(not re.fullmatch(r'[0-9a-f]{40} blob [0-9]+', row) for row in rows):
             raise QueueError('Missing or malformed control blob in request batch.')
-        if any(int(row.rsplit(' ', 1)[1]) > MAXIMUM_BYTES for row in rows):
-            raise QueueError('Remote control record exceeds one MiB.')
         output = run(['git', 'cat-file', '--batch'], root, data=supplied)
         position = 0
         for expected in rows:
@@ -604,8 +596,6 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
             if not path.is_file():
                 raise QueueError('Gate artifacts must be regular flat files; unsupported evidence was retained.')
             total += path.stat().st_size
-            if total > 128 * 1024 * 1024:
-                raise QueueError('Gate evidence exceeds the 128 MiB portable evidence limit; preserve it and refine the owning adapter.')
             artifacts[path.name] = file_digest(path)
         value = dict(name=check['name'], kind=check['kind'], candidate=candidate, evidence_candidate=candidate, key=key, environment=environment,
                      started_utc=started, completed_utc=utc(), folder=str(folder), artifacts=artifacts, reused=False)

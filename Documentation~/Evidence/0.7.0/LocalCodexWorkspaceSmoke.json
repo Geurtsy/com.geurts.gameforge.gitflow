@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "model": "gpt-5.6-sol",
+  "effort": "max",
+  "tool_edit_verified": true,
+  "independent_read_only_review": true,
+  "original_preserved": true,
+  "seconds": 178.15
+}

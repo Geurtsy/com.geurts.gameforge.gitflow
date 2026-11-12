@@ -47,7 +47,7 @@ The processor is the background program that checks, combines and publishes chan
 
 Forge packages and documentation never update automatically through GitFlow. After you deliberately install an update and stop the publisher, the operator can explicitly adopt the already installed runner; that action installs nothing and retains existing work.
 
-Automatic repair is disabled until the operator enables its separate authorization control. Selecting a model does not enable repair. When authorized, it uses that local Codex model, keeps all attempt history, and has up to three hours from its original start. Restarts and model changes never reset that clock. It stops sooner after three consecutive attempts without meaningful progress. It can make bounded corrections to eligible source files; it cannot edit protected tests, validation rules, native settings or vendor files. Required checks still apply.
+Automatic repair is disabled until the operator authorizes it. When enabled, it can repair relevant project files, including shaders, Editor scripts, packages and large files, in a separate workspace. It may create, delete, rename or replace files. An independent review checks proposed changes before application, and the queue still runs its required checks. There are no fixed repair size/edit-count limits or three-failure cutoff. The original three-hour budget and full history survive restarts. Your active project, credentials, unrelated work, independent checks and queue ownership remain protected.
 
 OPTIONAL EXISTING-COMMIT ROUTE
 If you already use a Git client, Submit committed work accepts a clean recorded checkpoint: save Unity, select only task-owned changes and necessary metadata, record a meaningful commit, then fill Title, Implementation summary and Version increment and click Submit exact source once. This is optional; basic Queue local changes creates its own checkpoint.
@@ -58,7 +58,7 @@ An ordinary Git push does not add work to the queue automatically. Direct pushes
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.6.1",
+  "packageVersion": "0.7.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

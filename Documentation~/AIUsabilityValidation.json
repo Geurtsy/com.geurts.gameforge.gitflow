@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.6.1",
-  "candidate": "v0.6.1",
+  "packageVersion": "0.7.0",
+  "candidate": "v0.7.0",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Five focused real-Git/Windows checks cover explicitly scoped Editor/attribute conflict repair, unchanged-text/assertion/attribute/skip guards, stopped-owner policy updates, ordinary large-conflict behavior and durable runner adoption. Controlled fixture proposals only; no paid inference in source acceptance.",
+  "scope": "Project-wide disk-backed repair, independent read-only review, large/binary/create/delete/rename artifacts, preservation and original-budget acceptance. Native C# code/dependencies/examples unchanged apart from the version stamp; exact prior native evidence reused.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.6.1/ConflictScopeAcceptance.log",
-    "passed": 5,
+    "report": "Documentation~/Evidence/0.7.0/ProjectRepairAcceptance.log",
+    "passed": 13,
     "failed": 0,
-    "scope": "Five focused real-Git/Windows checks cover explicitly scoped Editor/attribute conflict repair, unchanged-text/assertion/attribute/skip guards, stopped-owner policy updates, ordinary large-conflict behavior and durable runner adoption. Controlled fixture proposals only; no paid inference in source acceptance."
+    "scope": "Thirteen focused real-Git/Windows checks: broad large/binary/create/delete/rename artifacts; independent review and protected gate rejection; concurrent-edit preservation; original deadline/interrupted-state guards; retries beyond three stalls; complete >1 MiB inputs and >256 KiB replies; >8 MiB native logs; durable deployment/cache-removal and unchanged-gate integration; control-blob ceiling removal. Controlled transports, with a separate real local-Codex tool/review smoke test."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.5.3/Compiler.json",
@@ -35,17 +35,31 @@
   "additionalEditors": [],
   "integrationRecipes": [],
   "publicationBlockers": [],
-  "limits": "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher.",
+  "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
     "sourceCommit": "1692edbaca9c95e32c05bd645c38fede7d4b2673",
     "nativeCandidate": "7a3c2f727e1a1f822dacc054c6b51ffb0a74e6af",
-    "reason": "C# behavior, assembly definitions, dependencies and supported example unchanged apart from the version stamp; reuse exact 0.5.3 native evidence and 0.5.4 deployment/native-diagnostic acceptance.",
-    "freshPaidInference": false
+    "reason": "All C# behavior, assembly definitions, dependencies and supported example are unchanged apart from the version string; reuse exact 0.5.3 native evidence. Python repair/deployment behavior is covered by new real-Git checks and a separate real local-Codex workspace smoke test.",
+    "freshPaidInference": false,
+    "comparison": "Documentation~/Evidence/0.7.0/NativeEvidenceReuse.json"
   },
   "additionalAcceptance": {
-    "report": "Documentation~/Evidence/0.5.4/DeploymentAcceptance.log",
-    "passed": 12,
+    "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",
+    "passed": 1,
     "failed": 0,
-    "scope": "Unchanged deployment/lifecycle evidence reused from published 0.5.4."
+    "scope": "Fresh large-file/create/delete/rename/binary acceptance after making streaming hashing compatible with the declared Python 3.10 minimum."
+  },
+  "localCodexWorkspaceSmoke": {
+    "report": "Documentation~/Evidence/0.7.0/LocalCodexWorkspaceSmoke.json",
+    "status": "passed",
+    "model": "gpt-5.6-sol",
+    "effort": "max",
+    "scope": "Disposable saved-file correction using real workspace-write shell/file tools, followed by independent read-only review; original file retained. Does not certify live game repair."
+  },
+  "protectedPathAcceptance": {
+    "report": "Documentation~/Evidence/0.7.0/ProtectedPathAcceptance.log",
+    "passed": 1,
+    "failed": 0,
+    "scope": "Fresh independent-gate preservation after case-insensitive Windows protection matching."
   }
 }

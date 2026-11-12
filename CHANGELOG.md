@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0 — 2026-11-12
+
+- Replace narrow exact-fragment repair with tool-enabled project copies and an independent read-only artifact review before candidate mutation.
+- Permit relevant Editor/shader/package/vendor/settings/test/asset files, creation/deletion/rename, binary edits and whole-file replacement.
+- Remove fixed repair byte and edit-count ceilings, queue control/evidence size ceilings, three-stall cutoff and ten-minute per-call ceiling; retain the original three-hour budget and all attempt evidence.
+- Preserve active work, original candidate hashes/index, independent validation, credentials and one fenced publisher. Record configured fallback selection.
+
 ## 0.6.1 — 2026-11-12
 
 - Preserve native Unity serialized payload whitespace during repair commits while retaining the staged authored-text guard, including source outside the proposal.

@@ -1,11 +1,13 @@
-# GitFlow 0.6.1 validation
+# GitFlow 0.7.0 validation
 
-Five focused real-Git/Windows checks in [ConflictScopeAcceptance.log](Evidence/0.6.1/ConflictScopeAcceptance.log) validate explicit Editor/attribute conflict admission, default refusal before inference, both current/incoming feature retention, unchanged outside-block text, assertion/attribute/skip guards, stopped-owner configuration/ownership, ordinary large-file repair and durable runner adoption. The real merge also retains a native Unity payload byte-for-byte and still rejects whitespace in authored source outside the model proposal. Model proposals are fixtures; no paid inference was used in source acceptance.
+Thirteen focused real-Git/Windows checks pass in [ProjectRepairAcceptance.log](Evidence/0.7.0/ProjectRepairAcceptance.log). Coverage includes broad project artifacts, files larger than the former limits, more than sixteen edits, whole-file/binary/create/delete/rename changes, protected controllers/gates, rejected independent review, concurrent candidate preservation, original repair deadlines, interrupted states, retries beyond three stalls, uncapped diagnostics/model transport, durable deployment and integration through unchanged required checks. Superseded narrow-scope/size-cutoff tests are replaced by these behavior/preservation checks; legacy conflict-configuration compatibility remains covered separately.
 
-Unchanged 0.5.4 twelve-case deployment and two-case native-diagnostic evidence is reused from its published source. C# behavior, example, dependencies and assembly definitions are unchanged apart from the version string; exact reused 0.5.3 native reports and candidate are recorded in AIUsabilityValidation.json. Structural assertion counts do not prove semantic coverage: inspect the resolution and keep required native gates. No visual checks were performed.
+A real local Codex gpt-5.6-sol/max [workspace smoke test](Evidence/0.7.0/LocalCodexWorkspaceSmoke.json) edits one disposable function with file/shell tools, verifies its established contract, and passes a separate read-only review with the original preserved. Its first invocation exposed a missing per-invocation Windows sandbox setting; the corrected invocation explicitly enables the existing elevated Windows sandbox rather than inheriting read-only fallback. No global settings changed. This is not whole-game or production repair certification.
+
+[Native evidence reuse](Evidence/0.7.0/NativeEvidenceReuse.json) compares every C#/assembly-definition file with published 0.6.1. All behavior, dependencies and supported examples are unchanged; only the version literal changes. Exact 0.5.3 compilation/qualification and four native presentation checks remain tied to their original source/environment in AIUsabilityValidation.json. New Python behavior is covered separately above. No visual checks are performed or required.
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.6.1","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.7.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

@@ -29,11 +29,11 @@
       "operations": [],
       "id": "recovery_and_repair",
       "validation": [
-        "Fresh real-Git cache-removal fixture completes a guarded large-file source repair, native-helper invocation and restart after the original package directory is gone. Publication/pull recovery and original three-hour/no-progress guards pass. Model replies are fixtures; paid inference remains unverified."
+        "Focused real-Git/Windows artifact, preservation, independent review, large-file, durable budget, retry and unchanged-gate integration acceptance; controlled transports. Exact live consumer results are separate."
       ],
       "maturity": "candidate",
       "provider": "editor",
-      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported. Complete source files up to 256 KiB, diagnostic files up to 64 KiB, a 1 MiB encoded context and 256 KiB proposals; oversized inputs are rejected without truncation. Explicit stopped-owner conflict scope permits reviewed first-party test and .gitattributes merges, retaining outside text, attribute lines and assertion counts without skips or controller overrides."
+      "description": "Same-ID recovery and optional project-wide tool-enabled isolated repair with independent read-only review. Relevant files of any type may be created/deleted/renamed/replaced. No fixed repair file/context/proposal/diagnostic/evidence sizes, edit counts, three-stall cutoff or ten-minute model-call ceiling. Preserve original three-hour budget, active work, credentials, independent gates and publisher ownership."
     },
     {
       "id": "local_codex_selection",
@@ -81,7 +81,7 @@
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.6.1",
+  "packageVersion": "0.7.0",
   "prerequisites": [
     {
       "required": true,
@@ -139,7 +139,7 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Fresh focused conflict-scope acceptance plus explicitly reused native/deployment evidence; see Documentation~/AIUsabilityValidation.json.",
+    "scope": "Focused Python/real-Git project-repair and deployment acceptance with explicitly reused unchanged C# native evidence; see Documentation~/AIUsabilityValidation.json.",
     "unverified": [
       "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher."
     ],

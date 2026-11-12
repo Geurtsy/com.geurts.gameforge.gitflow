@@ -1,0 +1,6 @@
+test_large_project_files_create_delete_rename_binary_and_more_than_sixteen_edits (TestGitFlowRepairWorkspace.ProjectRepairAcceptance.test_large_project_files_create_delete_rename_binary_and_more_than_sixteen_edits) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 8.167s
+
+OK

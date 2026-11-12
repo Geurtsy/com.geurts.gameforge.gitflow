@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.6.1 adds explicitly authorized conflict-file repair scope to the modern Queue Panel and publisher. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.7.0 adds broad project repair in an isolated tool-enabled workspace, with an independent read-only review before candidate mutation. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -54,7 +54,7 @@ Start configured background publisher starts one deterministic native program. I
 
 After a manual Forge update, Adopt this installed runner after stopping requires stopped local owners, a released shared owner and the exact reviewed configuration identity. It preserves requests, candidates, repair history and evidence, journals both configurations and updates only the configured runner/owned adapter paths. An interrupted ownership/configuration mismatch fails closed for operator reconciliation. This action installs nothing and does not restart the processor.
 
-Publisher ref reads batch missing exact Git objects and bounded request blobs, while sensitive ref/lease checks still query the remote freshly. See [reference-read behavior and limits](QueueConsole.md#bounds-and-truthful-evidence). The source-only benchmark is `python Tools~/Queue/BenchmarkGitFlowReferences.py --output <new-task-owned-report.json>` from a Git source checkout retaining commit 2e5ab9a. It creates only disposable local repositories and requires an existing output directory; results are synthetic local evidence, not production or LFS savings forecasts.
+Publisher ref reads batch missing exact Git objects and complete request blobs, while sensitive ref/lease checks still query the remote freshly. See [reference-read behavior and limits](QueueConsole.md#bounds-and-truthful-evidence). The source-only benchmark is `python Tools~/Queue/BenchmarkGitFlowReferences.py --output <new-task-owned-report.json>` from a Git source checkout retaining commit 2e5ab9a. It creates only disposable local repositories and requires an existing output directory; results are synthetic local evidence, not production or LFS savings forecasts.
 
 ## Native compiler prerequisite and evidence
 
@@ -64,49 +64,29 @@ Use the published Compatibility owner for exact dependency preparation and coher
 
 The gate emits flat portable `result.json` and `compiler-qualification.json` with run/candidate identities and hashes. Full input inventories, copied responses and derived assemblies remain in a private sibling `<evidence>.compiler-private` directory; its launcher log is private too. Retain those owner-local records and publish only safe summaries. Any diagnostics, ignored immutable code assets, incomplete inputs or changed native/private-policy inputs fail the gate. No success receipt is written after failure.
 
-## Explicit conflict-file scope
+## Project repair and remaining safeguards
 
-Default repair exclusions remain in force. For an explicitly authorized operator recovery, `repair.conflict_paths` may name up to sixteen exact first-party `.cs`/`.py` files or root `.gitattributes`. No glob, folder, absolute/traversal path, vendor/generated/package/tool/controller scope is supported. Admission applies only while that exact task-owned file is unmerged, and only inside its standard two-way conflict blocks. Resolved tests do not become ordinary repair targets. Existing protected paths, version/native outputs and independent gate commands cannot be overridden.
+Automatic repair remains separately authorized and disabled by default. Existing enabled processors require explicit stopped-owner runner adoption; publication never installs or starts a consumer. The obsolete conflict_paths field/command remains compatible configuration data, but no longer limits the project-workspace resolver.
 
-After stopping the publisher and proving shared ownership released, invoke the installed/configured CLI with the reviewed configuration identity:
+Authorized repair can inspect and fix any relevant project file, including files outside the submitted diff, Editor scripts, shaders, packages/vendor source, tests, settings, assets and metadata. It supports creation, deletion, rename, binary changes and whole-file replacement with no fixed file/edit-count ceilings. Preserve licences, notices, asset GUIDs and existing features. Use the source/owning generator for generated outputs, and supported Unity APIs for Unity-owned serialization.
 
-```text
-python GitFlowQueue.py --repository C:/Dev/Game set-repair-conflict-paths --operator --expected-configuration REVIEWED_SHA256 --path .gitattributes --path Assets/Editor/MainMenuVerification.cs
-```
+Only five safeguards remain: preserve the active checkout and originals; keep changes relevant and exclude credentials/unrelated projects; keep independent validation and publication controllers protected; retain one fenced queue publisher; and retain the original three-hour total budget. All independent gates, warning/error/skip requirements and repository protections remain in force. Necessary independent-gate corrections need a separate reviewed change.
 
-This operator API is the supported code-only exception for explicit merge recovery; ordinary setup/start remains in the Editor. Omit every `--path` to clear the exception list. The action journals prior/revised configuration, updates the matching workspace owner and policy hash, preserves required checks/model/repair history, and never starts or retries work. Resume the original blocked request separately with its exact reviewed control commit and candidate. No duplicate submission or deadline reset.
+The controller copies complete saved nonignored candidate content into a short owner-local Repair/<identity>/Original and Proposed tree without Git metadata, remotes or ignored Unity caches. Codex edits only Proposed through workspace-write file/shell tools and official-documentation search. A separate read-only model pass checks the complete changed-file manifest and actual before/after artifacts for relevance, feature preservation and unchanged validation coverage. Rejected artifacts never change the candidate. The controller verifies original HEAD/index/membership/raw hashes and reviewed artifact hashes before importing the exact reviewed bytes, running the existing whitespace guard, committing, and rerunning independent checks. All artifacts, responses and hashes are retained.
 
-The proposal must preserve every byte outside conflict blocks, all existing feature behavior and test coverage. Attribute resolutions retain every nonblank rule/comment from both sides. Test resolutions must retain at least the larger side's assertion count and cannot introduce Ignore/Inconclusive/skipped-test attributes. These structural guards do not prove semantic coverage: inspect the actual resolution and rely on the unchanged native gates. Unsupported conflict styles or incompatible changes require operator review; there is no automatic waiver.
+No application-imposed byte limits apply to repair files, diagnostics/logs, model input/output, queue control records or portable gate evidence. The controller passes file paths rather than embedding project contents; the model reads/searches complete on-disk files in useful portions within its actual context window. Resource exhaustion, unavailable tooling and filesystem/platform limitations remain real failures, not a promise of infinite capacity. Viewer pagination/redaction/display limits are separate and unchanged.
 
-## Explicit conflict-file scope
+The original three-hour start and all attempts survive restart, adoption and model changes. There is no three-no-progress-attempt cutoff and no ten-minute model-call ceiling; each call receives only the remaining overall budget. Previous failures/review reasons are supplied to later attempts. A reply or review after the deadline cannot be applied. Explicit unavailable access/project decisions, uncertain interrupted application, ownership loss and failed independent gates remain blockers. Known model/review failures preserve the unchanged candidate and isolated artifacts for a reviewed continuation.
 
-Default exclusions remain. For explicit operator recovery, `repair.conflict_paths` names up to sixteen exact first-party `.cs`/`.py` files or root `.gitattributes`. No glob, folder, unsafe path, vendor/generated/package/tool/controller scope is supported. Admission applies only while the exact task-owned file is unmerged and only inside standard two-way conflict blocks. Resolved tests remain protected. Existing protected paths, version/native outputs and independent gate commands cannot be overridden.
+Configured model/effort remains primary. An optional repair.fallbacks array of {model, effort} objects permits an ordered alternative when the primary selection is absent from the signed-in local catalogue; actual selection is recorded. No unconfigured model is silently selected. Local Codex owns sign-in. Environment API keys are not passed; apps/plugins/hooks, subagents, memories and desktop/image tools are disabled to keep work inside the project and preserve the no-visual/background boundary. No approval dialogs or desktop input are requested.
 
-After stopping the publisher and proving shared ownership released, use the reviewed configuration identity:
+Find Python and Codex executables and DiscoverModelsAsync retain their local discovery behavior. DiagnoseAsync remains a separately authorized read-only proposal API; discovery alone does not prove inference access. Repair/source acceptance uses controlled transports, not a claim that live paid inference or a game has passed.
 
-```text
-python GitFlowQueue.py --repository C:/Dev/Game set-repair-conflict-paths --operator --expected-configuration REVIEWED_SHA256 --path .gitattributes --path Assets/Editor/MainMenuVerification.cs
-```
-
-This operator API is a supported code-only exception for explicitly requested merge recovery; ordinary setup/start remains in the Editor. Omit every `--path` to clear the list. The action journals both configurations, updates matching workspace ownership and policy hash, and preserves required checks, model and original repair history. It does not start or retry work. Resume the original request separately using its exact reviewed control commit and candidate; never resubmit or reset the deadline.
-
-Proposals preserve every byte outside conflict blocks and existing feature/test behavior. Attribute resolutions retain all nonblank lines from both sides. Test resolutions retain at least the larger side's assertion count and cannot introduce Ignore/Inconclusive/skipped-test attributes. Structural counts cannot prove semantic coverage: review the actual resolution and retain all independent native gates. Unsupported conflict styles or incompatible changes require operator review; there is no waiver.
-
-## Local Codex and bounded repair
-
-The explicit Find Python and Codex executables button searches local PATH, Python registration/install folders and supported native Codex CLI/Desktop locations without running or installing tools. Valid manual selections win; found paths remain editable and are saved only by the existing Save action. Unsupported/missing locations require manual selection. File discovery alone does not verify Python version, Codex sign-in or model access. Missing executable selections are rejected with a useful correction before launch.
-
-DiscoverModelsAsync uses local codex app-server initialize, account/read without token refresh, and paged model/list. It returns provider model IDs and supported reasoning efforts; it does not infer catalogue values from desktop labels. Discovery is not an inference request or entitlement proof. DiagnoseAsync requires explicitly reviewed bounded context and account usage consent; it returns one proposal without applying it.
-
-Automatic repair is disabled by default and separately authorized at operator configuration. Selecting a model grants no editing authority. Authorized repair pins the selected local model/effort and retains its original three-hour start across retries, restart and runner/model changes. Individual inference and Git/lease budgets remain separate. Only complete bounded task-owned source files are supplied. Limits are 256 KiB (262144 bytes) per complete UTF-8 source file, 64 KiB (65536 bytes) for a diagnostic file, 1 MiB (1048576 bytes) for the complete JSON-encoded context, and 256 KiB (262144 bytes) for the proposal response. Per-file limits count raw bytes; context counts UTF-8 encoded JSON, including escaping and metadata. The diagnosis transport shares the same context limit. Oversize input is rejected before inference without truncation; errors report needed and allowed bytes. These limits do not guarantee that the selected model can process every accepted context. Validation/controller/native/generated/vendor files are protected by default; the exact conflict-only exception above permits explicitly authorized first-party test-source and attribute merges without changing gate commands or policy. Exact unique fragment edits require the original raw hash; whole-file replacement, partial conflicts, stale edits and protected targets are rejected. Raw replies and hashes are retained before application. The post-repair whitespace guard checks every staged authored path, including source outside the proposal, while excluding native .asset/.meta/.prefab/.unity serialization; repair never rewrites those excluded payloads. If a failed native check supplies no diagnostics.json, the repair host inspects its owner-local Unity.log (at most 8 MiB) and includes every matching native exception, assertion marker and compiler warning/error line, within the existing 64 KiB diagnostic bound. Ordinary import/licensing chatter is not copied. The full log remains in owner evidence; lists are not truncated. Unsupported or oversized native diagnostics stop before paid inference and request an owning diagnostics.json summary. Native messages also identify repeated independent failures, rather than relying on a generic subprocess wrapper error. Three consecutive attempts with no bounded edit, repeated/whitespace-only source, or the same independent validation failure stop further attempts early; the durable counter survives restart. A changed independent failure resets that consecutive counter but never the deadline. Rejected proposals leave source intact, and subsequent proposals receive recent failure feedback. Interrupted uncertain attempts or violated safety boundaries still require reconciliation; their outcomes are never guessed.
-
-The repair guard is deterministically tested with fixture proposals. Live paid inference remains unverified; metadata discovery alone must never be described as successful model execution.
-
-## Disk use and retention
+## Storage and measurement
 
 Storage measurement is read-only, bounded and reports unique logical file bytes and incomplete paths. It does not report physical allocated clusters or delete anything. The fixed three-request benchmark retains one source/cache per full-clone baseline request and compares that with one shared workspace/cache plus all evidence. See Evidence/0.2.0/StorageBenchmark.json for actual samples and limits. Production Dreadvault measurements are separate read-only snapshots, not claimed savings.
 
-All failed candidates and evidence are retained. The gate portable-artifact limit is 128 MiB per gate; oversize evidence blocks publication. There is no automatic cleanup, compression or deletion of user workspaces, old Library directories, recovery archives or queue history. Long-term archive policy and low-disk operational thresholds need an explicit owning project decision.
+All failed candidates and evidence are retained. Portable gate evidence has no application-imposed byte ceiling. There is no automatic cleanup, compression or deletion of user workspaces, old Library directories, recovery archives or queue history. Long-term archive policy and low-disk operational thresholds need an explicit owning project decision.
 
 ## Manual Forge updates only
 
@@ -148,7 +128,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.6.1",
+  "packageVersion": "0.7.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

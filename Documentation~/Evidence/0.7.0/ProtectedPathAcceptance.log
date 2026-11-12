@@ -1,0 +1,6 @@
+test_protected_gate_changes_are_rejected_before_original_mutation (TestGitFlowRepairWorkspace.ProjectRepairAcceptance.test_protected_gate_changes_are_rejected_before_original_mutation) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.742s
+
+OK
