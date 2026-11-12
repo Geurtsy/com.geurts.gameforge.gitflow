@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.7.0 adds broad project repair in an isolated tool-enabled workspace, with an independent read-only review before candidate mutation. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.7.1 preflights repair proposals without mutating the publisher candidate, retries rejected formatting with diagnostics, and preserves native Unity overlay payloads. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -72,7 +72,7 @@ Authorized repair can inspect and fix any relevant project file, including files
 
 Only five safeguards remain: preserve the active checkout and originals; keep changes relevant and exclude credentials/unrelated projects; keep independent validation and publication controllers protected; retain one fenced queue publisher; and retain the original three-hour total budget. All independent gates, warning/error/skip requirements and repository protections remain in force. Necessary independent-gate corrections need a separate reviewed change.
 
-The controller copies complete saved nonignored candidate content into a short owner-local Repair/<identity>/Original and Proposed tree without Git metadata, remotes or ignored Unity caches. Codex edits only Proposed through workspace-write file/shell tools and official-documentation search. A separate read-only model pass checks the complete changed-file manifest and actual before/after artifacts for relevance, feature preservation and unchanged validation coverage. Rejected artifacts never change the candidate. The controller verifies original HEAD/index/membership/raw hashes and reviewed artifact hashes before importing the exact reviewed bytes, running the existing whitespace guard, committing, and rerunning independent checks. All artifacts, responses and hashes are retained.
+The controller copies complete saved nonignored candidate content into a short owner-local Repair/<identity>/Original and Proposed tree without Git metadata, remotes or ignored Unity caches. Codex edits only Proposed through workspace-write file/shell tools and official-documentation search. A separate read-only model pass checks the complete changed-file manifest and actual before/after artifacts for relevance, feature preservation and unchanged validation coverage. Rejected artifacts never change the candidate. The controller verifies original HEAD/index/membership/raw hashes and reviewed artifact hashes before importing the exact reviewed bytes, rerunning the staged whitespace guard, committing, and rerunning independent checks. All artifacts, responses and hashes are retained. Before independent review, a private Git index copied from the real candidate stages the proposed changes and runs the same authored-text whitespace guard, including previously staged source outside the proposal. A rejected check records preflight.json and returns its diagnostics to the next proposal within the original budget only after proving the real HEAD/index/status stayed unchanged. Native .overlay serialization joins the existing .asset/.meta/.prefab/.unity exception; exact reviewed payload bytes are preserved. Other Git, ownership, concurrent-change, import or commit failures remain actionable blockers, never blind retries of uncertain writes.
 
 No application-imposed byte limits apply to repair files, diagnostics/logs, model input/output, queue control records or portable gate evidence. The controller passes file paths rather than embedding project contents; the model reads/searches complete on-disk files in useful portions within its actual context window. Resource exhaustion, unavailable tooling and filesystem/platform limitations remain real failures, not a promise of infinite capacity. Viewer pagination/redaction/display limits are separate and unchanged.
 
@@ -128,7 +128,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.7.0",
+  "packageVersion": "0.7.1",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

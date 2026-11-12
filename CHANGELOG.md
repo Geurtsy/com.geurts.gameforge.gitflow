@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1 — 2026-11-13
+
+- Preserve native Unity overlay serialization instead of rejecting upstream payload whitespace.
+- Preflight the complete staged repair in a private Git index before review/application.
+- Return rejected authored formatting and its diagnostics to the repair loop without dirtying the publisher candidate, retaining the original deadline and independent checks.
+
 ## 0.7.0 — 2026-11-12
 
 - Replace narrow exact-fragment repair with tool-enabled project copies and an independent read-only artifact review before candidate mutation.

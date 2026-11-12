@@ -1,0 +1,24 @@
+GitFlow 0.7.1 real-Git/Windows repair acceptance
+
+python -m unittest -v TestGitFlowRepairWorkspace
+Initial run: 11 tests in 258.820s; 10 passed, 1 fixture error.
+The concurrency fixture generated CRLF for an originally CRLF-indexed file under core.autocrlf=false, causing the new preflight to reject the fixture before its intended concurrent-edit check. Its proposed authored correction now uses explicit LF bytes; no production implementation changed after this run.
+
+Passed in that run:
+test_disk_evidence_and_model_transport_have_no_previous_size_or_ten_minute_ceiling
+test_independent_review_rejection_keeps_candidate_and_artifacts
+test_interrupted_and_expired_repairs_cannot_restart_the_clock
+test_large_project_files_create_delete_rename_binary_and_more_than_sixteen_edits
+test_more_than_three_no_progress_attempts_keep_original_budget
+test_native_overlay_bytes_survive_review_and_commit
+test_preflight_checks_staged_source_outside_proposal_without_changing_real_index
+test_protected_gate_changes_are_rejected_before_original_mutation
+test_repaired_request_runs_unchanged_gates_and_retains_source_ancestry
+test_whitespace_rejection_retries_before_mutation_and_then_runs_required_gates
+
+The corrected concurrency case was rerun independently and passed. Exact output follows from ConcurrentPreservationAcceptance.log:test_concurrent_candidate_change_is_preserved_and_not_overwritten (TestGitFlowRepairWorkspace.ProjectRepairAcceptance.test_concurrent_candidate_change_is_preserved_and_not_overwritten) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 8.772s
+
+OK

@@ -54,10 +54,41 @@ def guard_conflict_resolution(q, relative, original, updated):
             raise q.QueueError('Conflict-only test repair removed assertions or introduced a skipped check: ' + relative)
 
 
-def check_authored_whitespace(q, workspace):
+def check_authored_whitespace(q, workspace, environment=None):
     """Check all staged authored text without treating unchanged native Unity serialization as source formatting."""
-    exclusions = [':(exclude,glob)**/*' + suffix for suffix in ('.asset', '.meta', '.prefab', '.unity')]
-    q.git(workspace, 'diff', '--cached', '--check', '--', '.', *exclusions)
+    exclusions = [':(exclude,glob)**/*' + suffix for suffix in ('.asset', '.meta', '.prefab', '.unity', '.overlay')]
+    q.git(workspace, 'diff', '--cached', '--check', '--', '.', *exclusions, env=environment)
+
+
+def preflight_proposal(q, workspace, workspace_record, changed, folder):
+    """Run the real staged guard in a private index before touching candidate files/index."""
+    import shutil
+    from GitFlowRepairWorkspace import identity
+    if identity(q, workspace) != workspace_record['candidate']:
+        raise q.QueueError('Candidate changed before repair preflight; artifacts retained.')
+    index = Path(q.git(workspace, 'rev-parse', '--git-path', 'index'))
+    if not index.is_absolute():
+        index = workspace / index
+    private_index = q.plain(folder / 'preflight.index')
+    shutil.copy2(q.plain(index), private_index)
+    environment = dict(GIT_INDEX_FILE=str(private_index), GIT_WORK_TREE=workspace_record['proposed'])
+    pathspec = b''.join((':(literal)' + name).encode('utf-8') + b'\0' for name in changed)
+    q.run(['git', 'add', '--all', '--pathspec-from-file=-', '--pathspec-file-nul'], workspace,
+          data=pathspec, environment=environment)
+    try:
+        check_authored_whitespace(q, workspace, environment)
+    except q.QueueError as error:
+        if not str(error).startswith('git failed (2):'):
+            raise
+        # Prove the real candidate is untouched before declaring this retryable.
+        if identity(q, workspace) != workspace_record['candidate']:
+            raise q.QueueError('Candidate changed during rejected preflight; reconcile retained artifacts.') from error
+        q.durable(folder / 'preflight.json', dict(state='rejected_candidate_unchanged', error=str(error)))
+        return str(error)
+    if identity(q, workspace) != workspace_record['candidate']:
+        raise q.QueueError('Candidate changed during repair preflight; artifacts retained.')
+    q.durable(folder / 'preflight.json', dict(state='passed', index_sha256=q.digest(private_index.read_bytes())))
+    return None
 
 
 def native_diagnostics(q, folder):
@@ -111,7 +142,7 @@ def fingerprint(files):
 
 
 def repair(q, workspace, value, policy, failure, evidence_root, checkpoint, lease, transport=None):
-    """Try again after an unproductive proposal; stop at the durable deadline or repeated stalled attempts."""
+    """Retry safe proposal failures within the original durable deadline."""
     while True:
         try:
             return repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoint, lease, transport)
@@ -182,6 +213,11 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         attempt['state'] = 'no_progress'
         no_progress(q, record, attempt, checkpoint, 'Model made no project changes; complete artifacts and history retained.')
     q.durable(folder / 'changes.json', changed)
+    rejected = preflight_proposal(q, workspace, workspace_record, changed, folder)
+    if rejected:
+        attempt['state'] = 'preflight_rejected_candidate_unchanged'
+        no_progress(q, record, attempt, checkpoint,
+                    'Proposal failed the staged whitespace guard before candidate mutation. Correct the proposed authored text: ' + rejected)
     attempt.update(state='reviewing', paths=sorted(changed))
     checkpoint()
     review_context = dict(context, changes=str(folder / 'changes.json'), repair_summary=reply.get('proposal', {}))
