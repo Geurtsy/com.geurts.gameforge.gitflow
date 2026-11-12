@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.5.4 adds automatic publisher setup and a full modern Queue Panel. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.6.0 adds explicitly authorized conflict-file repair scope to the modern Queue Panel and publisher. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -64,13 +64,41 @@ Use the published Compatibility owner for exact dependency preparation and coher
 
 The gate emits flat portable `result.json` and `compiler-qualification.json` with run/candidate identities and hashes. Full input inventories, copied responses and derived assemblies remain in a private sibling `<evidence>.compiler-private` directory; its launcher log is private too. Retain those owner-local records and publish only safe summaries. Any diagnostics, ignored immutable code assets, incomplete inputs or changed native/private-policy inputs fail the gate. No success receipt is written after failure.
 
+## Explicit conflict-file scope
+
+Default repair exclusions remain in force. For an explicitly authorized operator recovery, `repair.conflict_paths` may name up to sixteen exact first-party `.cs`/`.py` files or root `.gitattributes`. No glob, folder, absolute/traversal path, vendor/generated/package/tool/controller scope is supported. Admission applies only while that exact task-owned file is unmerged, and only inside its standard two-way conflict blocks. Resolved tests do not become ordinary repair targets. Existing protected paths, version/native outputs and independent gate commands cannot be overridden.
+
+After stopping the publisher and proving shared ownership released, invoke the installed/configured CLI with the reviewed configuration identity:
+
+```text
+python GitFlowQueue.py --repository C:/Dev/Game set-repair-conflict-paths --operator --expected-configuration REVIEWED_SHA256 --path .gitattributes --path Assets/Editor/MainMenuVerification.cs
+```
+
+This operator API is the supported code-only exception for explicit merge recovery; ordinary setup/start remains in the Editor. Omit every `--path` to clear the exception list. The action journals prior/revised configuration, updates the matching workspace owner and policy hash, preserves required checks/model/repair history, and never starts or retries work. Resume the original blocked request separately with its exact reviewed control commit and candidate. No duplicate submission or deadline reset.
+
+The proposal must preserve every byte outside conflict blocks, all existing feature behavior and test coverage. Attribute resolutions retain every nonblank rule/comment from both sides. Test resolutions must retain at least the larger side's assertion count and cannot introduce Ignore/Inconclusive/skipped-test attributes. These structural guards do not prove semantic coverage: inspect the actual resolution and rely on the unchanged native gates. Unsupported conflict styles or incompatible changes require operator review; there is no automatic waiver.
+
+## Explicit conflict-file scope
+
+Default exclusions remain. For explicit operator recovery, `repair.conflict_paths` names up to sixteen exact first-party `.cs`/`.py` files or root `.gitattributes`. No glob, folder, unsafe path, vendor/generated/package/tool/controller scope is supported. Admission applies only while the exact task-owned file is unmerged and only inside standard two-way conflict blocks. Resolved tests remain protected. Existing protected paths, version/native outputs and independent gate commands cannot be overridden.
+
+After stopping the publisher and proving shared ownership released, use the reviewed configuration identity:
+
+```text
+python GitFlowQueue.py --repository C:/Dev/Game set-repair-conflict-paths --operator --expected-configuration REVIEWED_SHA256 --path .gitattributes --path Assets/Editor/MainMenuVerification.cs
+```
+
+This operator API is a supported code-only exception for explicitly requested merge recovery; ordinary setup/start remains in the Editor. Omit every `--path` to clear the list. The action journals both configurations, updates matching workspace ownership and policy hash, and preserves required checks, model and original repair history. It does not start or retry work. Resume the original request separately using its exact reviewed control commit and candidate; never resubmit or reset the deadline.
+
+Proposals preserve every byte outside conflict blocks and existing feature/test behavior. Attribute resolutions retain all nonblank lines from both sides. Test resolutions retain at least the larger side's assertion count and cannot introduce Ignore/Inconclusive/skipped-test attributes. Structural counts cannot prove semantic coverage: review the actual resolution and retain all independent native gates. Unsupported conflict styles or incompatible changes require operator review; there is no waiver.
+
 ## Local Codex and bounded repair
 
 The explicit Find Python and Codex executables button searches local PATH, Python registration/install folders and supported native Codex CLI/Desktop locations without running or installing tools. Valid manual selections win; found paths remain editable and are saved only by the existing Save action. Unsupported/missing locations require manual selection. File discovery alone does not verify Python version, Codex sign-in or model access. Missing executable selections are rejected with a useful correction before launch.
 
 DiscoverModelsAsync uses local codex app-server initialize, account/read without token refresh, and paged model/list. It returns provider model IDs and supported reasoning efforts; it does not infer catalogue values from desktop labels. Discovery is not an inference request or entitlement proof. DiagnoseAsync requires explicitly reviewed bounded context and account usage consent; it returns one proposal without applying it.
 
-Automatic repair is disabled by default and separately authorized at operator configuration. Selecting a model grants no editing authority. Authorized repair pins the selected local model/effort and retains its original three-hour start across retries, restart and runner/model changes. Individual inference and Git/lease budgets remain separate. Only complete bounded task-owned source files are supplied. Limits are 256 KiB (262144 bytes) per complete UTF-8 source file, 64 KiB (65536 bytes) for a diagnostic file, 1 MiB (1048576 bytes) for the complete JSON-encoded context, and 256 KiB (262144 bytes) for the proposal response. Per-file limits count raw bytes; context counts UTF-8 encoded JSON, including escaping and metadata. The diagnosis transport shares the same context limit. Oversize input is rejected before inference without truncation; errors report needed and allowed bytes. These limits do not guarantee that the selected model can process every accepted context. Validation/controller/native/generated/vendor files are protected. Exact unique fragment edits require the original raw hash; whole-file replacement, partial conflicts, stale edits and protected targets are rejected. Raw replies and hashes are retained before application. If a failed native check supplies no diagnostics.json, the repair host inspects its owner-local Unity.log (at most 8 MiB) and includes every matching native exception, assertion marker and compiler warning/error line, within the existing 64 KiB diagnostic bound. Ordinary import/licensing chatter is not copied. The full log remains in owner evidence; lists are not truncated. Unsupported or oversized native diagnostics stop before paid inference and request an owning diagnostics.json summary. Native messages also identify repeated independent failures, rather than relying on a generic subprocess wrapper error. Three consecutive attempts with no bounded edit, repeated/whitespace-only source, or the same independent validation failure stop further attempts early; the durable counter survives restart. A changed independent failure resets that consecutive counter but never the deadline. Rejected proposals leave source intact, and subsequent proposals receive recent failure feedback. Interrupted uncertain attempts or violated safety boundaries still require reconciliation; their outcomes are never guessed.
+Automatic repair is disabled by default and separately authorized at operator configuration. Selecting a model grants no editing authority. Authorized repair pins the selected local model/effort and retains its original three-hour start across retries, restart and runner/model changes. Individual inference and Git/lease budgets remain separate. Only complete bounded task-owned source files are supplied. Limits are 256 KiB (262144 bytes) per complete UTF-8 source file, 64 KiB (65536 bytes) for a diagnostic file, 1 MiB (1048576 bytes) for the complete JSON-encoded context, and 256 KiB (262144 bytes) for the proposal response. Per-file limits count raw bytes; context counts UTF-8 encoded JSON, including escaping and metadata. The diagnosis transport shares the same context limit. Oversize input is rejected before inference without truncation; errors report needed and allowed bytes. These limits do not guarantee that the selected model can process every accepted context. Validation/controller/native/generated/vendor files are protected by default; the exact conflict-only exception above permits explicitly authorized first-party test-source and attribute merges without changing gate commands or policy. Exact unique fragment edits require the original raw hash; whole-file replacement, partial conflicts, stale edits and protected targets are rejected. Raw replies and hashes are retained before application. If a failed native check supplies no diagnostics.json, the repair host inspects its owner-local Unity.log (at most 8 MiB) and includes every matching native exception, assertion marker and compiler warning/error line, within the existing 64 KiB diagnostic bound. Ordinary import/licensing chatter is not copied. The full log remains in owner evidence; lists are not truncated. Unsupported or oversized native diagnostics stop before paid inference and request an owning diagnostics.json summary. Native messages also identify repeated independent failures, rather than relying on a generic subprocess wrapper error. Three consecutive attempts with no bounded edit, repeated/whitespace-only source, or the same independent validation failure stop further attempts early; the durable counter survives restart. A changed independent failure resets that consecutive counter but never the deadline. Rejected proposals leave source intact, and subsequent proposals receive recent failure feedback. Interrupted uncertain attempts or violated safety boundaries still require reconciliation; their outcomes are never guessed.
 
 The repair guard is deterministically tested with fixture proposals. Live paid inference remains unverified; metadata discovery alone must never be described as successful model execution.
 
@@ -120,7 +148,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.4",
+  "packageVersion": "0.6.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

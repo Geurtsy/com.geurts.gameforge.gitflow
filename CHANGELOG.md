@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 — 2026-11-12
+
+- Add stopped-owner exact conflict-file scope with configuration journaling and unchanged checks, model and original repair clocks.
+- Admit explicit first-party test-source and root .gitattributes merges while preserving outside text, both attribute rule sets and assertion counts; reject skips and controller/native overrides.
+
 ## 0.5.4 — 2026-11-12
 
 - Preserve the complete publisher module family and native Unity helper under the owned workspace at explicit configuration or stopped-owner adoption. Package-cache replacement no longer removes active repair imports or adapter paths.

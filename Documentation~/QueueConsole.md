@@ -1,6 +1,6 @@
 # GitFlow queue console and selected-repository setup
 
-Version 0.5.4 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
+Version 0.6.0 provides the queue console and selected-repository setup. Disposable native projects and a local queue have been exercised; no live game or production publisher was changed. Use the Catalogue for released installation targets, not this candidate branch.
 
 ## Private HTTPS repositories
 
@@ -63,6 +63,6 @@ Focused disposable regressions cover a 140-request queue, page navigation, repea
 
 <!-- GEURTS-RELEASE-CONTEXT:BEGIN -->
 ```json
-{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.5.4","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
+{"packageId":"com.geurts.gameforge.gitflow","packageVersion":"0.6.0","dependencies":{"com.geurts.gameforge.god":"0.44.4","com.unity.nuget.newtonsoft-json":"3.2.2"}}
 ```
 <!-- GEURTS-RELEASE-CONTEXT:END -->

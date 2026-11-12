@@ -4,6 +4,7 @@ These tests are necessary: source inspection cannot establish atomic remote
 arbitration, unchanged-input reuse or recovery after a successful publication.
 """
 import json
+import re
 import os
 from pathlib import Path
 import subprocess
@@ -310,6 +311,99 @@ class QueueAcceptance(unittest.TestCase):
         queue.clean(self.repository)
         self.assertTrue(queue.ancestor(self.repository, value['source'], candidate))
         self.assertEqual(path.read_text(), 'class Game { void Cleanup() { LogoCleanup(); HoverCleanup(); } }\n' + padding)
+
+    def test_explicit_editor_and_attribute_conflicts_preserve_both_features(self):
+        import GitFlowRepair as repair
+        relative = 'Assets/Editor/Check.cs'
+        check = self.repository / relative
+        check.parent.mkdir(parents=True)
+        check.write_text('// shared header\nclass Check { void Run() { Require(BasePolicy()); } }\n// shared footer\n')
+        attributes = self.repository / '.gitattributes'
+        attributes.write_text('# shared rules\n* text=auto\n*.cs text\n')
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Independent test and attribute baseline')
+        queue.git(self.repository, 'switch', '-c', 'audio_task')
+        check.write_text(check.read_text().replace('BasePolicy()', 'PooledAudioFeedback()'))
+        attributes.write_text(attributes.read_text() + '# audio\naudio.cs text eol=crlf\n')
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Incoming pooled audio')
+        value = queue.submit(self.repository, 'origin', 'Audio', 'minor', 'Real protected-file merge')
+        queue.git(self.repository, 'switch', 'main')
+        check.write_text(check.read_text().replace('BasePolicy()', 'CurrentMousePolicy()'))
+        attributes.write_text(attributes.read_text() + '# interaction\ninteraction.cs text eol=crlf\n')
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Current mouse controls and interaction rules')
+        self.assertRaises(queue.QueueError, queue.git, self.repository, 'merge', '--no-ff', '--no-edit', value['source'])
+        policy = dict(self.policy, repair=dict(enabled=True, window_seconds=10800, executable='fixture', model='selected-model', effort='high'))
+        transport = mock.Mock(side_effect=AssertionError('Default protected scope must not invoke inference'))
+        with self.assertRaisesRegex(queue.QueueError, 'No complete supported repair scope'):
+            repair.repair(queue, self.repository, value, policy, queue.QueueError('Merge conflict'), self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
+        transport.assert_not_called()
+        started = value['repair']['first_started_utc']
+        policy['repair']['conflict_paths'] = ['.gitattributes', relative]
+        def proposal(executable, model, effort, context, **options):
+            files = json.loads(context)['allowed_files']
+            self.assertEqual(set(files), {relative, '.gitattributes'})
+            edits = []
+            for name, item in files.items():
+                self.assertTrue(item['conflict_only'])
+                text = item['text']
+                start, end = text.index('<<<<<<<'), text.index('\n', text.index('>>>>>>>')) + 1
+                block = text[start:end]
+                if name == '.gitattributes':
+                    ours, theirs = re.split(r'=======\r?\n', block.split('\n', 1)[1])
+                    replacement = ours + theirs[:theirs.index('>>>>>>>')]
+                else:
+                    replacement = 'class Check { void Run() { Require(CurrentMousePolicy()); Require(PooledAudioFeedback()); } }' + ('\r\n' if '\r\n' in text else '\n')
+                edits.append(dict(path=name, expected_sha256=item['sha256'], old_text=block, new_text=replacement))
+            return dict(model_invoked=False, proposal=dict(edits=edits))
+        candidate = repair.repair(queue, self.repository, value, policy, queue.QueueError('Merge conflict'),
+            self.workspace_root / 'Evidence', lambda: None, mock.Mock(), proposal)
+        queue.clean(self.repository)
+        self.assertTrue(queue.ancestor(self.repository, value['source'], candidate))
+        self.assertEqual(value['repair']['first_started_utc'], started)
+        self.assertIn('CurrentMousePolicy()', check.read_text())
+        self.assertIn('PooledAudioFeedback()', check.read_text())
+        self.assertIn('interaction.cs text eol=crlf', attributes.read_text())
+        self.assertIn('audio.cs text eol=crlf', attributes.read_text())
+        # Permission is not a standing license to edit a resolved test file.
+        resolved = dict(value)
+        resolved.pop('repair')
+        with self.assertRaisesRegex(queue.QueueError, 'No complete supported repair scope'):
+            repair.repair(queue, self.repository, resolved, policy, queue.QueueError('Later failure'),
+                self.workspace_root / 'Evidence', lambda: None, mock.Mock(), transport)
+        transport.assert_not_called()
+
+    def test_conflict_only_guard_refuses_outside_edits_assertion_removal_and_attribute_loss(self):
+        import GitFlowRepair as repair
+        original = 'header\n<<<<<<< HEAD\nRequire(Mouse());\n=======\nRequire(Audio());\n>>>>>>> incoming\nfooter\n'
+        good = 'header\nRequire(Mouse()); Require(Audio());\nfooter\n'
+        repair.guard_conflict_resolution(queue, 'Assets/Editor/Check.cs', original, good)
+        for updated in [good.replace('header', 'changed'), 'header\nPass();\nfooter\n', good.replace('Require(Audio());', 'Assert.Ignore("skip");')]:
+            self.assertRaises(queue.QueueError, repair.guard_conflict_resolution, queue, 'Assets/Editor/Check.cs', original, updated)
+        attributes = '# common\n<<<<<<< HEAD\na.cs text eol=crlf\n=======\nb.cs text eol=crlf\n>>>>>>> incoming\n'
+        self.assertRaises(queue.QueueError, repair.guard_conflict_resolution, queue, '.gitattributes', attributes, '# common\na.cs text eol=crlf\n')
+        repair.guard_conflict_resolution(queue, '.gitattributes', attributes, '# common\na.cs text eol=crlf\nb.cs text eol=crlf\n')
+
+    def test_conflict_scope_change_is_stopped_guarded_and_preserves_ownership(self):
+        prior = queue.configuration(self.repository)
+        paths = ['.gitattributes', 'Assets/Editor/Check.cs']
+        identity = queue.digest(prior)
+        with mock.patch.object(queue, 'inspect_owner', return_value=dict(state='owned')):
+            self.assertRaises(queue.QueueError, queue.set_repair_conflict_paths, self.repository, identity, paths)
+        self.assertEqual(queue.configuration(self.repository), prior)
+        self.assertRaises(queue.QueueError, queue.set_repair_conflict_paths, self.repository, '0' * 64, paths)
+        self.assertRaises(queue.QueueError, queue.set_repair_conflict_paths, self.repository, identity, ['Gate.py'])
+        result = queue.set_repair_conflict_paths(self.repository, identity, paths)
+        revised = queue.configuration(self.repository)
+        self.assertEqual(result['state'], 'repair_conflict_scope_updated')
+        self.assertEqual(revised['policy']['repair']['conflict_paths'], paths)
+        self.assertEqual(revised['policy']['checks'], prior['policy']['checks'])
+        self.assertEqual(revised, queue.read_json(self.workspace_root / 'ownership.json'))
+        self.assertEqual(len(list((queue.common(self.repository) / 'gameforge_queue').glob('conflict_scope_*.json'))), 1)
+        for path in ['../bad.cs', 'Assets/../bad.cs', 'C:/bad.cs', 'Assets\\Editor\\Bad.cs', 'Assets/Editor/*.cs', 'Packages/Bad.cs', 'Tools/Bad.py', '.git/config', 'Assets/Editor/Bad.cs.']:
+            with self.assertRaises(queue.QueueError):
+                queue.validate_policy(dict(self.policy, repair=dict(conflict_paths=[path])))
 
     def test_repair_file_and_diagnostics_byte_boundaries(self):
         import copy
