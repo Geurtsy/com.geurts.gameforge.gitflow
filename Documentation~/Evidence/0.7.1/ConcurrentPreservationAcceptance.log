@@ -1,0 +1,6 @@
+test_concurrent_candidate_change_is_preserved_and_not_overwritten (TestGitFlowRepairWorkspace.ProjectRepairAcceptance.test_concurrent_candidate_change_is_preserved_and_not_overwritten) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 8.772s
+
+OK

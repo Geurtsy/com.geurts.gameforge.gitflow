@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.7.0",
-  "candidate": "v0.7.0",
+  "packageVersion": "0.7.1",
+  "candidate": "v0.7.1",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Project-wide disk-backed repair, independent read-only review, large/binary/create/delete/rename artifacts, preservation and original-budget acceptance. Native C# code/dependencies/examples unchanged apart from the version stamp; exact prior native evidence reused.",
+  "scope": "Fresh real-Git repair preflight/retry and native-overlay preservation acceptance. Unchanged native C# and dependencies reuse the previously qualified native reports.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.7.0/ProjectRepairAcceptance.log",
-    "passed": 13,
+    "report": "Documentation~/Evidence/0.7.1/RepairPreflightAcceptance.log",
+    "passed": 11,
     "failed": 0,
-    "scope": "Thirteen focused real-Git/Windows checks: broad large/binary/create/delete/rename artifacts; independent review and protected gate rejection; concurrent-edit preservation; original deadline/interrupted-state guards; retries beyond three stalls; complete >1 MiB inputs and >256 KiB replies; >8 MiB native logs; durable deployment/cache-removal and unchanged-gate integration; control-blob ceiling removal. Controlled transports, with a separate real local-Codex tool/review smoke test."
+    "scope": "Eleven real-Git/Windows broad-repair checks, including unchanged-candidate whitespace rejection and recovery through required gates, staged source outside the proposal, and exact native overlay payload preservation. Controlled model transports."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.5.3/Compiler.json",
@@ -37,11 +37,11 @@
   "publicationBlockers": [],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
-    "sourceCommit": "1692edbaca9c95e32c05bd645c38fede7d4b2673",
+    "sourceCommit": "4de89f5eb9d25bc14ab8552e13f941f16a84479e",
     "nativeCandidate": "7a3c2f727e1a1f822dacc054c6b51ffb0a74e6af",
-    "reason": "All C# behavior, assembly definitions, dependencies and supported example are unchanged apart from the version string; reuse exact 0.5.3 native evidence. Python repair/deployment behavior is covered by new real-Git checks and a separate real local-Codex workspace smoke test.",
+    "reason": "All C# behavior, assemblies, dependencies and examples unchanged apart from version literal. Fresh Python repair checks cover new preflight/retry behavior; prior actual model invocation and native evidence retain original scope.",
     "freshPaidInference": false,
-    "comparison": "Documentation~/Evidence/0.7.0/NativeEvidenceReuse.json"
+    "comparison": "Documentation~/Evidence/0.7.1/NativeEvidenceReuse.json"
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",

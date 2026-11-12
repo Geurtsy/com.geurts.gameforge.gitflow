@@ -92,7 +92,7 @@ class ProjectRepairAcceptance(unittest.TestCase):
             if review:
                 (self.repository / 'feature.txt').write_text('concurrent author\n')
                 return self.response(True)
-            (workspace / 'feature.txt').write_text('repair\n')
+            (workspace / 'feature.txt').write_bytes(b'repair\n')
             return self.response()
         self.assertRaisesRegex(queue.QueueError, 'Candidate changed', repair.repair_attempt, queue, self.repository,
                                value, policy, queue.QueueError('failure'), evidence, lambda: None, mock.Mock(), transport)
@@ -164,6 +164,72 @@ class ProjectRepairAcceptance(unittest.TestCase):
         self.assertEqual((self.workspace_root / 'Workspace/Gate.py').read_bytes(), gate)
         self.assertTrue((self.repository / 'fail.txt').exists(), 'Worker checkout must remain intact.')
         self.assertEqual(result['receipt']['checks'][0]['name'], 'compile_project')
+
+    def test_native_overlay_bytes_survive_review_and_commit(self):
+        value, policy, evidence = self.inputs()
+        payload = b'%YAML 1.1\r\n--- !u!114 &1\r\n  m_EditorClassIdentifier: \r\n'
+        def transport(settings, context, workspace, folder, budget, review=False):
+            if not review:
+                target = workspace / 'Packages/Prepared/Editor/Assets/Default.overlay'
+                target.parent.mkdir(parents=True)
+                target.write_bytes(payload)
+            return self.response(review)
+        repair.repair(queue, self.repository, value, policy, queue.QueueError('failure'), evidence, lambda: None, mock.Mock(), transport)
+        self.assertEqual((self.repository / 'Packages/Prepared/Editor/Assets/Default.overlay').read_bytes(), payload)
+        queue.clean(self.repository)
+
+    def test_whitespace_rejection_retries_before_mutation_and_then_runs_required_gates(self):
+        value = self.source('fail.txt', 'fail\n')
+        config = queue.configuration(self.repository)
+        config['policy']['repair'] = dict(enabled=True, executable='fixture', model='selected-model', effort='high', window_seconds=10800)
+        config['policy_hash'] = queue.digest(config['policy'])
+        queue.durable(queue.common(self.repository) / 'gameforge_queue/configuration.json', config)
+        queue.durable(self.workspace_root / 'ownership.json', config)
+        proposals, reviews, baseline = [], [], []
+        def transport(settings, context, workspace, folder, budget, review=False):
+            if review:
+                reviews.append(True)
+                return self.response(True)
+            proposals.append(context)
+            candidate = self.workspace_root / 'Workspace'
+            import GitFlowRepairWorkspace as artifacts
+            if not baseline:
+                baseline.append(artifacts.identity(queue, candidate))
+            self.assertEqual(artifacts.identity(queue, candidate), baseline[0])
+            self.assertTrue((candidate / 'fail.txt').is_file())
+            (workspace / 'fail.txt').unlink()
+            (workspace / 'Repair.cs').write_bytes(b'// correction' + (b'  \n' if len(proposals) == 1 else b'\n'))
+            if len(proposals) == 2:
+                self.assertIn('trailing whitespace', context['history'][0]['reason'])
+            return self.response()
+        with mock.patch.object(models, 'repair_project', side_effect=transport):
+            result = queue.process_once(self.repository)
+        self.assertEqual(result['state'], 'integrated')
+        self.assertEqual(len(proposals), 2)
+        self.assertEqual(len(reviews), 1, 'Invalid authored whitespace must be rejected before independent review.')
+        attempts = result['repair']['attempts']
+        self.assertEqual(attempts[0]['state'], 'preflight_rejected_candidate_unchanged')
+        self.assertEqual(attempts[1]['state'], 'applied_pending_validation')
+        self.assertLess(attempts[1]['remaining_seconds'], attempts[0]['remaining_seconds'])
+        self.assertEqual(result['receipt']['checks'][0]['name'], 'compile_project')
+        self.assertTrue(queue.ancestor(self.repository, value['source'], result['main_commit']))
+
+    def test_preflight_checks_staged_source_outside_proposal_without_changing_real_index(self):
+        value, policy, evidence = self.inputs()
+        (self.repository / 'Outside.cs').write_bytes(b'// staged task source  \n')
+        queue.git(self.repository, 'add', 'Outside.cs')
+        import GitFlowRepairWorkspace as artifacts
+        baseline = artifacts.identity(queue, self.repository)
+        original_failure = (self.repository / 'failure.txt').read_bytes()
+        def transport(settings, context, workspace, folder, budget, review=False):
+            self.assertFalse(review)
+            (workspace / 'failure.txt').write_bytes(b'fixed\n')
+            return self.response()
+        self.assertRaises(repair.RetryableNoProgress, repair.repair_attempt, queue, self.repository,
+                          value, policy, queue.QueueError('failure'), evidence, lambda: None, mock.Mock(), transport)
+        self.assertEqual(artifacts.identity(queue, self.repository), baseline)
+        self.assertEqual((self.repository / 'failure.txt').read_bytes(), original_failure)
+        self.assertIn('Outside.cs', value['repair']['attempts'][0]['no_progress_reason'])
 
 
 if __name__ == '__main__':
