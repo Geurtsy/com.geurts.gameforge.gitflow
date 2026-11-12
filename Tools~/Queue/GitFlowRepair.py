@@ -59,6 +59,12 @@ def guard_conflict_resolution(q, relative, original, updated):
             raise q.QueueError('Conflict-only test repair removed assertions or introduced a skipped check: ' + relative)
 
 
+def check_authored_whitespace(q, workspace):
+    """Check all staged authored text without treating unchanged native Unity serialization as source formatting."""
+    exclusions = [':(exclude,glob)**/*' + suffix for suffix in ('.asset', '.meta', '.prefab', '.unity')]
+    q.git(workspace, 'diff', '--cached', '--check', '--', '.', *exclusions)
+
+
 def native_diagnostics(q, folder):
     """Collect every native exception/assertion/compiler diagnostic line, never an arbitrary log tail."""
     path = q.plain(folder / 'Unity.log')
@@ -277,7 +283,7 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
             payload = b'\xef\xbb\xbf' + payload
         q.plain(workspace / relative).write_bytes(payload)
     q.git(workspace, 'add', '--', *replacements)
-    q.git(workspace, 'diff', '--cached', '--check')
+    check_authored_whitespace(q, workspace)
     q.git(workspace, 'commit', '-m', 'Repair ' + value['id'] + ' with source-bound proposal')
     q.clean(workspace)
     attempt.update(state='applied_pending_validation', candidate=q.git(workspace, 'rev-parse', 'HEAD'), completed_utc=q.utc())

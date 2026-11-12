@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.6.0",
-  "candidate": "v0.6.0",
+  "packageVersion": "0.6.1",
+  "candidate": "v0.6.1",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -17,7 +17,7 @@
   "publicationReady": true,
   "scope": "Five focused real-Git/Windows checks cover explicitly scoped Editor/attribute conflict repair, unchanged-text/assertion/attribute/skip guards, stopped-owner policy updates, ordinary large-conflict behavior and durable runner adoption. Controlled fixture proposals only; no paid inference in source acceptance.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.6.0/ConflictScopeAcceptance.log",
+    "report": "Documentation~/Evidence/0.6.1/ConflictScopeAcceptance.log",
     "passed": 5,
     "failed": 0,
     "scope": "Five focused real-Git/Windows checks cover explicitly scoped Editor/attribute conflict repair, unchanged-text/assertion/attribute/skip guards, stopped-owner policy updates, ordinary large-conflict behavior and durable runner adoption. Controlled fixture proposals only; no paid inference in source acceptance."
