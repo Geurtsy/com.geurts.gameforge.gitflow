@@ -429,6 +429,11 @@ def validate_policy(policy):
         if type(check.get('timeout_seconds')) is not int or not 1 <= check['timeout_seconds'] <= 7200:
             raise QueueError('Gate timeout must be between 1 and 7200 seconds.')
     repair = policy.get('repair', {})
+    from GitFlowRepair import conflict_paths
+    try:
+        conflict_paths(repair)
+    except ValueError as error:
+        raise QueueError(str(error)) from error
     if repair.get('enabled'):
         if repair.get('window_seconds') != 10800 or not all(repair.get(key) for key in ('executable', 'model', 'effort')):
             raise QueueError('Authorized automatic repair requires a selected local Codex model/effort and a three-hour window.')
@@ -519,6 +524,33 @@ def upgrade_runner(root, expected_configuration):
         durable(path, revised)
         durable(journal, dict(state='completed', prior=prior, revised=revised))
         return dict(state='runner_adopted', detail='Existing installed runner adopted explicitly. No package was installed or updated. Restart separately; candidate, requests, repair start and evidence were preserved.')
+
+
+def set_repair_conflict_paths(root, expected_configuration, paths):
+    """Explicit stopped-owner configuration of exact conflict exceptions; preserve gates and request history."""
+    control = common(root) / 'gameforge_queue'
+    with exclusive(control / 'service.lock'), exclusive(control / 'processor.lock'), exclusive(control / 'configuration.lock'):
+        prior = configuration(root)
+        if digest(prior) != expected_configuration:
+            raise QueueError('Configuration changed; review it before changing conflict scope.')
+        if inspect_owner(root, prior['remote'])['state'] not in {'released', 'not_configured'}:
+            raise QueueError('Shared owner must be verifiably released before changing conflict scope.')
+        revised = json.loads(encoded(prior))
+        revised['policy'].setdefault('repair', {})['conflict_paths'] = paths
+        validate_policy(revised['policy'])
+        protected = {revised['policy']['version_file'], *revised['policy'].get('native_version_outputs', []), *revised['policy'].get('protected_paths', [])}
+        for check in revised['policy']['checks']:
+            protected.update(check['command'])
+        if any(name == item or name.startswith(item.rstrip('/') + '/') for name in paths for item in protected):
+            raise QueueError('Conflict scope cannot override an independent gate, native version output or protected path.')
+        revised['policy_hash'] = digest(revised['policy'])
+        revised['updated_utc'] = utc()
+        journal = control / ('conflict_scope_' + uuid.uuid4().hex + '.json')
+        durable(journal, dict(state='prepared', prior=prior, revised=revised))
+        durable(plain(prior['workspace_root']) / 'ownership.json', revised)
+        durable(control / 'configuration.json', revised)
+        durable(journal, dict(state='completed', prior=prior, revised=revised))
+        return dict(state='repair_conflict_scope_updated', paths=paths, configuration_identity=digest(revised))
 
 
 def input_key(workspace, check, policy_hash, environment):
@@ -996,6 +1028,10 @@ def main():
     upgrade = subcommands.add_parser('upgrade-runner')
     upgrade.add_argument('--operator', action='store_true', required=True)
     upgrade.add_argument('--expected-configuration', required=True)
+    scope = subcommands.add_parser('set-repair-conflict-paths')
+    scope.add_argument('--operator', action='store_true', required=True)
+    scope.add_argument('--expected-configuration', required=True)
+    scope.add_argument('--path', action='append', default=[])
     arguments = parser.parse_args()
     root = plain(arguments.repository)
     from GitFlowDeployment import forward
@@ -1027,6 +1063,8 @@ def main():
         result = resume_service(root, arguments.expected_configuration)
     elif arguments.command == 'upgrade-runner':
         result = upgrade_runner(root, arguments.expected_configuration)
+    elif arguments.command == 'set-repair-conflict-paths':
+        result = set_repair_conflict_paths(root, arguments.expected_configuration, arguments.path)
     elif arguments.command == 'storage':
         config = configuration(root)
         result = inspect_storage([config['workspace_root'], common(root)])

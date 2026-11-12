@@ -33,7 +33,7 @@
       ],
       "maturity": "candidate",
       "provider": "editor",
-      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported. Complete source files up to 256 KiB, diagnostic files up to 64 KiB, a 1 MiB encoded context and 256 KiB proposals; oversized inputs are rejected without truncation."
+      "description": "Same-ID publication recovery and optional three-hour bounded source repair; project-specific native identity adapters remain unsupported. Complete source files up to 256 KiB, diagnostic files up to 64 KiB, a 1 MiB encoded context and 256 KiB proposals; oversized inputs are rejected without truncation. Explicit stopped-owner conflict scope permits reviewed first-party test and .gitattributes merges, retaining outside text, attribute lines and assertion counts without skips or controller overrides."
     },
     {
       "id": "local_codex_selection",
@@ -65,7 +65,7 @@
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Fresh four native presentation checks and a full 31-assembly zero-diagnostic compilation passed for 0.5.4. Existing backend/authentication/repair evidence retains its historical source/environment scope. No visual checks are performed or required."
+        "Unchanged 0.5.3 four native presentation checks and 31-assembly zero-diagnostic compilation are explicitly reused. Existing backend/authentication/repair evidence retains its historical source/environment scope. No visual checks are performed or required."
       ]
     },
     {
@@ -76,12 +76,12 @@
       "operations": [],
       "description": "Explicit auto-fill/configure/start, full modern queue rows and opt-in view-owned live inspection. Existing policies are retained; local process lifetime is observed without lease takeover.",
       "validation": [
-        "Fresh four native presentation checks and a full 31-assembly zero-diagnostic compilation passed for 0.5.4. Existing backend/authentication/repair evidence retains its historical source/environment scope. No visual checks are performed or required."
+        "Unchanged 0.5.3 four native presentation checks and 31-assembly zero-diagnostic compilation are explicitly reused. Existing backend/authentication/repair evidence retains its historical source/environment scope. No visual checks are performed or required."
       ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.5.4",
+  "packageVersion": "0.6.0",
   "prerequisites": [
     {
       "required": true,
@@ -139,7 +139,7 @@
   "schemaVersion": "1.0.0",
   "validation": {
     "unityVersion": "6000.6.3f1",
-    "scope": "Twelve focused real-Git/Windows checks cover preserved runner deployment, package-cache deletion during validation followed by a guarded large-file repair, native helper survival, restart, same-PID service startup, stop/resume, adoption/lease ownership, publication/pull recovery, original repair deadlines and read-only observation. Model proposals are controlled fixtures; no paid inference was used.",
+    "scope": "Fresh focused conflict-scope acceptance plus explicitly reused native/deployment evidence; see Documentation~/AIUsabilityValidation.json.",
     "unverified": [
       "No rendered/physical checks, new whole-game certification, paid inference or legacy migration. Development tests do not install or start a consumer publisher."
     ],

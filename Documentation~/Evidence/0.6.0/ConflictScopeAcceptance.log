@@ -1,0 +1,10 @@
+test_explicit_editor_and_attribute_conflicts_preserve_both_features (TestGitFlowQueue.QueueAcceptance.test_explicit_editor_and_attribute_conflicts_preserve_both_features) ... ok
+test_conflict_only_guard_refuses_outside_edits_assertion_removal_and_attribute_loss (TestGitFlowQueue.QueueAcceptance.test_conflict_only_guard_refuses_outside_edits_assertion_removal_and_attribute_loss) ... ok
+test_conflict_scope_change_is_stopped_guarded_and_preserves_ownership (TestGitFlowQueue.QueueAcceptance.test_conflict_scope_change_is_stopped_guarded_and_preserves_ownership) ... ok
+test_repair_resolves_complete_large_conflict_without_truncation (TestGitFlowQueue.QueueAcceptance.test_repair_resolves_complete_large_conflict_without_truncation) ... ok
+test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner (TestGitFlowQueue.QueueAcceptance.test_stopped_runner_adoption_preserves_history_and_rejects_busy_owner) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 30.074s
+
+OK

@@ -12,6 +12,53 @@ MAXIMUM_DIAGNOSTIC_BYTES = 64 * 1024
 MAXIMUM_NATIVE_LOG_BYTES = 8 * 1024 * 1024
 
 
+def conflict_paths(settings):
+    """Validate exact, explicitly authorized first-party conflict exceptions; never globs or control paths."""
+    paths = settings.get('conflict_paths', [])
+    if not isinstance(paths, list) or len(paths) > 16:
+        raise ValueError('Repair conflict_paths must be an explicit list of at most sixteen files.')
+    seen = set()
+    forbidden = {'tools', 'tools~', 'projectsettings', 'packages', '.git', '.github', '.codex', '_thirdparty', 'plugins', '_generated'}
+    for name in paths:
+        if (not isinstance(name, str) or not name or len(name) > 259 or name != name.strip()
+                or any(character in name for character in '\\:*?[]\x00') or name.startswith('/')
+                or any(part in {'', '.', '..'} or part.endswith((' ', '.')) for part in name.split('/'))
+                or set(part.casefold() for part in name.split('/')) & forbidden
+                or (name != '.gitattributes' and Path(name).suffix.casefold() not in {'.cs', '.py'})
+                or name.casefold() in seen):
+            raise ValueError('Repair conflict scope requires unique safe first-party .cs/.py files or root .gitattributes: ' + repr(name))
+        seen.add(name.casefold())
+    return paths
+
+
+def guard_conflict_resolution(q, relative, original, updated):
+    """Permit edits only inside standard merge blocks, retaining attribute rules and assertion coverage."""
+    pattern = re.compile(r'^<<<<<<<[^\r\n]*\r?\n(.*?)^=======\r?\n(.*?)^>>>>>>>[^\r\n]*(?:\r?\n|$)', re.M | re.S)
+    blocks = list(pattern.finditer(original))
+    if not blocks or '|||||||' in original:
+        raise q.QueueError('Conflict-only scope needs complete standard two-way merge blocks: ' + relative)
+    pieces, cursor = ['\\A'], 0
+    for index, block in enumerate(blocks):
+        pieces.extend([re.escape(original[cursor:block.start()]), '(?P<resolution' + str(index) + '>.*?)'])
+        cursor = block.end()
+    pieces.extend([re.escape(original[cursor:]), '\\Z'])
+    match = re.fullmatch(''.join(pieces), updated, re.S)
+    if match is None:
+        raise q.QueueError('Conflict-only proposal changed text outside the authorized merge blocks: ' + relative)
+    assertion = re.compile(r'\b(?:Require|Assert(?:\.\w+)?|CollectionAssert\.\w+|StringAssert\.\w+|LogAssert\.\w+)\s*\(')
+    for index, block in enumerate(blocks):
+        resolution = match.group('resolution' + str(index))
+        if not resolution.strip():
+            raise q.QueueError('Conflict-only repair cannot discard a merge block: ' + relative)
+        if relative == '.gitattributes':
+            required = {line for side in block.groups() for line in side.splitlines() if line.strip()}
+            if not required <= set(resolution.splitlines()):
+                raise q.QueueError('Attribute conflict repair must retain the complete rules from both sides.')
+        elif (len(assertion.findall(resolution)) < max(len(assertion.findall(side)) for side in block.groups())
+                or re.search(r'\bAssert\.(?:Ignore|Inconclusive)\s*\(|\[\s*(?:Ignore|Explicit)\b', resolution)):
+            raise q.QueueError('Conflict-only test repair removed assertions or introduced a skipped check: ' + relative)
+
+
 def native_diagnostics(q, folder):
     """Collect every native exception/assertion/compiler diagnostic line, never an arbitrary log tail."""
     path = q.plain(folder / 'Unity.log')
@@ -124,12 +171,18 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
     changed = q.git(workspace, 'diff', '--name-only', value['base'], value['source']).splitlines()
     conflicts = set(q.git(workspace, 'diff', '--name-only', '--diff-filter=U').splitlines())
     files = {}
+    try:
+        authorized_conflicts = set(conflict_paths(settings))
+    except ValueError as error:
+        raise q.QueueError(str(error)) from error
     for relative in changed:
         path = Path(relative)
         parts = {part.casefold() for part in path.parts}
+        conflict_only = relative in authorized_conflicts and relative in conflicts
         if (relative in protected or any(relative.startswith(item.rstrip('/') + '/') for item in protected)
-                or parts & {'tools', 'tools~', 'tests', 'tests~', 'test', 'testing', 'editor', 'projectsettings', 'packages', '.github', '.codex', '_thirdparty', 'plugins', '_generated'}
-                or path.suffix.casefold() not in {'.cs', '.py'}):
+                or parts & {'tools', 'tools~', 'projectsettings', 'packages', '.git', '.github', '.codex', '_thirdparty', 'plugins', '_generated'}
+                or (not conflict_only and (parts & {'tests', 'tests~', 'test', 'testing', 'editor'}
+                    or path.suffix.casefold() not in {'.cs', '.py'}))):
             continue
         target = q.plain(workspace / path)
         if not target.is_file():
@@ -140,6 +193,8 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         if b'\0' in raw:
             raise q.QueueError('Repair context requires a supported text file: ' + relative)
         files[relative] = dict(sha256=q.digest(raw), text=raw.decode('utf-8-sig'), bom=raw.startswith(b'\xef\xbb\xbf'))
+        if conflict_only:
+            files[relative]['conflict_only'] = True
     if not files or conflicts - set(files):
         raise q.QueueError('No complete supported repair scope, or conflicts include protected/native files: ' + ', '.join(sorted(conflicts - set(files))))
     before = fingerprint(files)
@@ -160,7 +215,7 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
                             failure=str(failure), diagnostics=diagnostics, allowed_files=files,
                             recent_attempts=[{key: attempt.get(key) for key in ('state', 'failure_evidence', 'no_progress_reason', 'paths')}
                                              for attempt in record['attempts'][-NO_PROGRESS_LIMIT:]],
-                            rule='Complete file text is provided. Learn from the recorded unsuccessful attempts and try a different supported correction. Change only a unique necessary fragment; no whole-file replacement, test edits or policy edits.'))
+                            rule='Complete file text is provided. Learn from unsuccessful attempts. Change only a unique necessary fragment; no publication/lease/validation-policy/controller changes. Ordinary files forbid whole-file replacement and test edits. Files marked conflict_only have explicit user permission solely to resolve their existing merge blocks: preserve every byte outside those blocks, all test coverage and existing behavior, without skips or weakened assertions. Retain all .gitattributes rules from both sides. Combine the current and incoming feature behavior, retaining current input and interaction policies when incoming source predates them.'))
     context_bytes = len(context.encode('utf-8'))
     if context_bytes > MAXIMUM_CONTEXT_BYTES:
         raise q.QueueError(f'Complete repair context requires {context_bytes} bytes; limit {MAXIMUM_CONTEXT_BYTES} bytes. No partial conflict context was sent.')
@@ -198,11 +253,13 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         if relative not in files or relative in replacements or edit['expected_sha256'] != files[relative]['sha256']:
             raise q.QueueError('Edit targets a protected, repeated or stale source; source unchanged.')
         original, old, new = files[relative]['text'], edit['old_text'], edit['new_text']
-        if not old or old == original or original.count(old) != 1 or old == new:
+        if not old or (old == original and not files[relative].get('conflict_only')) or original.count(old) != 1 or old == new:
             raise q.QueueError('Edit must replace one exact necessary fragment; source unchanged.')
         updated = original.replace(old, new, 1)
         if any(marker in updated for marker in ['<<<<<<<', '=======', '>>>>>>>', '|||||||']):
             raise q.QueueError('Proposed source retains conflict markers; source unchanged.')
+        if files[relative].get('conflict_only'):
+            guard_conflict_resolution(q, relative, original, updated)
         replacements[relative] = dict(files[relative], text=updated)
     after_files = dict(files, **replacements)
     after = fingerprint(after_files)
