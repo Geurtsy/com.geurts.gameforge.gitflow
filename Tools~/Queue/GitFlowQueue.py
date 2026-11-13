@@ -412,6 +412,8 @@ def validate_policy(policy):
         if not re.fullmatch('[a-z]+(?:_[a-z]+)*', check.get('name', '')) or check['name'] in names:
             raise QueueError('Gate names must be unique full-word identifiers.')
         names.add(check['name'])
+        if 'code_only' in check and type(check['code_only']) is not bool:
+            raise QueueError('code_only must be a reviewed boolean, never a filename filter.')
         if check.get('kind') not in {'compilation', 'final', 'specialist'}:
             raise QueueError('Every check must be a required compilation/final/specialist gate.')
         if not check.get('command') or not all(isinstance(arg, str) and arg for arg in check['command']):
@@ -422,6 +424,8 @@ def validate_policy(policy):
             raise QueueError('Gate timeout must be between 1 and 7200 seconds.')
         from GitFlowSession import validate as validate_session
         validate_session(sys.modules[__name__], check.get('session_outputs', []))
+    if 'documentation_only' in policy and type(policy['documentation_only']) is not bool:
+        raise QueueError('documentation_only must be a boolean.')
     repair = policy.get('repair', {})
     from GitFlowRepair import conflict_paths
     try:
@@ -602,6 +606,135 @@ def set_native_session_outputs(root, expected_configuration, check_name, paths):
         return dict(state='native_session_outputs_updated', check=check_name, paths=paths, configuration_identity=digest(revised))
 
 
+def set_documentation_checks(root, expected_configuration, names):
+    """Review applicability only while the publisher and shared owner are stopped."""
+    control = common(root) / 'gameforge_queue'
+    with exclusive(control / 'service.lock'), exclusive(control / 'processor.lock'), exclusive(control / 'configuration.lock'):
+        prior = configuration(root)
+        if digest(prior) != expected_configuration:
+            raise QueueError('Configuration changed; review documentation applicability again.')
+        if inspect_owner(root, prior['remote'])['state'] not in {'released', 'not_configured'}:
+            raise QueueError('Shared owner must be verifiably released before changing applicability.')
+        if not set(names) <= {check['name'] for check in prior['policy']['checks']}:
+            raise QueueError('Select existing required checks by exact name.')
+        revised = json.loads(encoded(prior))
+        for check in revised['policy']['checks']:
+            check['code_only'] = check['name'] in names
+        validate_policy(revised['policy'])
+        revised.update(policy_hash=digest(revised['policy']), updated_utc=utc())
+        journal = control / ('documentation_checks_' + uuid.uuid4().hex + '.json')
+        durable(journal, dict(state='prepared', prior=prior, revised=revised))
+        durable(plain(prior['workspace_root']) / 'ownership.json', revised)
+        durable(control / 'configuration.json', revised)
+        durable(journal, dict(state='completed', prior=prior, revised=revised))
+        return dict(state='documentation_checks_updated', checks=names, configuration_identity=digest(revised))
+
+
+def changed_files(workspace, before, after):
+    """Read exact paths and modes without rename heuristics or Git path quoting."""
+    fields = run(['git', 'diff-tree', '-r', '--no-commit-id', '--raw', '--no-abbrev',
+                  '--no-renames', '-z', before, after], workspace).decode('utf-8').split('\0')
+    return [(fields[index].split(), fields[index + 1]) for index in range(0, len(fields) - 1, 2)]
+
+
+def documentation_scope(workspace, base, source, candidate, policy, version):
+    """Fail closed: only ordinary text outside imported roots, plus a proven version stamp."""
+    if not policy.get('documentation_only', True):
+        return None
+    changes = changed_files(workspace, base, source)
+    if not changes:
+        return None
+    markers = {}
+    blobs = set()
+    for fields, path in changes:
+        if fields[0] not in {':100644', ':000000'} or fields[1] not in {'100644', '000000'}:
+            return None
+        parts = path.split('/')
+        if parts[0].lower() in {'assets', 'packages', 'projectsettings', 'library', 'temp', 'usersettings', 'obj', 'build', 'builds', '.git'}:
+            return None
+        # A nested Unity project is recognized from its tracked native project marker.
+        if len(parts) > 2 and parts[1] in {'Docs', 'Documentation~'}:
+            marker = parts[0] + '/ProjectSettings/ProjectVersion.txt'
+            for ref in (base, source):
+                if (ref, marker) not in markers:
+                    markers[ref, marker] = git(workspace, 'ls-tree', ref, '--', marker)
+            if not all(markers[ref, marker] for ref in (base, source)):
+                return None
+            parts = parts[1:]
+        if not (parts[0] in {'Docs', 'Documentation~'} and len(parts) > 1 and
+                Path(parts[-1]).suffix.lower() in {'.md', '.txt'} or
+                len(parts) == 1 and parts[0] in {'README.md', 'CHANGELOG.md'}):
+            return None
+        for identity, mode in ((fields[2], fields[0][1:]), (fields[3], fields[1])):
+            if mode != '000000':
+                blobs.add(identity)
+    identities = sorted(blobs)
+    for offset in range(0, len(identities), 64):
+        selected = identities[offset:offset + 64]
+        output = run(['git', 'cat-file', '--batch'], workspace, data=('\n'.join(selected) + '\n').encode('ascii'))
+        position = 0
+        for identity in selected:
+            end = output.find(b'\n', position)
+            header = output[position:end].decode('ascii').split()
+            if end < 0 or len(header) != 3 or header[:2] != [identity, 'blob'] or not header[2].isdigit():
+                raise QueueError('Documentation blob batch is incomplete or malformed.')
+            size = int(header[2])
+            raw = output[end + 1:end + 1 + size]
+            position = end + 1 + size
+            if len(raw) != size or output[position:position + 1] != b'\n':
+                raise QueueError('Documentation blob batch was truncated.')
+            position += 1
+            try:
+                raw.decode('utf-8-sig')
+            except UnicodeDecodeError:
+                return None
+            if b'\0' in raw:
+                return None
+        if position != len(output):
+            raise QueueError('Unexpected trailing documentation blob data.')
+    allowed = {policy['version_file'], *policy.get('native_version_outputs', [])}
+    if git(workspace, 'show', candidate + ':' + policy['version_file']).strip() != version:
+        return None
+    stamps = changed_files(workspace, source, candidate)
+    for fields, path in stamps:
+        if path not in allowed or fields[0] != ':100644' or fields[1] != '100644':
+            return None
+        if any(part.lower() in {'assets', 'packages'} for part in path.split('/')):
+            return None
+        before = run(['git', 'show', source + ':' + path], workspace)
+        after = run(['git', 'show', candidate + ':' + path], workspace)
+        if path == policy['version_file']:
+            if (Path(path).suffix != '.txt' or any(part.lower() in {'assets', 'packages'} for part in path.split('/')) or
+                    after.decode('utf-8-sig').strip() != version):
+                return None
+        elif path.endswith('/ProjectSettings/ProjectSettings.asset'):
+            # Native authoring owns serialization. Only its bundleVersion field is irrelevant here.
+            pattern = rb'(?m)^  bundleVersion: [^\r\n]+'
+            if (len(re.findall(pattern, before)) != 1 or len(re.findall(pattern, after)) != 1 or
+                    re.findall(pattern, after)[0] != b'  bundleVersion: ' + version.encode() or
+                    re.sub(pattern, b'  bundleVersion: VERSION', before) != re.sub(pattern, b'  bundleVersion: VERSION', after)):
+                return None
+        else:
+            return None
+    if candidate != source and not stamps:
+        return None
+    return dict(base_main=base, documentation_candidate=source, candidate=candidate,
+                paths=[path for _, path in changes], version=version,
+                version_outputs=sorted(allowed), policy=policy)
+
+
+def documentation_gate(workspace, evidence_root, check, candidate, scope):
+    """Retain truthful portable applicability evidence; never claim a compiler ran."""
+    folder = plain(evidence_root / (check['name'] + '_' + uuid.uuid4().hex))
+    folder.mkdir(parents=True)
+    durable(folder / 'scope.json', scope)
+    durable(folder / 'result.json', dict(candidate=candidate, status='not_applicable',
+            reason='Only non-imported documentation and verified version metadata changed.'))
+    return dict(name=check['name'], kind=check['kind'], candidate=candidate,
+                applicability='not_applicable', status='not_applicable', folder=str(folder), reused=False,
+                artifacts={path.name: file_digest(path) for path in folder.iterdir()})
+
+
 def input_key(workspace, check, policy_hash, environment):
     """Relevant Git objects, exact command and declared environment define reusable evidence."""
     objects = {path: git(workspace, 'ls-tree', '-r', 'HEAD', '--', path) if path != '.' else
@@ -749,6 +882,19 @@ def verify_published_evidence(root, identity, value):
             content = run(['git', 'show', identity + ':' + str(index) + '-' + name], root)
             if digest(content) != expected:
                 raise QueueError('Published validation artifact checksum differs.')
+        if check.get('applicability') == 'not_applicable':
+            scope = json.loads(run(['git', 'show', identity + ':' + str(index) + '-scope.json'], root))
+            policy = scope['policy']
+            validate_policy(policy)
+            declared = next((item for item in policy['checks'] if item['name'] == check['name']), {})
+            result = json.loads(run(['git', 'show', identity + ':' + str(index) + '-result.json'], root))
+            if (digest(policy) != receipt['policy'] or declared.get('kind') != check['kind'] or
+                    result.get('status') != 'not_applicable' or result.get('candidate') != value['main_commit'] or
+                    not declared.get('code_only', declared.get('kind') == 'compilation') or scope['version'] != receipt['version'] or
+                    scope['base_main'] != receipt['base_main'] or scope['candidate'] != value['main_commit'] or
+                    documentation_scope(root, scope['base_main'], scope['documentation_candidate'],
+                                        scope['candidate'], policy, scope['version']) != scope):
+                raise QueueError('Documentation applicability proof does not match the delivered source/policy.')
 
 
 def workspace_for(root, config, main):
@@ -865,13 +1011,16 @@ def process_once(root, expected_request=None, expected_candidate=None):
             stage = 'version_assignment'
             main_version = git(root, 'show', main + ':' + policy['version_file']).strip()
             version = next_version(main_version, value['size'])
+            documentation_source = git(workspace, 'rev-parse', 'HEAD')
             while True:
                 try:
                     stamp_version(workspace, policy, version, evidence_root)
                     break
                 except GateFailure as error:
+                    documentation_source = None  # A repaired candidate requires normal full validation.
                     repair_failure(error)
             candidate = git(workspace, 'rev-parse', 'HEAD')
+            documentation = documentation_scope(workspace, main, documentation_source, candidate, policy, version) if documentation_source else None
             attempt = dict(candidate=candidate, base_main=main, version=version, started_utc=utc(), policy=config['policy_hash'])
             value['attempts'].append(attempt)
             value.update(state='validating', candidate=candidate, version=version)
@@ -885,11 +1034,15 @@ def process_once(root, expected_request=None, expected_candidate=None):
                 try:
                     for check in policy['checks']:
                         lease.guard()
-                        result = execute_gate(workspace, evidence_root, check, candidate, config['policy_hash'], cache)
+                        if documentation and check.get('code_only', check['kind'] == 'compilation'):
+                            result = documentation_gate(workspace, evidence_root, check, candidate, documentation)
+                        else:
+                            result = execute_gate(workspace, evidence_root, check, candidate, config['policy_hash'], cache)
                         checks.append(result)
                         durable(cache_path, cache)
                     break
                 except QueueError as error:
+                    documentation = None
                     diagnostic = failure_diagnostic(error, 'required_check')
                     attempt.update(failure=diagnostic['cause_code'] + ': ' + diagnostic['cause'], diagnostic=diagnostic, finished_utc=utc())
                     checkpoint()
@@ -1090,6 +1243,10 @@ def main():
     model.add_argument('--expected-configuration', required=True)
     model.add_argument('--model', required=True)
     model.add_argument('--effort', required=True)
+    documentation = subcommands.add_parser('set-documentation-checks')
+    documentation.add_argument('--operator', action='store_true', required=True)
+    documentation.add_argument('--expected-configuration', required=True)
+    documentation.add_argument('--check', action='append', default=[])
     arguments = parser.parse_args()
     root = plain(arguments.repository)
     from GitFlowDeployment import forward
@@ -1121,6 +1278,8 @@ def main():
         result = resume_service(root, arguments.expected_configuration)
     elif arguments.command == 'set-repair-model':
         result = set_repair_model(root, arguments.expected_configuration, arguments.model, arguments.effort)
+    elif arguments.command == 'set-documentation-checks':
+        result = set_documentation_checks(root, arguments.expected_configuration, arguments.check)
     elif arguments.command == 'upgrade-runner':
         result = upgrade_runner(root, arguments.expected_configuration)
     elif arguments.command == 'set-repair-conflict-paths':

@@ -1,0 +1,6 @@
+test_exact_source_is_idempotent_and_delivery_retains_ancestry (TestGitFlowQueue.QueueAcceptance.test_exact_source_is_idempotent_and_delivery_retains_ancestry) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 84.749s
+
+OK

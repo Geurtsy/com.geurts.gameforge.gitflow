@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.0 — 2026-11-14
+
+- Classify the complete merged documentation change and verify native version-only metadata before omitting code-only gates.
+- Retain portable not-applicable proof and revalidate it on published-receipt recovery; code, mixed, repaired and unknown inputs retain full zero-warning checks.
+- Add stopped-owner explicit per-check applicability; preserve required documentation checks and all other settings.
+
 ## 0.8.1 — 2026-11-13
 
 - Batch native Git original verification, preserving actual clean filters, raw originals, HEAD/index and capture-race checks.

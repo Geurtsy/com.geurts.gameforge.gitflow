@@ -1,0 +1,6 @@
+test_documentation_classifier_rejects_mixed_imported_binary_and_executable_changes (TestGitFlowQueue.QueueAcceptance.test_documentation_classifier_rejects_mixed_imported_binary_and_executable_changes) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 16.805s
+
+OK

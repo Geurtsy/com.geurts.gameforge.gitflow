@@ -1,6 +1,6 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.8.1",
+  "packageVersion": "0.9.0",
   "currentDocuments": [
     "README.md",
     "Documentation~/AIUsability.md",
@@ -22,5 +22,5 @@
       "symbol": "InspectionExample"
     }
   ],
-  "previousVersion": "0.8.0"
+  "previousVersion": "0.8.1"
 }

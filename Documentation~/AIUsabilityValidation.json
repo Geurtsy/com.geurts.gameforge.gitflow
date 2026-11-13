@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.8.1",
-  "candidate": "v0.8.1",
+  "packageVersion": "0.9.0",
+  "candidate": "v0.9.0",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Batched native session original verification and phase timings; unchanged Unity implementation/example evidence reused, with new real-Git preservation checks and same-input performance comparison.",
+  "scope": "Python documentation-only applicability and portable recovery; unchanged native implementation/examples retain their original source/environment proof.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.8.1/SessionAcceptance.log",
-    "passed": 4,
+    "report": "Documentation~/Evidence/0.9.0/QueueAcceptance.log",
+    "passed": 8,
     "failed": 0,
-    "scope": "Real Git clean-filter/CRLF/Unicode/batch-boundary parity, capture race preservation, native timeout cleanup and HEAD/index/deletion preservation."
+    "scope": "Real-Git documentation publication/recovery/tamper proof, conservative classification, mixed warning rejection, native version exception, explicit applicability and existing delivery/failure/specialist regressions."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.5.3/Compiler.json",
@@ -37,9 +37,9 @@
   "publicationBlockers": [],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
-    "baseline": "e1a7c85777eab9d811d9b95dd48ac4c4a8b387da",
-    "report": "Documentation~/Evidence/0.8.1/NativeEvidenceReuse.json",
-    "reason": "Native C# and assembly declarations unchanged except the package version literal; no native behavior, dependency or profile change."
+    "baseline": "9f94758b9943dc18cdd55e1954c7cd9eacfde727",
+    "report": "Documentation~/Evidence/0.9.0/NativeEvidenceReuse.json",
+    "reason": "Unchanged C#/assemblies/examples except package version literal; Python changes covered by new host acceptance."
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",
