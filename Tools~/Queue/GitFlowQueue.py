@@ -420,6 +420,8 @@ def validate_policy(policy):
             raise QueueError('Declare every gate input path, using . when uncertain.')
         if type(check.get('timeout_seconds')) is not int or not 1 <= check['timeout_seconds'] <= 7200:
             raise QueueError('Gate timeout must be between 1 and 7200 seconds.')
+        from GitFlowSession import validate as validate_session
+        validate_session(sys.modules[__name__], check.get('session_outputs', []))
     repair = policy.get('repair', {})
     from GitFlowRepair import conflict_paths
     try:
@@ -545,6 +547,61 @@ def set_repair_conflict_paths(root, expected_configuration, paths):
         return dict(state='repair_conflict_scope_updated', paths=paths, configuration_identity=digest(revised))
 
 
+def set_repair_model(root, expected_configuration, model, effort):
+    """Explicit stopped-owner selection; preserve gates, fallback order and original repair clocks."""
+    control = common(root) / 'gameforge_queue'
+    with exclusive(control / 'service.lock'), exclusive(control / 'processor.lock'), exclusive(control / 'configuration.lock'):
+        prior = configuration(root)
+        if digest(prior) != expected_configuration:
+            raise QueueError('Configuration changed; review it before selecting repair reasoning.')
+        if inspect_owner(root, prior['remote'])['state'] not in {'released', 'not_configured'}:
+            raise QueueError('Shared owner must be verifiably released before selecting repair reasoning.')
+        from GitFlowModels import discover
+        settings = prior['policy'].get('repair', {})
+        if not settings.get('executable'):
+            raise QueueError('Configure an authorized repair executable before selecting its model.')
+        catalogue = discover(settings.get('executable', ''))
+        if catalogue['account_state'] != 'signed_in' or not any(
+                item['model'] == model and effort in item['efforts'] for item in catalogue['models']):
+            raise QueueError('Select an available signed-in repair model and reasoning effort; no automatic substitution.')
+        revised = json.loads(encoded(prior))
+        revised['policy']['repair'].update(model=model, effort=effort)
+        validate_policy(revised['policy'])
+        revised.update(policy_hash=digest(revised['policy']), updated_utc=utc())
+        journal = control / ('repair_model_' + uuid.uuid4().hex + '.json')
+        durable(journal, dict(state='prepared', prior=prior, revised=revised))
+        durable(plain(prior['workspace_root']) / 'ownership.json', revised)
+        durable(control / 'configuration.json', revised)
+        durable(journal, dict(state='completed', prior=prior, revised=revised))
+        return dict(state='repair_model_updated', model=model, effort=effort, configuration_identity=digest(revised))
+
+
+def set_native_session_outputs(root, expected_configuration, check_name, paths):
+    """Bind exact native-owner session outputs while the configured publisher is stopped."""
+    control = common(root) / 'gameforge_queue'
+    with exclusive(control / 'service.lock'), exclusive(control / 'processor.lock'), exclusive(control / 'configuration.lock'):
+        prior = configuration(root)
+        if digest(prior) != expected_configuration:
+            raise QueueError('Configuration changed; review it before declaring native session outputs.')
+        if inspect_owner(root, prior['remote'])['state'] not in {'released', 'not_configured'}:
+            raise QueueError('Shared owner must be verifiably released before changing native session outputs.')
+        from GitFlowSession import validate
+        validate(sys.modules[__name__], paths)
+        revised = json.loads(encoded(prior))
+        checks = [check for check in revised['policy']['checks'] if check['name'] == check_name]
+        if len(checks) != 1:
+            raise QueueError('Select one existing native gate by its exact name.')
+        checks[0]['session_outputs'] = paths
+        validate_policy(revised['policy'])
+        revised.update(policy_hash=digest(revised['policy']), updated_utc=utc())
+        journal = control / ('native_session_' + uuid.uuid4().hex + '.json')
+        durable(journal, dict(state='prepared', prior=prior, revised=revised))
+        durable(plain(prior['workspace_root']) / 'ownership.json', revised)
+        durable(control / 'configuration.json', revised)
+        durable(journal, dict(state='completed', prior=prior, revised=revised))
+        return dict(state='native_session_outputs_updated', check=check_name, paths=paths, configuration_identity=digest(revised))
+
+
 def input_key(workspace, check, policy_hash, environment):
     """Relevant Git objects, exact command and declared environment define reusable evidence."""
     objects = {path: git(workspace, 'ls-tree', '-r', 'HEAD', '--', path) if path != '.' else
@@ -576,10 +633,16 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
             command=arguments, environment=environment, started_utc=started))
     try:
         active = leases.ACTIVE.get()
-        with (folder / 'output.log').open('wb') as output:
-            result_process = process_run(arguments, cwd=workspace, stdout=output, stderr=output,
-                timeout=check['timeout_seconds'], cancelled=active.stop if active else None,
-                env=dict(os.environ, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='Never'))
+        from GitFlowSession import Snapshot
+        session = Snapshot(sys.modules[__name__], workspace, folder, check['session_outputs']) if check.get('session_outputs') else None
+        try:
+            with (folder / 'output.log').open('wb') as output:
+                result_process = process_run(arguments, cwd=workspace, stdout=output, stderr=output,
+                    timeout=check['timeout_seconds'], cancelled=active.stop if active else None,
+                    env=dict(os.environ, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='Never'))
+        finally:
+            if session:
+                session.restore()
         if result_process.returncode:
             raise QueueError('Required gate ' + check['name'] + ' failed with exit ' + str(result_process.returncode) + '; full output retained at ' + str(folder))
         clean(workspace)
@@ -1022,6 +1085,11 @@ def main():
     scope.add_argument('--operator', action='store_true', required=True)
     scope.add_argument('--expected-configuration', required=True)
     scope.add_argument('--path', action='append', default=[])
+    model = subcommands.add_parser('set-repair-model')
+    model.add_argument('--operator', action='store_true', required=True)
+    model.add_argument('--expected-configuration', required=True)
+    model.add_argument('--model', required=True)
+    model.add_argument('--effort', required=True)
     arguments = parser.parse_args()
     root = plain(arguments.repository)
     from GitFlowDeployment import forward
@@ -1051,6 +1119,8 @@ def main():
         result = {'state': 'stop_requested', 'detail': 'The current owned request finishes before shutdown. This is not stopped-owner proof.'}
     elif arguments.command == 'resume-service':
         result = resume_service(root, arguments.expected_configuration)
+    elif arguments.command == 'set-repair-model':
+        result = set_repair_model(root, arguments.expected_configuration, arguments.model, arguments.effort)
     elif arguments.command == 'upgrade-runner':
         result = upgrade_runner(root, arguments.expected_configuration)
     elif arguments.command == 'set-repair-conflict-paths':

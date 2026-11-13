@@ -1,0 +1,17 @@
+{
+  "answer": {
+    "applied": false,
+    "effort": "high",
+    "model": "gpt-5.6-sol",
+    "model_invoked": true,
+    "proposal": {
+      "approved": true,
+      "limitations": "Targeted Roslyn compilation passed. Per instruction, the protected main_menu/final gates were not rerun and no visual checks were performed.\n\nFun Fact: SetValueWithoutNotify refreshes the display without staging another settings change.",
+      "reason": "TDLR: Approved. The sole manifested C# change directly fixes the Reset synchronization failure by hydrating the dropdown from authoritative DisplayValue while preserving the existing staging and Apply path. Manifest hashes match; asset GUID metadata, validation code, and affected dependencies are unchanged."
+    },
+    "schema": 1
+  },
+  "baseline_max_seconds": 385.6501171,
+  "scope": "One fresh signed-in read-only review of the same immutable Original/Proposed artifacts. Nonconcurrent baseline; not a controlled general latency guarantee. No repair imported or budget reset.",
+  "seconds": 145.52646839999943
+}

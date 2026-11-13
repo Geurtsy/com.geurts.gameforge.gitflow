@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 — 2026-11-13
+
+- Reconcile completed rejected heartbeat-only pushes with exact-owner readback and at most one same-child retry under the old deadline; preserve all delivery fencing.
+- Persist and restore explicitly declared native session outputs in the surviving controller, including native child timeout/cancellation.
+- Add stopped-owner model/reasoning and native-session policy selection with exact configuration identity and preservation journals.
+
 ## 0.7.2 — 2026-11-13
 
 - Parallelize independent complete-file path checks, capture and byte audits without removing preservation checks.

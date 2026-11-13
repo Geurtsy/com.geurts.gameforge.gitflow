@@ -1,6 +1,14 @@
 # GitFlow supported automation contract
 
-Version 0.7.2 speeds complete repair capture/audits, focuses model work, and exposes repair phase timings. Existing preflight, native payload and preservation rules remain. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.8.0 adds bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+
+## Faster failure recovery
+
+A completed rejected heartbeat with no other publication targets receives exact-object/owner readback under the previous monotonic deadline. If the child already landed, verify it without another push; if the exact held parent remains, retry the same child once with a full write reserve. A moved owner, second rejection, timeout, late verification, release or delivery/control publication failure still fences the owner. The protocol-1 lineage and timing remain compatible; durable heartbeat receipts retain the rejection, readback and verification. This is no general Git/network retry loop.
+
+An operator may declare exact tracked native session-output paths in each gate's `session_outputs` list using `GitFlowQueue.set_native_session_outputs(root, expected_configuration, check_name, paths)`. Call only while local owners have stopped and the shared owner is released. Declare only known native-owned session settings/cache outputs, never authored gameplay, assets or validation code. No globs or implicit discovery apply. Before launch the surviving parent saves complete originals and their hashes as flat gate artifacts; after child completion/cancellation it restores those exact known bytes. HEAD/index changes, deletion, reparse replacement or unknown source remain blocking and preserved. Existing policies without this declaration retain their previous behavior. A whole publisher crash still needs stopped-owner recovery from the retained originals; this mechanism handles child cancellation, not machine/process resurrection.
+
+Use `set-repair-model --operator --expected-configuration <reviewed-identity> --model <configured-model> --effort high` through the installed CLI after stopping the publisher and verifying a released shared owner. The operation checks the signed-in local model catalogue, journals both configurations and preserves gates, fallback order, candidate, history and original repair clocks. Selection never silently downgrades reasoning, enables repair or changes a model. Lower effort can reduce latency but is not a fixed duration promise; independent artifact review and final gates remain required. Repair itself has no per-call shortcut timeout beyond the original overall budget.
 
 ## Choose the relevant surface
 
@@ -132,7 +140,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.7.2",
+  "packageVersion": "0.8.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

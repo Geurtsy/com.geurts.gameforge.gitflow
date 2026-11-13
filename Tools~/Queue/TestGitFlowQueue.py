@@ -456,6 +456,146 @@ class QueueAcceptance(unittest.TestCase):
             self.assertEqual(queue.inspect_owner(self.repository, 'origin')['state'], 'unknown')
             parent = child
 
+    def heartbeat_case(self, mode):
+        queue.git(self.repository, 'update-ref', 'refs/remotes/origin/main', self.base)
+        now = [0.0]
+        lease = queue.leases.Lease(queue, self.repository, 'origin', clock=lambda: now[0]).acquire()
+        held, deadline = lease.oid, lease.deadline
+        real = queue.leases.transport
+        pushes = []
+        def rejected(q, root, *arguments, **kwargs):
+            if arguments[0] != 'push':
+                result = real(q, root, *arguments, **kwargs)
+                if mode == 'late': now[0] = deadline
+                return result
+            pushes.append(arguments)
+            if len(pushes) == 1 or mode == 'twice':
+                if mode == 'accepted': real(q, root, *arguments, **kwargs)
+                if mode == 'successor':
+                    metadata = lease.metadata('owned', 'other owner')
+                    metadata['owner'] = 'f' * 32
+                    child = queue.object_commit(root, held, metadata, 'Competing successor')
+                    real(q, root, 'push', 'origin', child + ':' + queue.LOCK)
+                raise queue.leases.Rejected('Injected completed heartbeat rejection')
+            return real(q, root, *arguments, **kwargs)
+        with mock.patch.object(queue.leases, 'transport', side_effect=rejected):
+            if mode in {'successor', 'twice', 'late'}:
+                self.assertRaises(queue.leases.LeaseError, lease.advance)
+                self.assertTrue(lease.stop.is_set())
+                self.assertRaises(queue.leases.LeaseError, lease.advance)
+            else:
+                lease.advance()
+                self.assertFalse(lease.stop.is_set())
+        self.assertEqual(len(pushes), 2 if mode in {'retry', 'twice'} else 1)
+        if mode in {'accepted', 'retry'}:
+            self.assertEqual(queue.remote_ref(self.repository, 'origin', queue.LOCK), lease.oid)
+            receipt = queue.read_json(queue.common(self.repository)/'gameforge_queue'/('heartbeat_'+lease.oid+'.json'))
+            self.assertEqual(receipt['state'], 'verified')
+            self.assertEqual(receipt['retried'], mode == 'retry')
+            lease.close()
+        else:
+            self.assertEqual(lease.deadline, deadline)
+
+    def test_rejected_heartbeat_retries_once_after_exact_held_owner_readback(self):
+        self.heartbeat_case('retry')
+
+    def test_rejected_but_applied_heartbeat_is_verified_without_another_push(self):
+        self.heartbeat_case('accepted')
+
+    def test_rejected_heartbeat_with_changed_owner_is_permanently_fenced(self):
+        self.heartbeat_case('successor')
+
+    def test_repeated_heartbeat_rejection_is_bounded_and_permanently_fenced(self):
+        self.heartbeat_case('twice')
+
+    def test_heartbeat_readback_cannot_revive_the_old_deadline(self):
+        self.heartbeat_case('late')
+
+    def test_completed_delivery_rejection_never_retries_as_a_heartbeat(self):
+        queue.git(self.repository,'update-ref','refs/remotes/origin/main',self.base)
+        lease=queue.leases.Lease(queue,self.repository,'origin').acquire()
+        real=queue.leases.transport
+        pushes=[]
+        def reject(q,root,*arguments,**kwargs):
+            if arguments[0]=='push':
+                pushes.append(arguments)
+                raise queue.leases.Rejected('Injected delivery rejection')
+            return real(q,root,*arguments,**kwargs)
+        with mock.patch.object(queue.leases,'transport',side_effect=reject):
+            self.assertRaises(queue.leases.LeaseError,lease.publish,self.repository,'origin',[self.base+':refs/heads/gameforge/rejected'])
+        self.assertEqual(len(pushes),1)
+        self.assertTrue(lease.stop.is_set())
+        self.assertIsNone(queue.remote_ref(self.repository,'origin','refs/heads/gameforge/rejected'))
+
+    def test_native_timeout_restores_only_declared_parent_owned_outputs(self):
+        session = self.repository/'session.meta'
+        data = b'\xef\xbb\xbfNative original\r\n'
+        session.write_bytes(data)
+        script = self.repository/'Native.py'
+        script.write_text('from pathlib import Path\nimport time\n'
+                          'Path("session.meta").write_bytes(b"native session output")\n'
+                          'Path("unknown.txt").write_bytes(b"preserve unknown")\n'
+                          'time.sleep(60)\n')
+        queue.git(self.repository,'add','session.meta','Native.py')
+        queue.git(self.repository,'commit','-m','Native timeout fixture')
+        candidate=queue.git(self.repository,'rev-parse','HEAD')
+        index=Path(queue.git(self.repository,'rev-parse','--path-format=absolute','--git-path','index'))
+        before=index.read_bytes()
+        check=dict(self.policy['checks'][0],command=['{python}','Native.py'],timeout_seconds=2,session_outputs=['session.meta'])
+        self.assertRaises(queue.GateFailure,queue.execute_gate,self.repository,self.workspace_root/'Evidence',check,candidate,'policy',{})
+        self.assertEqual(session.read_bytes(),data)
+        self.assertEqual(index.read_bytes(),before)
+        self.assertEqual((self.repository/'unknown.txt').read_bytes(),b'preserve unknown')
+        receipts=list((self.workspace_root/'Evidence').glob('*/session-restoration.json'))
+        self.assertEqual(queue.read_json(receipts[0])['restored'],['session.meta'])
+        import GitFlowSession
+        for names in [['../source'],['*.meta'],['.git/index'],['x','x'],[{}]]:
+            self.assertRaises(queue.QueueError,GitFlowSession.validate,queue,names)
+
+    def test_native_session_divergence_is_preserved_before_any_restoration(self):
+        import GitFlowSession
+        path=self.repository/'owned.meta';path.write_bytes(b'original')
+        queue.git(self.repository,'add','owned.meta');queue.git(self.repository,'commit','-m','Owned session output')
+        folder=self.workspace_root/'Session';folder.mkdir()
+        snapshot=GitFlowSession.Snapshot(queue,self.repository,folder,['owned.meta'])
+        path.write_bytes(b'changed and staged')
+        queue.git(self.repository,'add','owned.meta')
+        self.assertRaises(queue.QueueError,snapshot.restore)
+        self.assertEqual(path.read_bytes(),b'changed and staged')
+        self.assertTrue((folder/'session-originals.json').exists())
+        queue.git(self.repository,'reset','--','owned.meta')
+        path.unlink()
+        self.assertRaises(queue.QueueError,snapshot.restore)
+        self.assertFalse(path.exists())
+
+    def test_repair_model_selection_is_explicit_stopped_and_preserves_gates(self):
+        import GitFlowModels
+        config=queue.configuration(self.repository)
+        config['policy']['repair']=dict(enabled=True,executable='fixture',model='configured',effort='max',window_seconds=10800)
+        config['policy_hash']=queue.digest(config['policy'])
+        control=queue.common(self.repository)/'gameforge_queue'
+        queue.durable(control/'configuration.json',config)
+        queue.durable(self.workspace_root/'ownership.json',config)
+        catalogue=dict(account_state='signed_in',models=[dict(model='configured',efforts=['high','max'])])
+        with mock.patch.object(GitFlowModels,'discover',return_value=catalogue):
+            self.assertRaises(queue.QueueError,queue.set_repair_model,self.repository,'0'*64,'configured','high')
+            self.assertRaises(queue.QueueError,queue.set_repair_model,self.repository,queue.digest(config),'other','high')
+            lease=queue.leases.Lease(queue,self.repository,'origin').acquire()
+            self.assertRaises(queue.QueueError,queue.set_repair_model,self.repository,queue.digest(config),'configured','high')
+            self.assertRaises(queue.QueueError,queue.set_native_session_outputs,self.repository,queue.digest(config),'compile_project',['session.meta'])
+            lease.close()
+            result=queue.set_repair_model(self.repository,queue.digest(config),'configured','high')
+        updated=queue.configuration(self.repository)
+        self.assertEqual(result['effort'],'high')
+        self.assertEqual(updated['policy']['checks'],config['policy']['checks'])
+        self.assertEqual(updated['policy']['repair'],dict(config['policy']['repair'],effort='high'))
+        self.assertRaises(queue.QueueError,queue.set_native_session_outputs,self.repository,queue.digest(updated),'unknown',['session.meta'])
+        self.assertRaises(queue.QueueError,queue.set_native_session_outputs,self.repository,queue.digest(updated),'compile_project',['../source'])
+        queue.set_native_session_outputs(self.repository,queue.digest(updated),'compile_project',['session.meta'])
+        final=queue.configuration(self.repository)
+        self.assertEqual(final['policy']['repair'],updated['policy']['repair'])
+        self.assertEqual(final['policy']['checks'],[dict(updated['policy']['checks'][0],session_outputs=['session.meta'])])
+
     def test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance(self):
         check = dict(self.policy['checks'][0], kind='specialist', inputs=['feature.txt', 'Gate.py'])
         cache = {}

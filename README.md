@@ -1,6 +1,6 @@
 # Geurts Game Forge GitFlow
 
-Version 0.7.2 accelerates complete repair snapshots and byte audits with independent parallel file I/O, focuses model work on the actual failure, and records truthful repair phases and timings.
+Version 0.8.0 recovers a completed rejected heartbeat by exact-owner readback, restores declared native session outputs from the surviving controller, and supports explicit stopped-owner repair model selection.
 
 In Unity, Queue local changes captures saved task-owned work into a recorded checkpoint and confirms its waiting-list entry while preserving the live branch, staging and working edits. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
@@ -18,7 +18,7 @@ Install from the authoritative released catalogue. Publication and consumer inst
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.7.2",
+  "packageVersion": "0.8.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

@@ -1,6 +1,6 @@
 {
   "name": "com.geurts.gameforge.gitflow",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "displayName": "Geurts Game Forge GitFlow",
   "description": "Editor queue panel, automatic publisher setup and strict deterministic integration host. No skip or validation bypass. Requires God, Odin Inspector and Quantum Console.",
   "unity": "6000.6",
