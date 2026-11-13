@@ -1,0 +1,43 @@
+Final acceptance: eight distinct tests passed. Seven initial cases passed; the delivery case correctly rejected tooling edited during that run. A frozen-source rerun passed; the strengthened imported-path classifier also passed. Original failure retained in InitialAcceptance.log.
+
+test_documentation_publication_is_truthful_and_resumes_without_compilation (TestGitFlowQueue.QueueAcceptance.test_documentation_publication_is_truthful_and_resumes_without_compilation) ... ok
+test_documentation_classifier_rejects_mixed_imported_binary_and_executable_changes (TestGitFlowQueue.QueueAcceptance.test_documentation_classifier_rejects_mixed_imported_binary_and_executable_changes) ... ok
+test_documentation_mixed_code_still_blocks_on_a_single_warning (TestGitFlowQueue.QueueAcceptance.test_documentation_mixed_code_still_blocks_on_a_single_warning) ... ok
+test_documentation_native_version_exception_rejects_other_player_settings (TestGitFlowQueue.QueueAcceptance.test_documentation_native_version_exception_rejects_other_player_settings) ... ok
+test_documentation_final_gate_remains_required_unless_explicitly_code_only (TestGitFlowQueue.QueueAcceptance.test_documentation_final_gate_remains_required_unless_explicitly_code_only) ... ok
+test_exact_source_is_idempotent_and_delivery_retains_ancestry (TestGitFlowQueue.QueueAcceptance.test_exact_source_is_idempotent_and_delivery_retains_ancestry) ... ERROR
+test_failure_blocks_following_work_and_never_changes_main (TestGitFlowQueue.QueueAcceptance.test_failure_blocks_following_work_and_never_changes_main) ... ok
+test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance (TestGitFlowQueue.QueueAcceptance.test_specialist_reuses_only_identical_declared_inputs_and_preserves_provenance) ... ok
+
+======================================================================
+ERROR: test_exact_source_is_idempotent_and_delivery_retains_ancestry (TestGitFlowQueue.QueueAcceptance.test_exact_source_is_idempotent_and_delivery_retains_ancestry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\gfdocs\Tools~\Queue\TestGitFlowQueue.py", line 200, in test_exact_source_is_idempotent_and_delivery_retains_ancestry
+    result = queue.process_once(self.repository)
+                 ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\gfdocs\Tools~\Queue\GitFlowQueue.py", line 929, in process_once
+  File "C:\gfdocs\Tools~\Queue\GitFlowQueue.py", line 483, in configuration
+    raise QueueError('Configured runner differs. A stopped-owner reviewed upgrade is required.')
+GitFlowQueue.QueueError: Configured runner differs. A stopped-owner reviewed upgrade is required.
+
+----------------------------------------------------------------------
+Ran 8 tests in 458.758s
+
+FAILED (errors=1)
+
+Frozen-source delivery rerun:
+test_exact_source_is_idempotent_and_delivery_retains_ancestry (TestGitFlowQueue.QueueAcceptance.test_exact_source_is_idempotent_and_delivery_retains_ancestry) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 84.749s
+
+OK
+
+Final classifier rerun:
+test_documentation_classifier_rejects_mixed_imported_binary_and_executable_changes (TestGitFlowQueue.QueueAcceptance.test_documentation_classifier_rejects_mixed_imported_binary_and_executable_changes) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 16.805s
+
+OK

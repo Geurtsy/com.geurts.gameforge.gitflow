@@ -1,0 +1,106 @@
+{
+  "baseline": "9f94758b9943dc18cdd55e1954c7cd9eacfde727",
+  "files": [
+    {
+      "path": "Editor/AssemblyInfo.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/Geurts.GameForge.GitFlow.Editor.asmdef",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowBrick.cs",
+      "unchanged": false,
+      "only_version_literal_changed": true
+    },
+    {
+      "path": "Editor/GitFlowControls.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowHelp.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowHost.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowInspection.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowNativeGate.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowPresentation.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowProcess.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowQueueConsole.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowSnapshot.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowToolDiscovery.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowWindow.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/Geurts.GameForge.GitFlow.Editor.Tests.asmdef",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowHelpTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowInspectionTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowPresentationTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowToolDiscoveryTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tools~/Examples/InspectionExample.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    }
+  ],
+  "scope": "Only Python queue applicability and guides change. Native C#, examples and assembly definitions retain their existing proof; the sole C# difference is the package version literal."
+}

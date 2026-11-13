@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "distinct_cases": 8,
+  "failed_unresolved": 0,
+  "initial_passed": 7,
+  "initial_runner_mismatch": 1,
+  "final_delivery_rerun": "FinalPublication.log",
+  "final_classifier_rerun": "FinalClassifier.log",
+  "original": "InitialAcceptance.log",
+  "note": "Runner files were edited while the first delivery test was active; immutable-tooling guard rejected it. Source was frozen and that exact case passed. No production runner was edited."
+}

@@ -62,6 +62,135 @@ class QueueAcceptance(unittest.TestCase):
         queue.git(self.repository, 'commit', '-m', 'Task source')
         return queue.submit(self.repository, 'origin', 'Task', 'patch', 'Focused acceptance change')
 
+    def test_documentation_publication_is_truthful_and_resumes_without_compilation(self):
+        (self.repository / 'Docs').mkdir()
+        value = self.source('Docs/GDD.md', '# Snapshot\n')
+        with mock.patch.object(queue, 'execute_gate', side_effect=AssertionError('Documentation must not compile')):
+            with mock.patch.object(queue, 'synchronize', side_effect=queue.QueueError('Injected pull failure')):
+                self.assertRaises(queue.QueueError, queue.process_once, self.repository)
+        identity, _, published = queue.entries(self.repository, 'origin')[0]
+        self.assertEqual(published['state'], 'published')
+        check = published['receipt']['checks'][0]
+        self.assertEqual(check['applicability'], 'not_applicable')
+        report = json.loads(queue.git(self.repository, 'show', identity + ':0-result.json'))
+        self.assertEqual(report['status'], 'not_applicable')
+        self.assertNotIn('warnings', report)
+        queue.verify_published_evidence(self.repository, identity, published)
+        # Even consistently re-hashed portable artifacts must retain their original source proof.
+        files = {name: queue.run(['git', 'show', identity + ':' + name], self.repository)
+                 for name in ('0-result.json', '0-scope.json')}
+        scope = json.loads(files['0-scope.json'])
+        scope['paths'] = ['Docs/invented.md']
+        files['0-scope.json'] = queue.encoded(scope).encode()
+        forged = json.loads(queue.encoded(published))
+        forged['receipt']['checks'][0]['artifacts']['scope.json'] = queue.digest(files['0-scope.json'])
+        files['receipt.json'] = queue.encoded(forged['receipt']).encode()
+        forged_identity = queue.object_commit(self.repository, identity, forged, 'Tampered evidence fixture', files)
+        self.assertRaises(queue.QueueError, queue.verify_published_evidence, self.repository, forged_identity, forged)
+        with mock.patch.object(queue, 'execute_gate', side_effect=AssertionError('Published work must not compile')):
+            result = queue.process_once(self.repository)
+        self.assertEqual(result['state'], 'integrated')
+        self.assertEqual(result['version'], '1.0.1')
+        self.assertTrue(queue.ancestor(self.repository, value['source'], result['main_commit']))
+
+    def test_documentation_classifier_rejects_mixed_imported_binary_and_executable_changes(self):
+        docs = self.repository / 'Docs'
+        docs.mkdir()
+        # A coincidental marker inside Assets must never make imported docs eligible.
+        marker = self.repository / 'Assets/ProjectSettings/ProjectVersion.txt'
+        marker.parent.mkdir(parents=True)
+        marker.write_text('m_EditorVersion: 6000.6.8f1\n')
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Imported marker fixture')
+        for name, raw, mode in [('Docs/GDD.md', b'# safe\n', '100644'),
+                                ('Assets/README.md', b'# imported\n', '100644'),
+                                ('Assets/Docs/GDD.md', b'# imported nested\n', '100644'),
+                                ('Docs/build.rsp', b'/nowarn:all\n', '100644'),
+                                ('Docs/data.md', b'bad\0binary', '100644'),
+                                ('Docs/run.md', b'# executable\n', '100755')]:
+            with self.subTest(path=name):
+                before = queue.git(self.repository, 'rev-parse', 'HEAD')
+                path = self.repository / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+                queue.git(self.repository, 'add', name)
+                if mode == '100755':
+                    queue.git(self.repository, 'update-index', '--chmod=+x', name)
+                queue.git(self.repository, 'commit', '-m', 'Classification input')
+                head = queue.git(self.repository, 'rev-parse', 'HEAD')
+                scope = queue.documentation_scope(self.repository, before, head, head, self.policy, '1.0.0')
+                self.assertEqual(scope is not None, name == 'Docs/GDD.md')
+
+    def test_documentation_mixed_code_still_blocks_on_a_single_warning(self):
+        (self.repository / 'Docs').mkdir()
+        (self.repository / 'Docs/GDD.md').write_text('# Snapshot\n')
+        gate = self.repository / 'Gate.py'
+        gate.write_text(gate.read_text().replace('warnings=0', 'warnings=1'))
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Documentation and compiler input')
+        queue.submit(self.repository, 'origin', 'GDD title is not classification', 'patch', 'Mixed changes')
+        self.assertRaises(queue.QueueError, queue.process_once, self.repository)
+        self.assertEqual(queue.remote_ref(self.repository, 'origin', 'refs/heads/main'), self.base)
+        self.assertEqual(queue.entries(self.repository, 'origin')[0][2]['state'], 'validation_failed')
+
+    def test_documentation_native_version_exception_rejects_other_player_settings(self):
+        root = self.repository / 'Game'
+        (root / 'ProjectSettings').mkdir(parents=True)
+        (root / 'Docs').mkdir()
+        settings = root / 'ProjectSettings/ProjectSettings.asset'
+        settings.write_bytes(b'PlayerSettings:\n  bundleVersion: 1.0.0\n  scriptingDefineSymbols: SAFE\n')
+        (root / 'ProjectSettings/ProjectVersion.txt').write_text('m_EditorVersion: 6000.6.8f1\n')
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Native project baseline')
+        base = queue.git(self.repository, 'rev-parse', 'HEAD')
+        (root / 'Docs/GDD.md').write_text('# Snapshot\n')
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Nested documentation')
+        source = queue.git(self.repository, 'rev-parse', 'HEAD')
+        policy = dict(self.policy, native_version_outputs=['Game/ProjectSettings/ProjectSettings.asset'])
+        settings.write_bytes(settings.read_bytes().replace(b'1.0.0', b'1.0.1'))
+        (self.repository / 'version.txt').write_text('1.0.1\n')
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Native version stamp')
+        candidate = queue.git(self.repository, 'rev-parse', 'HEAD')
+        self.assertIsNotNone(queue.documentation_scope(self.repository, base, source, candidate, policy, '1.0.1'))
+        settings.write_bytes(settings.read_bytes().replace(b'SAFE', b'CHANGED'))
+        queue.git(self.repository, 'add', '.')
+        queue.git(self.repository, 'commit', '-m', 'Unsafe settings change')
+        candidate = queue.git(self.repository, 'rev-parse', 'HEAD')
+        self.assertIsNone(queue.documentation_scope(self.repository, base, source, candidate, policy, '1.0.1'))
+
+    def test_documentation_final_gate_remains_required_unless_explicitly_code_only(self):
+        (self.repository / 'Docs').mkdir()
+        self.source('Docs/GDD.md', '# Snapshot\n')
+        original = queue.configuration(self.repository)
+        names = ['compile_project']
+        self.assertRaises(queue.QueueError, queue.set_documentation_checks, self.repository, 'stale', names)
+        queue.set_documentation_checks(self.repository, queue.digest(original), names)
+        changed = queue.configuration(self.repository)
+        before = json.loads(queue.encoded(original['policy']))
+        after = json.loads(queue.encoded(changed['policy']))
+        self.assertTrue(after['checks'][0].pop('code_only'))
+        self.assertEqual(before, after)
+        # A final check without explicit applicability retains its real command/evidence.
+        final = dict(self.policy['checks'][0], name='runtime_gate', kind='final')
+        changed['policy']['checks'].append(final)
+        changed['policy_hash'] = queue.digest(changed['policy'])
+        queue.durable(queue.common(self.repository) / 'gameforge_queue/configuration.json', changed)
+        queue.durable(self.workspace_root / 'ownership.json', changed)
+        with mock.patch.object(queue, 'execute_gate', wraps=queue.execute_gate) as gates:
+            result = queue.process_once(self.repository)
+        self.assertEqual(gates.call_count, 1)
+        self.assertEqual(result['receipt']['checks'][1]['name'], 'runtime_gate')
+        self.assertNotIn('applicability', result['receipt']['checks'][1])
+        from GitFlowObserve import projection
+        self.assertEqual(projection({'applicability': 'not_applicable'}), {'applicability': 'not_applicable'})
+        self.assertEqual(projection({'applicability': 'private raw output'}), {})
+        self.policy['checks'][0]['code_only'] = False
+        self.assertIs(queue.validate_policy(self.policy), self.policy)
+        self.policy['checks'][0]['code_only'] = 'false'
+        self.assertRaises(queue.QueueError, queue.validate_policy, self.policy)
+
     def test_exact_source_is_idempotent_and_delivery_retains_ancestry(self):
         value = self.source()
         again = queue.submit(self.repository, 'origin', 'Other label', 'minor', 'Does not create a duplicate')

@@ -1,10 +1,20 @@
 # GitFlow supported automation contract
 
-Version 0.8.1 retains bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+Version 0.9.0 retains bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+
+## Documentation-only queue changes
+
+Compilation gates default to code-only applicability. The processor examines the complete merged change before version assignment, independently of the submission title. Only regular, non-executable UTF-8 `.md`/`.txt` files under root `Docs/` or `Documentation~/`, and root `README.md`/`CHANGELOG.md`, qualify. Nested Unity `Docs/`/`Documentation~/` require a tracked `ProjectSettings/ProjectVersion.txt` in both revisions. Imported assets, code, packages, configuration, binary/link/mode changes, unknown paths and mixed changes run full validation. A rename is checked as its deletion and addition.
+
+Native versioning still runs. Only the declared text version and a byte-verified `bundleVersion`-only native PlayerSettings change may accompany documentation; other changes fall back to full validation. Repaired candidates use normal gates. Receipts say `not_applicable`, never compiler passed, and retain exact base/documentation/final candidates, paths, policy and version proof. Published-receipt recovery rechecks that portable proof.
+
+Existing final/specialist checks remain required by default. A project may explicitly mark a check `code_only: true` if it has no documentation responsibility; `code_only: false` always runs it. `documentation_only: false` disables this route for a project whose build consumes documentation. While the service and shared owner are stopped, use `set-documentation-checks --operator --expected-configuration <reviewed-identity> --check <exact-name>` once per code-only check. Omitted checks remain required for documentation too. This changes applicability only; commands, diagnostic assertions, timeouts, scope and repair budgets remain intact.
+
+Code, mixed and unknown changes still require complete zero-warning/zero-error native compilation and qualification. Documentation checks, when configured, remain required. This route does not certify a new Unity build or reuse an old report as a newly executed check.
 
 ## Faster compiler verification
 
-Native session originals use bounded native Git batches with the same per-path clean filters and committed blob checks. Capture rechecks raw originals, HEAD and index before any child launch; unknown or concurrent edits remain failures. Full native script rebuilds and complete default-diagnostic qualification remain required. Native results record compilation and qualification durations, with the qualifier worker count when supplied by the installed Compatibility owner. No result cache, warning exclusion or skipped assembly is introduced.
+Native session originals use bounded native Git batches with the same per-path clean filters and committed blob checks. Capture rechecks raw originals, HEAD and index before any child launch; unknown or concurrent edits remain failures. For code, mixed or unknown changes, full native script rebuilds and complete default-diagnostic qualification remain required. Native results record compilation and qualification durations, with the qualifier worker count when supplied by the installed Compatibility owner. No result cache, warning exclusion or skipped assembly is introduced.
 
 A single Windows Unity 6000.6.8f1 serial-then-parallel comparison on the same stopped candidate checked 107 assemblies and 6317 unique inputs with zero diagnostics and identical compiler arguments. Qualification took 314.12s versus 106.73s; native original capture took 81.62s versus 4.82s for 213 files with identical manifests. Filesystem warmth and host load may affect timing; this does not measure a whole Unity rebuild or guarantee every queue request duration.
 
@@ -58,7 +68,7 @@ An operator configures one new short root. Ownership markers bind the repository
 
 The publisher serializes the oldest request, verifies dependencies, combines source with main, assigns one semantic version, and calls the native version adapter through PlayerSettings.bundleVersion. Protocol-1 version proof is explicitly requested and required. Legacy helper invocations without that flag retain their older behavior. Project-specific native derived identities require their own project adapter and required gate; this generic helper does not claim to implement them.
 
-Every configured check is required. Compilation and final gates always run against the exact candidate. The native compilation gate uses CompilationPipeline.RequestScriptCompilation with CleanBuildCache and collects every assembly diagnostic; a warm Library cannot hide cached warnings. This rebuilds scripts while retaining imported-asset caches. See [Unity's supported full-compilation API](https://docs.unity.com/en-us/engine/6000.0/script-reference/unityeditor/compilation/compilationpipeline/requestscriptcompilation). Specialist evidence can be reused only for identical declared source objects, policy, command, environment and tool bytes, with unchanged retained artifact hashes. Use inputs ["."] when complete dependencies are uncertain. Zero errors, warnings and skips are required. A final check requires a report identifying the current invocation and candidate, and must leave the source clean and unchanged. Moving main stops the candidate for explicit reviewed continuation instead of causing an automatic revalidation loop.
+Every applicable configured check is required. Outside the proven documentation-only route above, compilation and final gates always run against the exact candidate. The native compilation gate uses CompilationPipeline.RequestScriptCompilation with CleanBuildCache and collects every assembly diagnostic; a warm Library cannot hide cached warnings. This rebuilds scripts while retaining imported-asset caches. See [Unity's supported full-compilation API](https://docs.unity.com/en-us/engine/6000.0/script-reference/unityeditor/compilation/compilationpipeline/requestscriptcompilation). Specialist evidence can be reused only for identical declared source objects, policy, command, environment and tool bytes, with unchanged retained artifact hashes. Use inputs ["."] when complete dependencies are uncertain. Zero errors, warnings and skips are required. A final check requires a report identifying the current invocation and candidate, and must leave the source clean and unchanged. Moving main stops the candidate for explicit reviewed continuation instead of causing an automatic revalidation loop.
 
 Required checks finish before an atomic update of main, request state and the shared lease. Portable receipts and raw gate artifacts live in the request commit, outside game source. Later states preserve them. Published recovery verifies the complete portable receipt/artifact hashes and main/source ancestry before completing required pulls, with no second version or repeated checks. Dirty original checkouts remain untouched and leave the request Published until explicitly reconciled. A non-main task branch is not silently moved.
 
@@ -146,7 +156,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.8.1",
+  "packageVersion": "0.9.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
