@@ -1,6 +1,6 @@
 # GitFlow supported automation contract
 
-Version 0.7.1 preflights repair proposals without mutating the publisher candidate, retries rejected formatting with diagnostics, and preserves native Unity overlay payloads. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
+Version 0.7.2 speeds complete repair capture/audits, focuses model work, and exposes repair phase timings. Existing preflight, native payload and preservation rules remain. Read [Validation.md](Validation.md) for actual source/environment coverage and remaining release gates. Historical evidence retains its original scope.
 
 ## Choose the relevant surface
 
@@ -74,6 +74,10 @@ Only five safeguards remain: preserve the active checkout and originals; keep ch
 
 The controller copies complete saved nonignored candidate content into a short owner-local Repair/<identity>/Original and Proposed tree without Git metadata, remotes or ignored Unity caches. Codex edits only Proposed through workspace-write file/shell tools and official-documentation search. A separate read-only model pass checks the complete changed-file manifest and actual before/after artifacts for relevance, feature preservation and unchanged validation coverage. Rejected artifacts never change the candidate. The controller verifies original HEAD/index/membership/raw hashes and reviewed artifact hashes before importing the exact reviewed bytes, rerunning the staged whitespace guard, committing, and rerunning independent checks. All artifacts, responses and hashes are retained. Before independent review, a private Git index copied from the real candidate stages the proposed changes and runs the same authored-text whitespace guard, including previously staged source outside the proposal. A rejected check records preflight.json and returns its diagnostics to the next proposal within the original budget only after proving the real HEAD/index/status stayed unchanged. Native .overlay serialization joins the existing .asset/.meta/.prefab/.unity exception; exact reviewed payload bytes are preserved. Other Git, ownership, concurrent-change, import or commit failures remain actionable blockers, never blind retries of uncertain writes.
 
+Independent file validation, two-copy capture, hashing and candidate-byte audits use up to eight I/O workers. Every original path/reparse, membership, index, raw-byte, protected-file and review check remains; imports and Git publication stay serialized. The local state names snapshot, proposal, proposal audit, formatting check, review, review audit and application; each completed attempt retains phase seconds. These are measured stages, not inferred completion percentages.
+
+Model repair starts at the exact diagnostic and affected symbols; review inspects every changed artifact and directly affected dependencies without repeating the controller's complete tree hash scan. Neither model phase runs final queue gates. Unchanged failed native licensing/IPC/access calls are not retried inside the sandbox; report the exact unavailable native action promptly, never hand-edit Unity serialization. The original selected model/effort, full project availability, overall deadline and independent review/gates remain unchanged. A faster file benchmark does not guarantee a fixed total repair duration.
+
 No application-imposed byte limits apply to repair files, diagnostics/logs, model input/output, queue control records or portable gate evidence. The controller passes file paths rather than embedding project contents; the model reads/searches complete on-disk files in useful portions within its actual context window. Resource exhaustion, unavailable tooling and filesystem/platform limitations remain real failures, not a promise of infinite capacity. Viewer pagination/redaction/display limits are separate and unchanged.
 
 The original three-hour start and all attempts survive restart, adoption and model changes. There is no three-no-progress-attempt cutoff and no ten-minute model-call ceiling; each call receives only the remaining overall budget. Previous failures/review reasons are supplied to later attempts. A reply or review after the deadline cannot be applied. Explicit unavailable access/project decisions, uncertain interrupted application, ownership loss and failed independent gates remain blockers. Known model/review failures preserve the unchanged candidate and isolated artifacts for a reviewed continuation.
@@ -128,7 +132,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.7.1",
+  "packageVersion": "0.7.2",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.2 — 2026-11-13
+
+- Parallelize independent complete-file path checks, capture and byte audits without removing preservation checks.
+- Focus model repair/review on the failure and changed artifacts; avoid duplicate final gates and unchanged failed native calls.
+- Report actual repair phases and durable per-attempt timings, retaining configured model/effort and original budget.
+
 ## 0.7.1 — 2026-11-13
 
 - Preserve native Unity overlay serialization instead of rejecting upstream payload whitespace.

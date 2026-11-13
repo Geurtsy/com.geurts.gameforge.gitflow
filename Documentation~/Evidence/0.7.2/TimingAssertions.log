@@ -1,0 +1,6 @@
+test_whitespace_rejection_retries_before_mutation_and_then_runs_required_gates (TestGitFlowRepairWorkspace.ProjectRepairAcceptance.test_whitespace_rejection_retries_before_mutation_and_then_runs_required_gates) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 62.867s
+
+OK

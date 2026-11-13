@@ -4,6 +4,13 @@ import os
 from pathlib import Path
 import shutil
 import uuid
+from concurrent.futures import ThreadPoolExecutor
+
+
+def parallel_files(operation, values):
+    """Overlap independent ordinary-file I/O; keep every existing path and byte check."""
+    with ThreadPoolExecutor(max_workers=min(8, os.cpu_count() or 1)) as workers:
+        return list(workers.map(operation, values))
 
 
 def file_hash(path):
@@ -27,18 +34,23 @@ def identity(q, workspace):
 
 def manifest(q, directory):
     """Inspect all proposed ordinary files, rejecting links and nested Git metadata."""
-    result = {}
+    paths = []
     for parent, folders, files in os.walk(directory, followlinks=False):
-        for name in folders + files:
+        for name in folders:
             path = q.plain(Path(parent) / name)
             relative = path.relative_to(directory).as_posix()
             if any(part.casefold() == '.git' for part in Path(relative).parts):
                 raise q.QueueError('Repair workspace must not contain Git metadata: ' + relative)
-            if path.is_file():
-                result[relative] = dict(sha256=file_hash(path), bytes=path.stat().st_size)
-            elif not path.is_dir():
+            if not path.is_dir():
                 raise q.QueueError('Unsupported non-ordinary repair artifact: ' + relative)
-    return result
+        paths.extend(Path(parent) / name for name in files)
+    def inspect(path):
+        path = q.plain(path)
+        relative = path.relative_to(directory).as_posix()
+        if any(part.casefold() == '.git' for part in Path(relative).parts) or not path.is_file():
+            raise q.QueueError('Unsupported repair artifact: ' + relative)
+        return relative, dict(sha256=file_hash(path), bytes=path.stat().st_size)
+    return dict(parallel_files(inspect, paths))
 
 
 def prepare(q, workspace, evidence_root, folder):
@@ -48,27 +60,31 @@ def prepare(q, workspace, evidence_root, folder):
     names = set(q.run(['git', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], workspace).decode('utf-8').split('\0')) - {''}
     baseline = identity(q, workspace)
     # Validate every concrete descendant before creating/copying any project content.
-    for name in names:
+    def preflight(name):
         q.plain(workspace / name)
         q.plain(original / name)
         q.plain(proposed / name)
+    parallel_files(preflight, sorted(names))
     original.mkdir(parents=True, exist_ok=False)
     proposed.mkdir()
-    for name in sorted(names):
+    def copy(name):
         source = q.plain(workspace / name)
         if not source.exists():
-            continue
+            return
         if not source.is_file():
             raise q.QueueError('Unsupported tracked repair input: ' + name)
         for destination in [original / name, proposed / name]:
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, destination)
+    parallel_files(copy, sorted(names))
     files = manifest(q, original)
     if identity(q, workspace) != baseline or manifest(q, proposed) != files:
         raise q.QueueError('Candidate changed while preparing repair; original candidate retained.')
-    for name, value in files.items():
+    def verify(item):
+        name, value = item
         if file_hash(q.plain(workspace / name)) != value['sha256']:
             raise q.QueueError('Candidate bytes changed during repair capture: ' + name)
+    parallel_files(verify, files.items())
     record = dict(root=str(root), original=str(original), proposed=str(proposed),
                   candidate=baseline, files=files)
     q.durable(folder / 'workspace.json', record)
@@ -115,9 +131,11 @@ def apply(q, workspace, record, changed):
     existing = {name for name in names if (workspace / name).is_file()}
     if existing != set(record['files']):
         raise q.QueueError('Candidate file membership changed during repair; artifacts retained.')
-    for name, value in record['files'].items():
+    def verify(item):
+        name, value = item
         if file_hash(q.plain(workspace / name)) != value['sha256']:
             raise q.QueueError('Candidate bytes changed during repair: ' + name)
+    parallel_files(verify, record['files'].items())
     # Validate all destinations before starting the reviewed import.
     for name, change in changed.items():
         q.plain(workspace / name)

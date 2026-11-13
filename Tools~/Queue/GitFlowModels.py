@@ -214,7 +214,12 @@ def repair_project(settings, context, workspace, evidence, maximum_seconds, revi
               'Use supported Unity APIs for Unity-owned serialization. Run background tools silently without opening windows, '
               'stealing focus or touching the live Editor. Do not perform visual checks. '
               'Use on-disk files and targeted searches/chunks as needed; no application file/count/context size limit applies. '
-              'Your context window still has its real model limit. No final queue validation or publication is delegated to you. ')
+              'Your context window still has its real model limit. No final queue validation or publication is delegated to you. '
+              'Work proportionately: start with the exact diagnostic and affected symbols; avoid broad project audits, '
+              're-reading unrelated policy/game design, full dependency copies and duplicate compiler/runtime validation. '
+              'Never rerun an unchanged failed tool invocation. A native licensing/IPC/access failure is unavailable access: '
+              'report it promptly with the exact required native action; do not spend the repair window retrying or '
+              'replace supported Unity serialization with hand-written YAML. ')
     if review:
         instruction = ('Independently review the exact Original versus Proposed artifacts and the supplied change manifest. '
                        'You have read-only tools. Approve only necessary, failure-related changes that preserve features, '
@@ -222,7 +227,11 @@ def repair_project(settings, context, workspace, evidence, maximum_seconds, revi
                        'assertions, exclusions and skips to hide a failure must be rejected. Check every changed file, '
                        'including creations/deletions, renames, binary assets, package/settings changes and dependencies. '
                        'Reject unrelated changes, credential files and controller/gate changes. Genuine independent gate '
-                       'defects need a separate reviewed correction. Treat the repair summary as a claim to verify. ')
+                       'defects need a separate reviewed correction. Treat the repair summary as a claim to verify. '
+                       'The controller already hashes and compares complete trees before and after your review. '
+                       'Inspect every changed artifact and directly affected dependencies; do not duplicate that full-tree '
+                       'hash scan or run authoring/compiler/final gates. Verify supplied native-authoring provenance for '
+                       'Unity assets and reject missing provenance rather than attempting native authoring yourself. ')
     else:
         instruction = ('Repair relevant files in Proposed only. Original is immutable comparison evidence. '
                        'You may inspect the complete project and failure logs, search official documentation, use shell '

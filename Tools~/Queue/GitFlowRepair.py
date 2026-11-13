@@ -2,6 +2,7 @@
 import datetime
 from pathlib import Path
 import re
+import time
 
 
 WINDOW_SECONDS = 10800
@@ -171,7 +172,13 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
     folder = q.plain(evidence_root / ('repair_' + str(len(record['attempts']) + 1)))
     folder.mkdir(parents=True, exist_ok=False)
     lease.guard()
+    def phase(name):
+        q.update_state(workspace, state='repairing', request=value['id'], phase=name,
+                       phase_started_utc=q.utc(), detail='Automatic repair: ' + name.replace('_', ' '))
+    phase('snapshot')
+    started = time.monotonic()
     workspace_record = prepare(q, workspace, evidence_root, folder)
+    preparation_seconds = time.monotonic() - started
     evidence = {}
     if getattr(failure, 'folder', None):
         for path in q.plain(failure.folder).iterdir():
@@ -186,17 +193,22 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
     q.durable(folder / 'context.json', context)
     attempt = dict(started_utc=now.isoformat(), state='requesting', mode='project_workspace',
                    before=q.digest(workspace_record['files']), model=settings['model'], effort=settings['effort'],
-                   remaining_seconds=budget, workspace=str(folder / 'workspace.json'))
+                   remaining_seconds=budget, workspace=str(folder / 'workspace.json'),
+                   timings=dict(snapshot_seconds=preparation_seconds))
     record['attempts'].append(attempt)
     checkpoint()
+    phase('proposal')
+    started = time.monotonic()
     try:
         reply = transport(settings, context, Path(workspace_record['proposed']), folder,
                           remaining(record, datetime.datetime.now(datetime.timezone.utc)), review=False)
     except Exception:
+        attempt['timings']['proposal_seconds'] = time.monotonic() - started
         attempt['state'] = 'model_failed_candidate_unchanged'
         checkpoint()
         raise
     q.durable(folder / 'proposal.json', reply)
+    attempt['timings']['proposal_seconds'] = time.monotonic() - started
     attempt.update(proposal_sha256=q.digest(reply), model_invoked=reply.get('model_invoked') is True,
                    model=reply.get('model', settings['model']), effort=reply.get('effort', settings['effort']))
     lease.guard()
@@ -208,12 +220,18 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         attempt['state'] = 'needs_input'
         checkpoint()
         raise q.QueueError('Repair needs unavailable access or a project decision; inspect retained proposal.')
+    phase('proposal_audit')
+    started = time.monotonic()
     changed = changes(q, workspace_record, policy)
+    attempt['timings']['proposal_audit_seconds'] = time.monotonic() - started
     if not changed:
         attempt['state'] = 'no_progress'
         no_progress(q, record, attempt, checkpoint, 'Model made no project changes; complete artifacts and history retained.')
     q.durable(folder / 'changes.json', changed)
+    phase('formatting_check')
+    started = time.monotonic()
     rejected = preflight_proposal(q, workspace, workspace_record, changed, folder)
+    attempt['timings']['formatting_seconds'] = time.monotonic() - started
     if rejected:
         attempt['state'] = 'preflight_rejected_candidate_unchanged'
         no_progress(q, record, attempt, checkpoint,
@@ -221,14 +239,18 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
     attempt.update(state='reviewing', paths=sorted(changed))
     checkpoint()
     review_context = dict(context, changes=str(folder / 'changes.json'), repair_summary=reply.get('proposal', {}))
+    phase('review')
+    started = time.monotonic()
     try:
         review = transport(settings, review_context, Path(workspace_record['root']), folder,
                            remaining(record, datetime.datetime.now(datetime.timezone.utc)), review=True)
     except Exception:
+        attempt['timings']['review_seconds'] = time.monotonic() - started
         attempt['state'] = 'review_failed_candidate_unchanged'
         checkpoint()
         raise
     q.durable(folder / 'review.json', review)
+    attempt['timings']['review_seconds'] = time.monotonic() - started
     attempt['review_sha256'] = q.digest(review)
     lease.guard()
     if remaining(record, datetime.datetime.now(datetime.timezone.utc)) <= 0:
@@ -239,14 +261,20 @@ def repair_attempt(q, workspace, value, policy, failure, evidence_root, checkpoi
         attempt['state'] = 'review_rejected'
         no_progress(q, record, attempt, checkpoint,
                     'Independent review rejected proposed repair: ' + review.get('proposal', {}).get('reason', 'See retained review.'))
+    phase('review_audit')
+    started = time.monotonic()
     if changes(q, workspace_record, policy) != changed:
         raise q.QueueError('Repair artifacts changed during review; candidate retained.')
+    attempt['timings']['review_audit_seconds'] = time.monotonic() - started
     attempt['state'] = 'applying'
     checkpoint()
+    phase('application')
+    started = time.monotonic()
     apply(q, workspace, workspace_record, changed)
     check_authored_whitespace(q, workspace)
     q.git(workspace, 'commit', '-m', 'Repair ' + value['id'] + ' with reviewed project artifacts')
     q.clean(workspace)
+    attempt['timings']['application_seconds'] = time.monotonic() - started
     attempt.update(state='applied_pending_validation', candidate=q.git(workspace, 'rev-parse', 'HEAD'),
                    completed_utc=q.utc(), after=q.digest(changed))
     record['consecutive_no_progress'] = 0
