@@ -1,0 +1,21 @@
+Nine focused real-Git/Windows cases: heartbeat retry/accepted readback/moved-owner/repeated rejection/deadline, native child timeout, model selection, uncertain atomic ACK and concurrent claims.
+
+......
+----------------------------------------------------------------------
+Ran 9 tests in 114.765s
+
+OK
+
+Additional delivery-rejection and native divergence checks:
+..
+----------------------------------------------------------------------
+Ran 2 tests in 15.064s
+
+OK
+
+Expanded stopped-owner model/session configuration check:
+.
+----------------------------------------------------------------------
+Ran 1 test in 30.433s
+
+OK

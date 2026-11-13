@@ -256,6 +256,7 @@ class Lease:
             self.guard()
             self.attempted_oid, self.verification = None, None
             dispatch = self.clock()
+            receipt = None
             try:
                 child = self.q.object_commit(self.repo, self.oid, self.metadata(state, operation),
                                              "Integration lease " + operation)
@@ -263,13 +264,39 @@ class Lease:
                 # The lease ref and every delivery/control target change together.
                 # A successor of our held OID makes our child a rejected sibling.
                 self.attempted_oid = child
-                transport(self.q, self.repo, "push", "--atomic", self.remote,
-                          child + ":" + self.q.LOCK, *updates)
+                try:
+                    transport(self.q, self.repo, "push", "--atomic", self.remote,
+                              child + ":" + self.q.LOCK, *updates)
+                except Rejected as error:
+                    # Only a heartbeat has no other publication target to reconcile.
+                    # A completed rejection can be read back under the OLD deadline;
+                    # timeouts, release and atomic delivery remain permanently fenced.
+                    if state != "owned" or operation != "heartbeat" or updates:
+                        raise
+                    observed, metadata = snapshot(self.q, self.repo, self.remote)
+                    self.guard()
+                    validate(metadata)
+                    if observed not in {self.oid, child} or metadata['owner'] != self.owner or metadata['state'] != 'owned':
+                        raise LeaseError('Rejected heartbeat no longer has the exact held owner') from error
+                    receipt = dict(owner=self.owner, held=self.oid, child=child, observed=observed,
+                                   rejection=str(error), utc=self.q.utc(), retried=observed == self.oid,
+                                   state='reconciling')
+                    path = self.q.common(self.repo) / 'gameforge_queue' / ('heartbeat_' + child + '.json')
+                    self.q.durable(path, receipt)
+                    if observed == self.oid:
+                        self.guard(write=True)
+                        # Same immutable child, one normal FF retry, no new deadline.
+                        transport(self.q, self.repo, 'push', '--atomic', self.remote,
+                                  child + ':' + self.q.LOCK)
                 self.verification = verify_child(self.q, self.repo, self.remote, child,
                                                  released=state == "released", expected_owner=self.owner)
                 # A late ACK/verification must not revive the previous ownership.
                 # Keep the old deadline until the whole operation proves ownership.
                 self.guard()
+                if receipt is not None:
+                    receipt.update(state='verified', verification=self.verification)
+                    self.q.durable(path, receipt)
+                    self.guard()
                 self.oid, self.deadline = child, dispatch + SECONDS
                 self.guard()
                 return child

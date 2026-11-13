@@ -33,7 +33,7 @@
       ],
       "maturity": "candidate",
       "provider": "editor",
-      "description": "Same-ID recovery and optional project-wide tool-enabled isolated repair with independent read-only review. Relevant files of any type may be created/deleted/renamed/replaced. No fixed repair file/context/proposal/diagnostic/evidence sizes, edit counts, three-stall cutoff or ten-minute model-call ceiling. Preserve original three-hour budget, active work, credentials, independent gates and publisher ownership."
+      "description": "Same-ID recovery, bounded exact-owner heartbeat reconciliation, parent restoration of explicitly declared native session outputs, and optional project-wide isolated repair with independent review. Stopped-owner model/effort selection preserves gates and original clocks. Relevant files of any type may be created/deleted/renamed/replaced without fixed application size/edit-count ceilings. Preserve the original three-hour budget, active work, credentials, independent gates and publication fencing."
     },
     {
       "id": "local_codex_selection",
@@ -81,7 +81,7 @@
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.7.2",
+  "packageVersion": "0.8.0",
   "prerequisites": [
     {
       "required": true,

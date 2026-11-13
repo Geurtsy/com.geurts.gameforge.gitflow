@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.7.2",
-  "candidate": "v0.7.2",
+  "packageVersion": "0.8.0",
+  "candidate": "v0.8.0",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Fresh parallel full-file capture/audit preservation acceptance and real-Git benchmark, followed by focused repair phase-timing acceptance. Exact unchanged native evidence reused.",
+  "scope": "Fresh real-Git heartbeat fencing/reconciliation, actual Windows native child timeout with exact parent restoration, stopped-owner configuration and a signed-in High reasoning review. Exact unchanged native evidence reused.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.7.2/ProjectRepairAcceptance.log",
-    "passed": 11,
+    "report": "Documentation~/Evidence/0.8.0/RecoveryAcceptance.log",
+    "passed": 12,
     "failed": 0,
-    "scope": "Eleven real-Git/Windows complete broad-repair, concurrent-edit, review/protected-gate, native overlay, deadline, whitespace preflight and publication checks after parallel file I/O."
+    "scope": "Twelve focused executions across eleven distinct real-Git/Windows preservation/fencing/configuration cases; expanded configuration check rerun after adding session selection."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.5.3/Compiler.json",
@@ -37,11 +37,11 @@
   "publicationBlockers": [],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
-    "sourceCommit": "345c3995c8a650dec9cb0d278c8045ef1fa86866",
+    "sourceCommit": "de69d70dc9b5cc6b8500f7d396bfae54e52f7969",
     "nativeCandidate": "7a3c2f727e1a1f822dacc054c6b51ffb0a74e6af",
-    "reason": "All native behavior, assembly definitions, dependencies and examples unchanged except version literal. New Python behavior has fresh focused acceptance; prior model and native evidence retain their original scope.",
+    "reason": "All native C#/assembly/dependency/example behavior unchanged except version literal. Fresh Python tests and signed-in latency sample cover the changed controller behavior.",
     "freshPaidInference": false,
-    "comparison": "Documentation~/Evidence/0.7.2/NativeEvidenceReuse.json"
+    "comparison": "Documentation~/Evidence/0.8.0/NativeEvidenceReuse.json"
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",
@@ -75,5 +75,13 @@
     "passed": 2,
     "failed": 0,
     "scope": "Real-Git preflight retry through unchanged gates plus concurrent-edit preservation after phase/timing reporting."
+  },
+  "reasoningLatency": {
+    "report": "Documentation~/Evidence/0.8.0/ReasoningLatency.json",
+    "model": "gpt-5.6-sol",
+    "effort": "high",
+    "seconds": 145.52646839999943,
+    "baselineMaxSeconds": 385.6501171,
+    "scope": "One fresh signed-in read-only review of the same immutable Original/Proposed artifacts. Nonconcurrent baseline; not a controlled general latency guarantee. No repair imported or budget reset."
   }
 }
