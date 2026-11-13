@@ -211,6 +211,8 @@ class ProjectRepairAcceptance(unittest.TestCase):
         self.assertEqual(attempts[0]['state'], 'preflight_rejected_candidate_unchanged')
         self.assertEqual(attempts[1]['state'], 'applied_pending_validation')
         self.assertLess(attempts[1]['remaining_seconds'], attempts[0]['remaining_seconds'])
+        self.assertTrue({'snapshot_seconds', 'proposal_seconds', 'review_seconds', 'application_seconds'} <= attempts[1]['timings'].keys())
+        self.assertTrue(all(seconds >= 0 for seconds in attempts[1]['timings'].values()))
         self.assertEqual(result['receipt']['checks'][0]['name'], 'compile_project')
         self.assertTrue(queue.ancestor(self.repository, value['source'], result['main_commit']))
 

@@ -1,0 +1,7 @@
+test_whitespace_rejection_retries_before_mutation_and_then_runs_required_gates (TestGitFlowRepairWorkspace.ProjectRepairAcceptance.test_whitespace_rejection_retries_before_mutation_and_then_runs_required_gates) ... ok
+test_concurrent_candidate_change_is_preserved_and_not_overwritten (TestGitFlowRepairWorkspace.ProjectRepairAcceptance.test_concurrent_candidate_change_is_preserved_and_not_overwritten) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 74.249s
+
+OK

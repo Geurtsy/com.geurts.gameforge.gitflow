@@ -1,0 +1,127 @@
+{
+  "baseline": "345c3995c8a650dec9cb0d278c8045ef1fa86866",
+  "native_behavior_dependencies_and_examples_unchanged": true,
+  "files": [
+    {
+      "path": "Editor/AssemblyInfo.cs",
+      "baseline_sha256": "f5ae206db70e061a9dcdf5f1bc5736adb0a74d029a5b7595058a0d0dc6faef3a",
+      "candidate_sha256": "f5ae206db70e061a9dcdf5f1bc5736adb0a74d029a5b7595058a0d0dc6faef3a",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/Geurts.GameForge.GitFlow.Editor.asmdef",
+      "baseline_sha256": "8a2586f4e0fc79f959afac7fdc54dce6e8716133441196d3700b217b71639b92",
+      "candidate_sha256": "8a2586f4e0fc79f959afac7fdc54dce6e8716133441196d3700b217b71639b92",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowBrick.cs",
+      "baseline_sha256": "98af85def176c17befc130f3680a3672a95c180330942790732da45f53dd409a",
+      "candidate_sha256": "b698cfcbfc7006913480d0623fbecf070d360d3d076420f2d6bdc7011b64ac9c",
+      "only_version_literal_changed": true
+    },
+    {
+      "path": "Editor/GitFlowControls.cs",
+      "baseline_sha256": "7484dd167abd1f4826b8d0e995ca29ec5bbf6bbf4579e250dec7d7f421fb6218",
+      "candidate_sha256": "7484dd167abd1f4826b8d0e995ca29ec5bbf6bbf4579e250dec7d7f421fb6218",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowHelp.cs",
+      "baseline_sha256": "49d6f8f1b7ffd5613f0c9bca489c15d7b7de50495b5422b5766ce44f6d7c3f83",
+      "candidate_sha256": "49d6f8f1b7ffd5613f0c9bca489c15d7b7de50495b5422b5766ce44f6d7c3f83",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowHost.cs",
+      "baseline_sha256": "bc2d4a09a99a9d972fd91faf07c0adce9f4ebd61a122d798ff84268135eecda5",
+      "candidate_sha256": "bc2d4a09a99a9d972fd91faf07c0adce9f4ebd61a122d798ff84268135eecda5",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowInspection.cs",
+      "baseline_sha256": "418f5f7b5e31fcbd462807048569e3c781d36b8d896bfff511726c9d0f61bc80",
+      "candidate_sha256": "418f5f7b5e31fcbd462807048569e3c781d36b8d896bfff511726c9d0f61bc80",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowNativeGate.cs",
+      "baseline_sha256": "9cd9b4e46f82c72877280c92bba9d357eea10246c12fae1c60396e429441dae2",
+      "candidate_sha256": "9cd9b4e46f82c72877280c92bba9d357eea10246c12fae1c60396e429441dae2",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowPresentation.cs",
+      "baseline_sha256": "df52de6b92e64390ee4a8610fae6d17e459ca98baa39657641f73a536ad80352",
+      "candidate_sha256": "df52de6b92e64390ee4a8610fae6d17e459ca98baa39657641f73a536ad80352",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowProcess.cs",
+      "baseline_sha256": "db667cc23257e52a97c4092ca9269c228a48d8dfbc1dc4c3dddc982424b98d0e",
+      "candidate_sha256": "db667cc23257e52a97c4092ca9269c228a48d8dfbc1dc4c3dddc982424b98d0e",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowQueueConsole.cs",
+      "baseline_sha256": "24d5a81ef150ed06c2e707f944fa79af8b8b2e99551b2f83cef7ccee77f8cb2e",
+      "candidate_sha256": "24d5a81ef150ed06c2e707f944fa79af8b8b2e99551b2f83cef7ccee77f8cb2e",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowSnapshot.cs",
+      "baseline_sha256": "7cf74736de8c7e11c9fb8da5b007f0bbc1e8d7a7228b4349c3ad3e0de57a903d",
+      "candidate_sha256": "7cf74736de8c7e11c9fb8da5b007f0bbc1e8d7a7228b4349c3ad3e0de57a903d",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowToolDiscovery.cs",
+      "baseline_sha256": "b463b32009bd5242d02bb7b0126ad95011ce8a941a6e0268bd84ffadb21c13ad",
+      "candidate_sha256": "b463b32009bd5242d02bb7b0126ad95011ce8a941a6e0268bd84ffadb21c13ad",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowWindow.cs",
+      "baseline_sha256": "85be39b1100e09d906185b0346d1d0fb8e70742cb9038fce1fec9bd06050b590",
+      "candidate_sha256": "85be39b1100e09d906185b0346d1d0fb8e70742cb9038fce1fec9bd06050b590",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/Geurts.GameForge.GitFlow.Editor.Tests.asmdef",
+      "baseline_sha256": "beb9c918e371598247dcf2d8bdc25cd7dece2d710674cb988b653c45b2a22b46",
+      "candidate_sha256": "beb9c918e371598247dcf2d8bdc25cd7dece2d710674cb988b653c45b2a22b46",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowHelpTests.cs",
+      "baseline_sha256": "edf43916a02b494c98084694063e8bc4c094588cd8a17f968a7fd0f81ace997f",
+      "candidate_sha256": "edf43916a02b494c98084694063e8bc4c094588cd8a17f968a7fd0f81ace997f",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowInspectionTests.cs",
+      "baseline_sha256": "b1709f394b90c760cbe1183d50705f81b5e4275be9260a0163303ca96d462f9d",
+      "candidate_sha256": "b1709f394b90c760cbe1183d50705f81b5e4275be9260a0163303ca96d462f9d",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowPresentationTests.cs",
+      "baseline_sha256": "61180ba206ca754dfd1e4da94cfd59e721a3993f87eebb5fe7b53e8c00fa282c",
+      "candidate_sha256": "61180ba206ca754dfd1e4da94cfd59e721a3993f87eebb5fe7b53e8c00fa282c",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowToolDiscoveryTests.cs",
+      "baseline_sha256": "d67eb3c4bedbfd4049feb1a5b80ad9fde9cb96b1f3bf58a4867920373c51d1e3",
+      "candidate_sha256": "d67eb3c4bedbfd4049feb1a5b80ad9fde9cb96b1f3bf58a4867920373c51d1e3",
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tools~/Examples/InspectionExample.cs",
+      "baseline_sha256": "29a06811ea43f1bb64b92d386f9a4e5e6cde7cbc07914c43fa26e7223aa40245",
+      "candidate_sha256": "29a06811ea43f1bb64b92d386f9a4e5e6cde7cbc07914c43fa26e7223aa40245",
+      "only_version_literal_changed": false
+    }
+  ],
+  "reason": "Only Python repair I/O, prompt focus and phase observation change; native C#/example/assembly/dependencies unchanged apart from version literal."
+}

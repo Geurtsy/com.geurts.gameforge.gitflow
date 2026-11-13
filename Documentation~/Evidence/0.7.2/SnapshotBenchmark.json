@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "scope": "Disposable real-Git complete two-copy capture plus all original membership/index/raw-byte checks; 2500 representative small files. Warm original filesystem cache; local Windows measurement, not a whole-repair/model runtime guarantee.",
+  "timings": [
+    {
+      "implementation": "published_0.7.1",
+      "seconds": 38.84950169999502,
+      "files": 2504,
+      "bytes": 2924827
+    },
+    {
+      "implementation": "parallel_candidate",
+      "seconds": 14.334677000006195,
+      "files": 2504,
+      "bytes": 2924827
+    }
+  ],
+  "speedup": 2.710176287891121,
+  "identical_manifests": true,
+  "candidate_source_sha256": "6b819db2d07bb0d80839a8811f6c30d66da33ef86d1df35993a36f7e90dbc1b8"
+}
