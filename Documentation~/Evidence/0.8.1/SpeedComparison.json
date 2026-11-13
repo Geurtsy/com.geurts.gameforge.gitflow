@@ -1,0 +1,28 @@
+{
+  "all_diagnostics": 0,
+  "assemblies": 107,
+  "candidate": "a3952d28c72f0e3fba7976c9411675fc6a05c3f4",
+  "head_and_raw_index_unchanged": true,
+  "identical_compiler_arguments": true,
+  "identical_native_inputs": true,
+  "identical_session_manifests": true,
+  "input_files": 6317,
+  "parallel_workers": 4,
+  "private_benchmark_root": "C:\\gfcq\\Run2",
+  "scope": "Single nonconcurrent serial-then-parallel comparison on the same stopped candidate; filesystem warmth and host load may affect timing. No new Unity rebuild was run by this benchmark.",
+  "session_files": 213,
+  "times_seconds": {
+    "QualificationParallel": 106.72743819997413,
+    "QualificationSerial": 314.1167448000051,
+    "SnapshotBatch": 4.8208718999812845,
+    "SnapshotSerial": 81.62422120000701
+  },
+  "unity": "6000.6.8f1",
+  "baseline_gitflow": "0.8.0",
+  "baseline_compatibility": "0.4.2",
+  "candidate_gitflow": "0.8.1",
+  "candidate_compatibility": "0.5.0",
+  "logical_processors": 16,
+  "ram_gib": 64,
+  "measured_date": "2026-11-13"
+}

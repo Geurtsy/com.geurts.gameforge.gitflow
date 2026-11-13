@@ -58,7 +58,7 @@ An ordinary Git push does not add work to the queue automatically. Direct pushes
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.8.0",
+  "packageVersion": "0.8.1",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

@@ -35,8 +35,10 @@ def execute(arguments):
             raise QueueError('Select the project-owned required test filter before configuring publication.')
         command.extend(['-runTests', '-testPlatform', arguments.test_platform, '-testFilter', arguments.test_filter,
                         '-testResults', str(evidence / 'Results.xml')])
+    native_started = time.monotonic()
     with (evidence / 'process.log').open('wb') as output:
         result = process_run(command, cwd=root, stdout=output, stderr=output, timeout=max(1, deadline - time.monotonic()))
+    native_seconds = time.monotonic() - native_started
     if not log.is_file():
         raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')
     text = log.read_text(encoding='utf-8-sig', errors='replace')
@@ -76,6 +78,7 @@ def execute(arguments):
         if private_log.exists():
             raise QueueError('Private compiler process evidence already exists; select a fresh invocation folder.')
         qualifier_hash = file_digest(qualifier)
+        qualification_started = time.monotonic()
         with private_log.open('xb') as output:
             qualified = process_run([sys.executable, str(qualifier), '--project', str(root), '--unity-editor', str(editor),
                     '--destination', str(private)], cwd=root, stdout=output, stderr=output, timeout=max(1, deadline - time.monotonic()))
@@ -92,11 +95,15 @@ def execute(arguments):
                 assemblies=len(assemblies), diagnostics=sum(item.get('diagnosticCount', 0) for item in assemblies),
                 inputs_unchanged=qualification.get('inputsUnchanged'), policy_copies_unchanged=qualification.get('diagnosticPolicyCopiesUnchanged'),
                 qualifier_sha256=qualifier_hash, private_report_sha256=file_digest(private / 'qualification.json'),
+                duration_seconds=time.monotonic() - qualification_started,
+                parallel_workers=qualification.get('parallelWorkers', 1),
                 private_evidence_scope='Owner-local sibling folder; source/reference inventory and derived binaries are not portable artifacts.'))
         if not complete:
             raise QueueError('Unsuppressed full compiler qualification failed; preserve the private owner evidence before retrying.')
         durable(evidence / 'result.json', dict(run=arguments.run, candidate=arguments.candidate, status='passed', warnings=0, errors=0, skipped=0,
                 full_script_rebuild=True, native_report_sha256=file_digest(evidence / 'compilation.json'), full_log_sha256=file_digest(log),
+                native_compilation_seconds=native_seconds,
+                compiler_qualification_seconds=time.monotonic() - qualification_started,
                 compiler_qualification_sha256=file_digest(evidence / 'compiler-qualification.json')))
 
 

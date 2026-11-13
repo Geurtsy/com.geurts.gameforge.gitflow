@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1 — 2026-11-13
+
+- Batch native Git original verification, preserving actual clean filters, raw originals, HEAD/index and capture-race checks.
+- Record native compilation and compiler qualification duration/worker evidence; retain complete zero-warning gates.
+
 ## 0.8.0 — 2026-11-13
 
 - Reconcile completed rejected heartbeat-only pushes with exact-owner readback and at most one same-child retry under the old deadline; preserve all delivery fencing.

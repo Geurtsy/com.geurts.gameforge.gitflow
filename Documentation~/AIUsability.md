@@ -1,6 +1,12 @@
 # GitFlow supported automation contract
 
-Version 0.8.0 adds bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+Version 0.8.1 retains bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+
+## Faster compiler verification
+
+Native session originals use bounded native Git batches with the same per-path clean filters and committed blob checks. Capture rechecks raw originals, HEAD and index before any child launch; unknown or concurrent edits remain failures. Full native script rebuilds and complete default-diagnostic qualification remain required. Native results record compilation and qualification durations, with the qualifier worker count when supplied by the installed Compatibility owner. No result cache, warning exclusion or skipped assembly is introduced.
+
+A single Windows Unity 6000.6.8f1 serial-then-parallel comparison on the same stopped candidate checked 107 assemblies and 6317 unique inputs with zero diagnostics and identical compiler arguments. Qualification took 314.12s versus 106.73s; native original capture took 81.62s versus 4.82s for 213 files with identical manifests. Filesystem warmth and host load may affect timing; this does not measure a whole Unity rebuild or guarantee every queue request duration.
 
 ## Faster failure recovery
 
@@ -140,7 +146,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.8.0",
+  "packageVersion": "0.8.1",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
