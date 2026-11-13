@@ -568,6 +568,38 @@ class QueueAcceptance(unittest.TestCase):
         self.assertRaises(queue.QueueError,snapshot.restore)
         self.assertFalse(path.exists())
 
+    def test_native_session_batches_keep_native_filters_unicode_and_raw_originals(self):
+        import GitFlowSession
+        (self.repository/'.gitattributes').write_text('*.meta text eol=crlf\n*.filtered filter=canonical -text\n')
+        (self.repository/'Filter.py').write_text('import sys\nsys.stdout.buffer.write(sys.stdin.buffer.read().replace(b"working",b"canonical"))\n')
+        queue.git(self.repository,'config','filter.canonical.clean','"'+sys.executable.replace('\\','/')+'" Filter.py')
+        originals={f'Native {number} café.meta':b'native original\r\n' if number%2 else b'native original\n' for number in range(70)}
+        originals['Original.filtered']=b'working bytes\r\n'
+        for name,data in originals.items():(self.repository/name).write_bytes(data)
+        queue.git(self.repository,'add','.');queue.git(self.repository,'commit','-m','Native filter and batch boundary fixture')
+        folder=self.workspace_root/'Session';folder.mkdir()
+        snapshot=GitFlowSession.Snapshot(queue,self.repository,folder,list(originals))
+        for name in ('Original.filtered','Native 0 café.meta'):
+            blob=queue.run(['git','hash-object','--stdin','--path='+name],self.repository,data=originals[name]).decode().strip()
+            self.assertEqual(queue.read_json(folder/'session-originals.json')['files'][name]['blob'],blob)
+            (self.repository/name).write_bytes(b'native session output')
+        snapshot.restore()
+        self.assertEqual({name:(self.repository/name).read_bytes() for name in originals},originals)
+
+    def test_native_session_capture_race_preserves_the_new_bytes(self):
+        import GitFlowSession
+        path=self.repository/'owned.meta';path.write_bytes(b'original')
+        queue.git(self.repository,'add','owned.meta');queue.git(self.repository,'commit','-m','Capture race fixture')
+        folder=self.workspace_root/'Session';folder.mkdir();original=queue.run
+        def race(arguments,*args,**kwargs):
+            result=original(arguments,*args,**kwargs)
+            if arguments[:2]==['git','hash-object']:path.write_bytes(b'concurrent change')
+            return result
+        with mock.patch.object(queue,'run',side_effect=race):
+            self.assertRaisesRegex(queue.QueueError,'changed during capture',GitFlowSession.Snapshot,queue,self.repository,folder,['owned.meta'])
+        self.assertEqual(path.read_bytes(),b'concurrent change')
+        self.assertEqual((folder/'session-original-0.bin').read_bytes(),b'original')
+
     def test_repair_model_selection_is_explicit_stopped_and_preserves_gates(self):
         import GitFlowModels
         config=queue.configuration(self.repository)
