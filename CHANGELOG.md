@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0 — 2026-11-14
+
+- Recover only proven Unity-created missing folder metadata for tracked first-party assets; preserve exact GUIDs and native bytes.
+- Harvest native sidecars even when compilation fails, before paid code repair; preserve the actual compiler failure and original repair deadline.
+- Revalidate gate-time metadata commits against their new candidate, without duplicate versions or fabricated passes. Retain bounded inspection counts and provenance-specific failures.
+
 ## 0.9.0 — 2026-11-14
 
 - Classify the complete merged documentation change and verify native version-only metadata before omitting code-only gates.

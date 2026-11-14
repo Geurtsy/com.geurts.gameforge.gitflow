@@ -73,7 +73,10 @@ def failure_diagnostic(error, stage, folder=None, check_name=None):
     code, cause = 'operation_failed', 'The operation failed; inspect the retained owner evidence for the specific cause.'
     match = re.match(r'^Required gate ([a-z]+(?:_[a-z]+)*) failed with exit (-?[0-9]+);', message)
     git_failure = re.match(r'^git failed \((-?[0-9]+)\):', message)
-    if match:
+    from GitFlowFolderMetadata import Blocked as MetadataBlocked
+    if isinstance(error, MetadataBlocked):
+        code, cause = 'native_folder_metadata_unproven', 'Folder metadata lacks matching native ownership, GUID or source proof; preserve the files for review.'
+    elif match:
         code, cause = 'required_check_exit', 'A required validation command returned a failing exit code.'
     elif isinstance(underlying, subprocess.TimeoutExpired):
         code, cause = 'command_timeout', 'The command exceeded its configured deadline; its outcome needs reconciliation.'
@@ -427,6 +430,8 @@ def validate_policy(policy):
     if 'documentation_only' in policy and type(policy['documentation_only']) is not bool:
         raise QueueError('documentation_only must be a boolean.')
     repair = policy.get('repair', {})
+    if 'native_folder_metadata' in repair and type(repair['native_folder_metadata']) is not bool:
+        raise QueueError('native_folder_metadata must be a boolean.')
     from GitFlowRepair import conflict_paths
     try:
         conflict_paths(repair)
@@ -742,7 +747,7 @@ def input_key(workspace, check, policy_hash, environment):
     return digest(dict(objects=objects, check=check, policy=policy_hash, environment=environment))
 
 
-def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache):
+def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache, policy=None):
     """Mandatory final gates always run. Specialist reuse requires existing matching bytes."""
     environment = dict(python=sys.version, platform=sys.platform, host=socket.gethostname(),
                        git=git(workspace, '--version'), declared=check.get('environment', {}),
@@ -764,6 +769,8 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
     started = utc()
     durable(folder / 'invocation.json', dict(run=identity, candidate=candidate, inputs=key,
             command=arguments, environment=environment, started_utc=started))
+    from GitFlowFolderMetadata import prepare, environment as metadata_environment, harvest, Recovered, Blocked
+    metadata_plan = prepare(sys.modules[__name__], workspace, folder, policy)
     try:
         active = leases.ACTIVE.get()
         from GitFlowSession import Snapshot
@@ -772,10 +779,13 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
             with (folder / 'output.log').open('wb') as output:
                 result_process = process_run(arguments, cwd=workspace, stdout=output, stderr=output,
                     timeout=check['timeout_seconds'], cancelled=active.stop if active else None,
-                    env=dict(os.environ, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='Never'))
+                    env=dict(os.environ, GIT_TERMINAL_PROMPT='0', GCM_INTERACTIVE='Never', **metadata_environment(folder, metadata_plan)))
         finally:
             if session:
                 session.restore()
+        metadata_recovery = harvest(sys.modules[__name__], workspace, folder, metadata_plan)
+        if metadata_recovery:
+            raise Recovered(metadata_recovery)
         if result_process.returncode:
             raise QueueError('Required gate ' + check['name'] + ' failed with exit ' + str(result_process.returncode) + '; full output retained at ' + str(folder))
         clean(workspace)
@@ -797,6 +807,8 @@ def execute_gate(workspace, evidence_root, check, candidate, policy_hash, cache)
                      started_utc=started, completed_utc=utc(), folder=str(folder), artifacts=artifacts, reused=False)
         cache[key] = value
         return value
+    except (Recovered, Blocked):
+        raise
     except Exception as error:
         diagnostic = failure_diagnostic(error, 'required_check', folder, check['name'])
         durable(folder / 'failure.json', dict(run=identity, candidate=candidate, diagnostic=diagnostic, error=type(error).__name__ + ': ' + str(error)))
@@ -816,7 +828,7 @@ def next_version(current, size):
     return '.'.join(map(str, numbers))
 
 
-def stamp_version(workspace, policy, version, evidence_root):
+def stamp_version(workspace, policy, version, evidence_root, metadata_callback=None):
     """Generic text-version adapter; native Unity synchronization requires its owning adapter."""
     path = plain(workspace / policy['version_file'])
     old = path.read_bytes()
@@ -826,10 +838,18 @@ def stamp_version(workspace, policy, version, evidence_root):
         folder = plain(evidence_root / ('version_' + uuid.uuid4().hex))
         folder.mkdir(parents=True, exist_ok=False)
         command = [arg.replace('{repository}', str(workspace)).replace('{version}', version).replace('{evidence}', str(folder)) for arg in policy['native_version_command']]
+        from GitFlowFolderMetadata import prepare, environment, harvest
+        plan = prepare(sys.modules[__name__], workspace, folder, policy, policy.get('native_version_outputs', []))
+        native_failure = None
         try:
-            run(command, workspace, timeout=7200)
+            run(command, workspace, timeout=7200, environment=environment(folder, plan))
         except QueueError as error:
-            raise GateFailure(str(error), folder) from error
+            native_failure = error
+        recovered = harvest(sys.modules[__name__], workspace, folder, plan)
+        if recovered and metadata_callback:
+            metadata_callback(recovered)
+        if native_failure:
+            raise GateFailure(str(native_failure), folder) from native_failure
     path.write_bytes((version + ('\r\n' if b'\r\n' in old else '\n')).encode())
     allowed = [policy['version_file'], *policy.get('native_version_outputs', [])]
     changed = git(workspace, 'diff', '--name-only').splitlines()
@@ -994,6 +1014,11 @@ def process_once(root, expected_request=None, expected_candidate=None):
                 nonlocal previous
                 previous = publish_record(root, remote, lease, previous, reference, value)
 
+            def metadata_recovered(proof):
+                lease.guard()
+                value.setdefault('native_folder_metadata_recoveries', []).append(proof)
+                checkpoint()
+
             def repair_failure(failure):
                 from GitFlowRepair import repair
                 value['diagnostic'] = failure_diagnostic(failure, stage)
@@ -1014,7 +1039,7 @@ def process_once(root, expected_request=None, expected_candidate=None):
             documentation_source = git(workspace, 'rev-parse', 'HEAD')
             while True:
                 try:
-                    stamp_version(workspace, policy, version, evidence_root)
+                    stamp_version(workspace, policy, version, evidence_root, metadata_recovered)
                     break
                 except GateFailure as error:
                     documentation_source = None  # A repaired candidate requires normal full validation.
@@ -1028,6 +1053,7 @@ def process_once(root, expected_request=None, expected_candidate=None):
             update_state(root, state='validating', request=value['id'], candidate=candidate)
             cache_path = Path(config['workspace_root']) / 'evidence_cache.json'
             cache = read_json(cache_path) if cache_path.exists() else {}
+            from GitFlowFolderMetadata import Recovered
             while True:
                 checks = []
                 stage = 'required_check'
@@ -1037,10 +1063,21 @@ def process_once(root, expected_request=None, expected_candidate=None):
                         if documentation and check.get('code_only', check['kind'] == 'compilation'):
                             result = documentation_gate(workspace, evidence_root, check, candidate, documentation)
                         else:
-                            result = execute_gate(workspace, evidence_root, check, candidate, config['policy_hash'], cache)
+                            result = execute_gate(workspace, evidence_root, check, candidate, config['policy_hash'], cache, policy)
                         checks.append(result)
                         durable(cache_path, cache)
                     break
+                except Recovered as recovered:
+                    # These native outputs are source progress, never a compiler pass or a paid repair.
+                    documentation = None
+                    attempt.update(outcome='native_metadata_recovered_requires_validation', finished_utc=utc())
+                    candidate = recovered.proof['candidate']
+                    value['candidate'] = candidate
+                    metadata_recovered(recovered.proof)
+                    attempt = dict(candidate=candidate, base_main=main, version=version, started_utc=utc(), policy=config['policy_hash'])
+                    value['attempts'].append(attempt)
+                    checkpoint()
+                    update_state(root, state='validating', request=value['id'], candidate=candidate)
                 except QueueError as error:
                     documentation = None
                     diagnostic = failure_diagnostic(error, 'required_check')

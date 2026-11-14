@@ -1,6 +1,16 @@
 # GitFlow supported automation contract
 
-Version 0.9.0 retains bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+Version 0.10.0 retains bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+
+## Automatic Unity folder metadata recovery
+
+With automatic repair enabled, the controller can commit missing folder sidecars created by its owned Unity invocation before a code-repair model is called. It discovers tracked Unity projects, then missing sidecars for nonempty tracked folders under `Assets/_Project` and `Assets/_Generated`. Vendor/plugin/protected tool/cache roots, tracked metadata, ignored paths, empty/untracked folders and pre-existing untracked files are excluded. `repair.native_folder_metadata: false` opts out; other repair settings and deadlines are unchanged.
+
+The controller records exact HEAD/index, subtree membership, configured Editor and absent-before paths in an invocation-bound plan. The paired native adapter records newly created sidecars only after its Unity child stops, even when compilation fails or times out. It retains exact native bytes/GUIDs and never generates GUIDs. The controller checks that plan/proof, raw bytes, ordinary paths, unique noncolliding GUIDs, tracked changes and complete untracked membership still match before staging only those sidecars. Unknown files, malformed/stale proofs, changed source/index, links and collisions remain actionable; they do not trigger paid repair for provenance problems. Unsupported native wrappers without this proof remain blocked.
+
+Metadata recovery is not compiler success. Native version failures retain their diagnostics and proceed to ordinary source repair against a clean candidate. A gate-time metadata commit invalidates the old candidate result and reruns every required gate on the new commit, without another version or a model call. Original request/source/history and the original repair clock remain intact. Native proofs and recovery counts are retained for inspection. The unchanged full zero-warning/zero-error checks remain required for code and assets.
+
+Install the complete published runner/native family, then use the stopped-owner runner-adoption procedure. Older controllers invoking the newer native adapter without the plan environment keep their prior behavior; a new controller requires matching native provenance and never invents a fallback report. No managed documentation content update or unrelated project update is implied.
 
 ## Documentation-only queue changes
 
@@ -156,7 +166,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.9.0",
+  "packageVersion": "0.10.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

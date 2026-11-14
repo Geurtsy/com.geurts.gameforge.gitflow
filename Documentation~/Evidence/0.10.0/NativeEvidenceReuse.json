@@ -1,0 +1,106 @@
+{
+  "baseline": "efa56987cb878f2a23c6b1119817b79396a2d5df",
+  "scope": "Native C#, examples, assembly definitions and dependencies are unchanged except the package version literal. Existing native compilation/example evidence retains its original scope; new Python provenance is covered by real-Git tests and a real Unity failure smoke.",
+  "files": [
+    {
+      "path": "Editor/AssemblyInfo.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/Geurts.GameForge.GitFlow.Editor.asmdef",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowBrick.cs",
+      "unchanged": false,
+      "only_version_literal_changed": true
+    },
+    {
+      "path": "Editor/GitFlowControls.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowHelp.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowHost.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowInspection.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowNativeGate.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowPresentation.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowProcess.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowQueueConsole.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowSnapshot.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowToolDiscovery.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Editor/GitFlowWindow.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/Geurts.GameForge.GitFlow.Editor.Tests.asmdef",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowHelpTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowInspectionTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowPresentationTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tests/Editor/GitFlowToolDiscoveryTests.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    },
+    {
+      "path": "Tools~/Examples/InspectionExample.cs",
+      "unchanged": true,
+      "only_version_literal_changed": false
+    }
+  ]
+}

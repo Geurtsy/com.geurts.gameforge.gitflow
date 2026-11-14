@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.9.0",
-  "candidate": "v0.9.0",
+  "packageVersion": "0.10.0",
+  "candidate": "v0.10.0",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Python documentation-only applicability and portable recovery; unchanged native implementation/examples retain their original source/environment proof.",
+  "scope": "Python native folder-metadata provenance and automatic source reconciliation; unchanged C#/examples retain prior source/environment proof.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.9.0/QueueAcceptance.log",
-    "passed": 8,
+    "report": "Documentation~/Evidence/0.10.0/QueueAcceptance.log",
+    "passed": 9,
     "failed": 0,
-    "scope": "Real-Git documentation publication/recovery/tamper proof, conservative classification, mixed warning rejection, native version exception, explicit applicability and existing delivery/failure/specialist regressions."
+    "scope": "Six folder/report boundary cases plus end-to-end model-free revalidation, documentation publication and native session preservation."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.5.3/Compiler.json",
@@ -37,9 +37,9 @@
   "publicationBlockers": [],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
-    "baseline": "9f94758b9943dc18cdd55e1954c7cd9eacfde727",
-    "report": "Documentation~/Evidence/0.9.0/NativeEvidenceReuse.json",
-    "reason": "Unchanged C#/assemblies/examples except package version literal; Python changes covered by new host acceptance."
+    "baseline": "efa56987cb878f2a23c6b1119817b79396a2d5df",
+    "report": "Documentation~/Evidence/0.10.0/NativeEvidenceReuse.json",
+    "reason": "Native code/examples/assembly declarations unchanged except the package version literal."
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",
@@ -85,5 +85,10 @@
   "compilerPerformance": {
     "report": "Documentation~/Evidence/0.8.1/SpeedComparison.json",
     "scope": "Single nonconcurrent matched native input graph; every assembly still qualifies and full rebuild remains required."
+  },
+  "nativeFolderMetadata": {
+    "report": "Documentation~/Evidence/0.10.0/NativeFailureSmoke.json",
+    "status": "passed",
+    "scope": "Actual Unity 6000.6.8f1 generated fourteen missing folder sidecars before CS1029; the code failure remained failed and the original version was unchanged."
   }
 }

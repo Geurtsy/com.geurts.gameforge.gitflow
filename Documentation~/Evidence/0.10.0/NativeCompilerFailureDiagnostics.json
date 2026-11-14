@@ -1,0 +1,7 @@
+{
+  "complete_matching_diagnostics": [
+    "Assets\\_Project\\NativeMetadataSmoke.cs(3,8): error CS1029: #error: 'NATIVE_FOLDER_METADATA_FAILURE_SMOKE'",
+    "Scripts have compiler errors."
+  ],
+  "full_log_sha256": "ec0e9b7a586d5c2af2618cb4671b3ea3dc3392d3ae54c8735e44d6a824a35ec0"
+}
