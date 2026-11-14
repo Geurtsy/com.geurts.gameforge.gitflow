@@ -78,10 +78,22 @@
       "validation": [
         "Unchanged 0.5.3 four native presentation checks and 31-assembly zero-diagnostic compilation are explicitly reused. Existing backend/authentication/repair evidence retains its historical source/environment scope. No visual checks are performed or required."
       ]
+    },
+    {
+      "id": "native_folder_metadata_recovery",
+      "implemented": true,
+      "provider": "none",
+      "maturity": "supported",
+      "operations": [],
+      "description": "Native-proven missing folder sidecar recovery before code repair, with exact GUID preservation and required candidate revalidation",
+      "validation": [
+        "Real-Git boundary and end-to-end queue acceptance",
+        "Real Unity compiler-failure metadata smoke"
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.9.0",
+  "packageVersion": "0.10.0",
   "prerequisites": [
     {
       "required": true,

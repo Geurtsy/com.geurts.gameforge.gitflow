@@ -1,0 +1,11 @@
+test_gate_recovery_discards_old_candidate_result_and_requires_new_run (TestGitFlowFolderMetadata.FolderMetadataAcceptance.test_gate_recovery_discards_old_candidate_result_and_requires_new_run) ... ok
+test_native_failure_recovers_all_fourteen_without_passing_compilation (TestGitFlowFolderMetadata.FolderMetadataAcceptance.test_native_failure_recovers_all_fourteen_without_passing_compilation) ... ok
+test_native_version_failure_commits_only_proven_sidecars_then_retains_failure (TestGitFlowFolderMetadata.FolderMetadataAcceptance.test_native_version_failure_commits_only_proven_sidecars_then_retains_failure) ... ok
+test_preexisting_untracked_and_opt_out_are_not_adopted (TestGitFlowFolderMetadata.FolderMetadataAcceptance.test_preexisting_untracked_and_opt_out_are_not_adopted) ... ok
+test_proof_tamper_unknown_content_and_guid_collisions_never_stage (TestGitFlowFolderMetadata.FolderMetadataAcceptance.test_proof_tamper_unknown_content_and_guid_collisions_never_stage) ... ok
+test_recovery_projection_retains_counts_and_omits_raw_metadata (TestGitFlowFolderMetadata.FolderMetadataReportAcceptance.test_recovery_projection_retains_counts_and_omits_raw_metadata) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 24.148s
+
+OK

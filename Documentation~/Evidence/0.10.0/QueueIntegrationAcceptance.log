@@ -1,0 +1,8 @@
+test_queue_revalidates_native_metadata_progress_without_ai_or_renumbering (TestGitFlowFolderMetadataQueue.FolderMetadataQueueAcceptance.test_queue_revalidates_native_metadata_progress_without_ai_or_renumbering) ... ok
+test_documentation_publication_is_truthful_and_resumes_without_compilation (TestGitFlowQueue.QueueAcceptance.test_documentation_publication_is_truthful_and_resumes_without_compilation) ... ok
+test_native_session_batches_keep_native_filters_unicode_and_raw_originals (TestGitFlowQueue.QueueAcceptance.test_native_session_batches_keep_native_filters_unicode_and_raw_originals) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 114.588s
+
+OK

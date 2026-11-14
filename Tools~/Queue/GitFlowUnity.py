@@ -3,12 +3,15 @@ import argparse
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 import time
 import xml.etree.ElementTree as xml
 
 from GitFlowQueue import QueueError, durable, plain, file_digest
 from GitFlowProcess import process_run
+import GitFlowQueue as queue
+from GitFlowFolderMetadata import begin_native, finish_native
 
 
 def execute(arguments):
@@ -36,8 +39,15 @@ def execute(arguments):
         command.extend(['-runTests', '-testPlatform', arguments.test_platform, '-testFilter', arguments.test_filter,
                         '-testResults', str(evidence / 'Results.xml')])
     native_started = time.monotonic()
-    with (evidence / 'process.log').open('wb') as output:
-        result = process_run(command, cwd=root, stdout=output, stderr=output, timeout=max(1, deadline - time.monotonic()))
+    metadata = begin_native(queue, root, editor)
+    try:
+        with (evidence / 'process.log').open('wb') as output:
+            result = process_run(command, cwd=root, stdout=output, stderr=output, timeout=max(1, deadline - time.monotonic()))
+    except subprocess.TimeoutExpired:
+        # process_run has stopped its owned child tree before raising this timeout.
+        finish_native(queue, metadata, editor, 'timed_out')
+        raise
+    finish_native(queue, metadata, editor, result.returncode)
     native_seconds = time.monotonic() - native_started
     if not log.is_file():
         raise QueueError('Unity did not complete successfully; inspect retained Unity.log and process.log.')

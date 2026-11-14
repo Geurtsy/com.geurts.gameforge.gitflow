@@ -16,6 +16,7 @@ FIELDS = {
     'submitted_utc', 'started_utc', 'finished_utc', 'completed_utc', 'updated_utc', 'policy', 'base_main',
     'dependencies', 'attempts', 'failure', 'receipt', 'checks', 'name', 'kind', 'folder', 'run', 'warnings', 'errors',
     'skipped', 'reused', 'applicability', 'pulls', 'publisher', 'original', 'repair', 'window_started_utc', 'consecutive_stalled',
+    'native_folder_metadata_recoveries', 'recovered_folders', 'model_invoked', 'outcome',
     'attempt_count', 'owner', 'host', 'request', 'stage', 'process_id', 'pid', 'verified_main', 'evidence_candidate', 'lease_protocol', 'lease_seconds'
 }
 
@@ -33,6 +34,10 @@ def projection(value, depth=0):
             result['next_action'] = 'Preserve this request ID and exact control commit. Ask its owner to review the retained attempt/check folder. Raw diagnostics withheld; do not resubmit or bypass checks.'
         if result.get('applicability') != 'not_applicable':
             result.pop('applicability', None)
+        if type(result.get('model_invoked')) is not bool:
+            result.pop('model_invoked', None)
+        if type(result.get('recovered_folders')) is not int or result['recovered_folders'] < 0:
+            result.pop('recovered_folders', None)
         return result
     if isinstance(value, list):
         return [projection(item, depth + 1) for item in value[-16:]] + (['[older entries omitted]'] if len(value) > 16 else [])

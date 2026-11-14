@@ -1,0 +1,16 @@
+{
+  "candidate": "5fe9b41eb2a56b07b8d486c7c8e898f23d189102",
+  "compiler_status": "failed_as_intended_CS1029",
+  "existing_asset_bytes_unchanged": true,
+  "folders": 14,
+  "model_invoked": false,
+  "native_metadata_bytes_preserved": true,
+  "native_returncode": 1,
+  "proof": "NativeFolderMetadataProof.json",
+  "reporting_harness_note": "Initial runner completed recovery, then its final report hit a str/Path TypeError. This report verifies the retained native artifacts without repeating Unity or weakening assertions.",
+  "scope": "Real Unity-created missing folder metadata is committed while the genuine compiler failure remains failed.",
+  "status": "passed",
+  "unity": "6000.6.8f1",
+  "version_unchanged": true,
+  "working_tree_clean": true
+}

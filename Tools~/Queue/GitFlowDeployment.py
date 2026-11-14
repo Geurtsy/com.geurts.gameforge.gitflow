@@ -7,7 +7,7 @@ import uuid
 
 REQUIRED = {'GitFlowQueue.py', 'GitFlowLease.py', 'GitFlowRepair.py', 'GitFlowModels.py',
             'GitFlowUnity.py', 'GitFlowProcess.py', 'GitFlowStorage.py', 'GitFlowCapture.py',
-            'GitFlowObserve.py', 'GitFlowPublisher.py', 'GitFlowDeployment.py', 'GitFlowRepairWorkspace.py', 'GitFlowSession.py'}
+            'GitFlowObserve.py', 'GitFlowPublisher.py', 'GitFlowDeployment.py', 'GitFlowRepairWorkspace.py', 'GitFlowSession.py', 'GitFlowFolderMetadata.py'}
 
 
 def deploy(q, workspace):

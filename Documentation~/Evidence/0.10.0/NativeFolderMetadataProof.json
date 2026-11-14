@@ -1,0 +1,125 @@
+{
+  "candidate": "427771f451540c1b4ca08423a4ea2086b4d8414a",
+  "editor": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.6.8f1\\Editor\\Unity.exe",
+  "index": "8e2ff0adde65b447128602dd6e03cdb8cb117217ad9f8ecd4757b0344c017f67",
+  "invocation": "e8016b33fdab425fa0de1116445daec7",
+  "native_child_stopped": true,
+  "native_returncode": 1,
+  "outputs": [
+    {
+      "folder": "Assets/_Generated/Terrain/Source0",
+      "guid": "dac7046cb3789274c88d1a86373dccab",
+      "metadata": "Assets/_Generated/Terrain/Source0.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogZGFjNzA0NmNiMzc4OTI3NGM4OGQxYTg2MzczZGNjYWI=",
+      "raw_sha256": "cf7624064ee050b289b509fc6ffbec9a2eaaf1c777c438b3f86ca5e632f13a1e",
+      "tree": "34d9458ba2894167d9db82fe9e00829ca799ed20"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source0/Revision",
+      "guid": "927d4f2f647f010479e54a6dcdef393d",
+      "metadata": "Assets/_Generated/Terrain/Source0/Revision.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogOTI3ZDRmMmY2NDdmMDEwNDc5ZTU0YTZkY2RlZjM5M2Q=",
+      "raw_sha256": "bc22bdf5cea33283655479f2066ddee8a715eac7345edf833ef1087100fc3174",
+      "tree": "fa7b2a008476490d6684c45369a828ea34df3297"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source1",
+      "guid": "e866cd8a47baf984c86a2e0fc869dcf4",
+      "metadata": "Assets/_Generated/Terrain/Source1.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogZTg2NmNkOGE0N2JhZjk4NGM4NmEyZTBmYzg2OWRjZjQ=",
+      "raw_sha256": "6478316b6c9c6455d8ee55a25b76b5762004f7db57ef4b8df8f69ad88dd4ef91",
+      "tree": "094eb5406045f582a3e4e6cd08c5856e59284566"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source1/Revision",
+      "guid": "b1d49679ae1915d44b23cde2d8a07df1",
+      "metadata": "Assets/_Generated/Terrain/Source1/Revision.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogYjFkNDk2NzlhZTE5MTVkNDRiMjNjZGUyZDhhMDdkZjE=",
+      "raw_sha256": "124cd54f0247794e197238455018bdbc94c0410c06e5db12ce753d5be07cf414",
+      "tree": "ad6d1f8b54ab8d165bff4ff7a777bec9c4c5ff21"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source2",
+      "guid": "5f22b0dfccbd5954bb0bf7a3a707339a",
+      "metadata": "Assets/_Generated/Terrain/Source2.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogNWYyMmIwZGZjY2JkNTk1NGJiMGJmN2EzYTcwNzMzOWE=",
+      "raw_sha256": "658a7a68f0ec35dff03275b700073416e791a09dd2ff97d7479e6c40cf6ce858",
+      "tree": "cd5a63597d9ca02402145d50d6afcc63cfda1987"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source2/Revision",
+      "guid": "9c05a3637bd38334b858459b6bfbd64d",
+      "metadata": "Assets/_Generated/Terrain/Source2/Revision.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogOWMwNWEzNjM3YmQzODMzNGI4NTg0NTliNmJmYmQ2NGQ=",
+      "raw_sha256": "eeec3fc29af8db90559e4fda93b9bbeeb493f4aaec3dfd1872074dff45cf12dd",
+      "tree": "c151d1bd985d02d9ad882a9567c0ecc2d01baec2"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source3",
+      "guid": "562fb5d56fedc54419764bfd989f3d70",
+      "metadata": "Assets/_Generated/Terrain/Source3.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogNTYyZmI1ZDU2ZmVkYzU0NDE5NzY0YmZkOTg5ZjNkNzA=",
+      "raw_sha256": "feab68670b4bb7d907896cc2c2dd334f0bacaf53badbefc5c4b652f40e0a8880",
+      "tree": "1881ed9e35163b35d1f9c7b68aca598dc6d84e9f"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source3/Revision",
+      "guid": "e48c8b09e44e7644da971365a50df063",
+      "metadata": "Assets/_Generated/Terrain/Source3/Revision.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogZTQ4YzhiMDllNDRlNzY0NGRhOTcxMzY1YTUwZGYwNjM=",
+      "raw_sha256": "7020795d6d3d3855b0c86abd7713915327646c56a1218ae332f00c135217b81f",
+      "tree": "259a3e264c01dac62bc0208404836f17f4538a8e"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source4",
+      "guid": "e5d7cc139df00f74ba4ae662990e2ae2",
+      "metadata": "Assets/_Generated/Terrain/Source4.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogZTVkN2NjMTM5ZGYwMGY3NGJhNGFlNjYyOTkwZTJhZTI=",
+      "raw_sha256": "88d14390c319c41fde31ae1f7bcb295961e3e92c35b1c60b7fae56f46309d631",
+      "tree": "2bb4c8bd7f764fb6ecb4f6dae22a7f454c2d3b68"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source4/Revision",
+      "guid": "b3b02637b79bcea4d8b97202f02a0004",
+      "metadata": "Assets/_Generated/Terrain/Source4/Revision.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogYjNiMDI2MzdiNzliY2VhNGQ4Yjk3MjAyZjAyYTAwMDQ=",
+      "raw_sha256": "51893014d3d5900352a9714a9c1b14e2dee03ba452bf2a628d217f494852e9da",
+      "tree": "893cc1a55b10431af2a5a2718360aaa68d5c68b6"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source5",
+      "guid": "2fec2ac31ab18f642bad5540c24f9f7d",
+      "metadata": "Assets/_Generated/Terrain/Source5.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogMmZlYzJhYzMxYWIxOGY2NDJiYWQ1NTQwYzI0ZjlmN2Q=",
+      "raw_sha256": "9b6f8e5dc4aebf83047b83940063980b12e2405e1ca1e0f8bc5cfefb86f101e1",
+      "tree": "6b14e83db097ea157a10a9e7f3f30dad15185091"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source5/Revision",
+      "guid": "afacc2ae76b263c419a85d9a7d030098",
+      "metadata": "Assets/_Generated/Terrain/Source5/Revision.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogYWZhY2MyYWU3NmIyNjNjNDE5YTg1ZDlhN2QwMzAwOTg=",
+      "raw_sha256": "41808169742739af86774b1def5bb87f3a5ce936da1264077844c7dac82d2dcd",
+      "tree": "878b94584d785541b55e0adaa9cb62bc56a3edce"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source6",
+      "guid": "84780bc1a63552349a39afef7afab73a",
+      "metadata": "Assets/_Generated/Terrain/Source6.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogODQ3ODBiYzFhNjM1NTIzNDlhMzlhZmVmN2FmYWI3M2E=",
+      "raw_sha256": "2a182d77ff36d1e5a53aa6f23d7323463a8fe13efae21ebfc560323aba596962",
+      "tree": "b681f4d271e03c5189bae947c26812eb633b2918"
+    },
+    {
+      "folder": "Assets/_Generated/Terrain/Source6/Revision",
+      "guid": "5f2a617430185ff42ad0f241a549c061",
+      "metadata": "Assets/_Generated/Terrain/Source6/Revision.meta",
+      "raw_base64": "ZmlsZUZvcm1hdFZlcnNpb246IDIKZ3VpZDogNWYyYTYxNzQzMDE4NWZmNDJhZDBmMjQxYTU0OWMwNjE=",
+      "raw_sha256": "d3b12e978d76aea1862c998a8ff62eb2acea652b4cc543853adcaccd7d0ae49b",
+      "tree": "454dad3719e69cb92f1cf28374c12607c1bc966b"
+    }
+  ],
+  "plan_sha256": "8245cd3908c6023175f8ad516cbd69f7438d30006097f26414a0a202ba799f3e",
+  "project": "C:\\gfmfx",
+  "protocol": 1
+}
