@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.1 — 2026-11-15
+
+- Include both sides of staged renames in scoped and whole-repository local commits, preserving asset metadata and removing the old paths.
+- Retain the default commit-before-queue behavior and all required publication checks.
+
 ## 0.13.0 — 2026-11-15
 
 - Commit saved local changes on the current branch before submitting them to the queue by default; native Git hooks/signing remain active.
