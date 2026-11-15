@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.11.0",
-  "candidate": "v0.11.0",
+  "packageVersion": "0.12.0",
+  "candidate": "v0.12.0",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Python lease verification and same-service abandoned-owner recovery; unchanged C#/examples retain prior native evidence.",
+  "scope": "Python lease timing and coordination/publication reservation; unchanged native sources retain scoped evidence.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.11.0/QueueAcceptance.log",
-    "passed": 9,
+    "report": "Documentation~/Evidence/0.12.0/QueueAcceptance.log",
+    "passed": 11,
     "failed": 0,
-    "scope": "Five ownership recovery cases and four existing fencing controls; real local Git with controlled read failures and test-only monotonic clock advance."
+    "scope": "Four timing controls, five ownership-recovery controls and two existing uncertain/legacy fencing controls; test-only monotonic advancement."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.5.3/Compiler.json",
@@ -37,9 +37,9 @@
   "publicationBlockers": [],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
-    "baseline": "1ec0389665572d910d5c1d884718ecc81ab40b4e",
-    "report": "Documentation~/Evidence/0.11.0/NativeEvidenceReuse.json",
-    "reason": "Unchanged C#/examples/assembly declarations/dependencies except version literal."
+    "baseline": "91500850972c21bb51470c0f49a7092eebc05871",
+    "report": "Documentation~/Evidence/0.12.0/NativeEvidenceReuse.json",
+    "reason": "Unchanged native code/examples/dependencies apart from package version literal."
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",

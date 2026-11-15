@@ -1,6 +1,6 @@
 # Geurts Game Forge GitFlow
 
-Version 0.11.0 automatically recovers transient ownership-verification reads and safely continues clean heartbeat-interrupted candidates under fresh ownership. Native folder metadata recovery and full zero-warning checks remain supported.
+Version 0.12.0 reduces new ownership recovery windows to ten minutes with faster coordination reads, full publication reserves and unchanged zero-warning checks. Older lease records retain their full recorded duration.
 
 In Unity, Queue local changes captures saved task-owned work into a recorded checkpoint and confirms its waiting-list entry while preserving the live branch, staging and working edits. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
@@ -18,7 +18,7 @@ Install from the authoritative released catalogue. Publication and consumer inst
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.11.0",
+  "packageVersion": "0.12.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

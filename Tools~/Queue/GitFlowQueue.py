@@ -1275,7 +1275,7 @@ def serve(root, expected_configuration=None):
                 else:
                     update_state(root, state='blocked', diagnostic=failure_diagnostic(error, 'processor'), detail=type(error).__name__ + ': ' + str(error))
                     return
-            for _ in range(60):
+            for _ in range(leases.RECOVERY_BACKOFF if recovery else 60):
                 if (control / 'stop.json').exists():
                     break
                 time.sleep(1)

@@ -17,10 +17,13 @@ import time
 import uuid
 
 PROTOCOL = 1
-SECONDS = 1800
-COMPATIBLE_SECONDS = frozenset({180, SECONDS})
-HEARTBEAT = 30
+SECONDS = 600
+COMPATIBLE_SECONDS = frozenset({180, 1800, SECONDS})
+HEARTBEAT = 10
 TRANSPORT_TIMEOUT = 300
+COORDINATION_TIMEOUT = 20
+VERIFICATION_BUDGET = 3 * COORDINATION_TIMEOUT
+RECOVERY_BACKOFF = 10
 ACTIVE = contextvars.ContextVar("integration_lease", default=None)
 OBSERVED = {}
 
@@ -60,13 +63,13 @@ def transport(q, repo, *arguments, timeout=TRANSPORT_TIMEOUT):
 
 def snapshot(q, repo, remote):
     """Use immutable objects without racing the controller's FETCH_HEAD."""
-    rows = transport(q, repo, "ls-remote", remote, q.LOCK).splitlines()
+    rows = transport(q, repo, "ls-remote", remote, q.LOCK, timeout=COORDINATION_TIMEOUT).splitlines()
     if not rows:
         return None, None
     oid = rows[0].split()[0]
     if not re.fullmatch(r"[0-9a-f]{40}", oid):
         raise LeaseError("Invalid remote lease object identity")
-    transport(q, repo, "fetch", "--no-write-fetch-head", remote, oid)
+    transport(q, repo, "fetch", "--no-write-fetch-head", remote, oid, timeout=COORDINATION_TIMEOUT)
     try:
         value = q.read_request(repo, oid)
     except (ValueError, q.QueueError) as error:
@@ -97,20 +100,20 @@ def validate(value):
 def verify_child(q, repo, remote, child, released=False, expected_owner=None):
     """Verify reads only; an exact-parent mismatch gets one bounded fresh observation.
 
-    The original two-transport (600s) verification allowance is shared by every
+    The bounded coordination verification allowance is shared by every
     local/remote Git read here. One failed remote read may restart verification
     within that same budget. No push, sleep, deadline extension or write retry is
     permitted. An owned lease still requires the exact child, never a successor.
     """
-    deadline = time.monotonic() + 2 * TRANSPORT_TIMEOUT
+    deadline = time.monotonic() + VERIFICATION_BUDGET
     evidence = dict(expected_child=child, expected_owner=expected_owner, released=released,
-                    observations=[], read_failures=[], read_budget_seconds=2 * TRANSPORT_TIMEOUT, phase="initial_ref")
+                    observations=[], read_failures=[], read_budget_seconds=VERIFICATION_BUDGET, phase="initial_ref")
     def read(*arguments):
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise LeaseError("Lease verification read budget expired")
         evidence['read_command'] = arguments[0]
-        result = transport(q, repo, *arguments, timeout=min(TRANSPORT_TIMEOUT, remaining))
+        result = transport(q, repo, *arguments, timeout=min(COORDINATION_TIMEOUT, remaining))
         if time.monotonic() >= deadline:
             raise LeaseError("Lease verification read budget expired")
         return result
@@ -225,7 +228,7 @@ class Lease:
         self.failure = type(error).__name__ + ": " + (str(error) or "no exception message")
         self.stop.set()
 
-    def guard(self, write=False):
+    def guard(self, write=False, reserve=None):
         if self.closed:
             raise LeaseError("Released/closed lease owner cannot publish again")
         if self.failure:
@@ -233,7 +236,8 @@ class Lease:
         if not self.oid or self.clock() >= self.deadline:
             self.failed(LeaseError("Local monotonic ownership deadline expired"))
             raise LeaseError("Lease owner fenced: " + self.failure)
-        if write and self.deadline - self.clock() < TRANSPORT_TIMEOUT:
+        required = TRANSPORT_TIMEOUT + VERIFICATION_BUDGET if reserve is None else reserve
+        if write and self.deadline - self.clock() < required:
             self.failed(LeaseError("Insufficient ownership time for a bounded Git publication"))
             raise LeaseError("Lease owner fenced: " + self.failure)
 
@@ -258,7 +262,7 @@ class Lease:
                 child = self.q.object_commit(self.repo, parent, self.metadata("owned", "claim"), "Integration lease claim")
                 self.attempted_oid = child
                 try:
-                    transport(self.q, self.repo, "push", self.remote, child + ":" + self.q.LOCK)
+                    transport(self.q, self.repo, "push", self.remote, child + ":" + self.q.LOCK, timeout=COORDINATION_TIMEOUT)
                 except Rejected:
                     current, metadata = snapshot(self.q, self.repo, self.remote)
                     if current and current not in {oid, child}:
@@ -279,6 +283,12 @@ class Lease:
     def advance(self, state="owned", operation="heartbeat", updates=()):
         with self.mutex:
             self.guard()
+            timeout = TRANSPORT_TIMEOUT if updates else COORDINATION_TIMEOUT
+            reserve = timeout + VERIFICATION_BUDGET
+            if operation != 'heartbeat' and self.deadline - self.clock() < reserve + COORDINATION_TIMEOUT:
+                # Renew before constructing the child, so it descends from the
+                # newly verified parent. This is no retry of a delivery write.
+                self.advance()
             self.last_operation = operation
             self.attempted_oid, self.verification = None, None
             dispatch = self.clock()
@@ -286,13 +296,13 @@ class Lease:
             try:
                 child = self.q.object_commit(self.repo, self.oid, self.metadata(state, operation),
                                              "Integration lease " + operation)
-                self.guard(write=True)
+                self.guard(write=True, reserve=reserve)
                 # The lease ref and every delivery/control target change together.
                 # A successor of our held OID makes our child a rejected sibling.
                 self.attempted_oid = child
                 try:
                     transport(self.q, self.repo, "push", "--atomic", self.remote,
-                              child + ":" + self.q.LOCK, *updates)
+                              child + ":" + self.q.LOCK, *updates, timeout=timeout)
                 except Rejected as error:
                     # Only a heartbeat has no other publication target to reconcile.
                     # A completed rejection can be read back under the OLD deadline;
@@ -310,10 +320,10 @@ class Lease:
                     path = self.q.common(self.repo) / 'gameforge_queue' / ('heartbeat_' + child + '.json')
                     self.q.durable(path, receipt)
                     if observed == self.oid:
-                        self.guard(write=True)
+                        self.guard(write=True, reserve=reserve)
                         # Same immutable child, one normal FF retry, no new deadline.
                         transport(self.q, self.repo, 'push', '--atomic', self.remote,
-                                  child + ':' + self.q.LOCK)
+                                  child + ':' + self.q.LOCK, timeout=COORDINATION_TIMEOUT)
                 self.verification = verify_child(self.q, self.repo, self.remote, child,
                                                  released=state == "released", expected_owner=self.owner)
                 # A late ACK/verification must not revive the previous ownership.
@@ -352,6 +362,10 @@ class Lease:
                 root_common = (Path(root) / self.q.git(root, "rev-parse", "--git-common-dir")).resolve()
                 owner_common = (Path(self.repo) / self.q.git(self.repo, "rev-parse", "--git-common-dir")).resolve()
                 if root_common != owner_common:
+                    reserve = TRANSPORT_TIMEOUT + COORDINATION_TIMEOUT + VERIFICATION_BUDGET
+                    if self.deadline - self.clock() < reserve + COORDINATION_TIMEOUT:
+                        self.advance()
+                    self.guard(write=True, reserve=reserve)
                     transport(self.q, self.repo, "fetch", "--no-write-fetch-head", str(root), oid)
                 updates.append(oid + ":" + target)
             return self.advance(operation="publish", updates=updates)
@@ -391,6 +405,6 @@ def confirmed_release(q, repo, remote, expected):
     lease = Lease(q, repo, remote)
     child = q.object_commit(repo, oid, lease.metadata("released", "confirmed stopped-owner migration"),
                             "Integration lease confirmed release")
-    transport(q, repo, "push", remote, child + ":" + q.LOCK)
+    transport(q, repo, "push", remote, child + ":" + q.LOCK, timeout=COORDINATION_TIMEOUT)
     verify_child(q, repo, remote, child, released=True, expected_owner=lease.owner)
     return child
