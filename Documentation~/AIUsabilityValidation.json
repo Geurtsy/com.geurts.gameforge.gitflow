@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.13.0",
-  "candidate": "v0.13.0",
+  "packageVersion": "0.13.1",
+  "candidate": "v0.13.1",
   "unityVersion": "6000.6.8f1",
   "passed": 1,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Fresh full Unity rebuild and 31 default-policy compiler assemblies; nonvisual native help data and compile-checked example. Existing operation provider/dependency bodies retain their actual unchanged scope. No consumer adoption, rendering, game/player build or whole-game acceptance claimed.",
+  "scope": "Default local commits with complete staged asset/metadata rename inventory. Native evidence retains the 0.13.0 input scope, with only a package version literal changed.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.13.0/QueueAcceptance.log",
-    "passed": 12,
+    "report": "Documentation~/Evidence/0.13.1/QueueAcceptance.log",
+    "passed": 13,
     "failed": 0,
-    "scope": "Required source CI: native local commits and exact retries, final disposable publication/pull, scoped/nested preservation, configured hook refusal/change, concurrent index/working edits and detached/index-lock controls."
+    "scope": "Thirteen real-Git cases include scoped and whole-repository staged asset/metadata moves, local commit preservation and existing default commit/retry controls. Required source CI must pass before publication."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.13.0/Compiler.json",
@@ -37,9 +37,9 @@
   "publicationBlockers": [],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
-    "baseline": "0bb06a6cb13f1f2cad6d078408aa86674759e2c8",
-    "report": "Documentation~/Evidence/0.13.0/SourceCoverage.json",
-    "reason": "Fresh native evidence at the exact Git-resolved candidate; subsequent Windows test-assertion and evidence-only edits leave native/production input membership unchanged. Prior unrelated feature results remain historical."
+    "baseline": "593723fb3a6ab6e1e66add1646d299058597de5a",
+    "report": "Documentation~/Evidence/0.13.1/NativeEvidenceReuse.json",
+    "reason": "Native C#/assemblies/examples/dependencies match released 0.13.0 except the 0.13.1 package/version literal. Native reports retain their actual 0bb06a6 candidate identity. Python rename behavior has fresh real-Git coverage; final required source CI remains a publication gate. No fresh Unity run or consumer installation claimed."
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",

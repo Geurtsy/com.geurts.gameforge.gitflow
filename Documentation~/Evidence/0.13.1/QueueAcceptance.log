@@ -1,0 +1,18 @@
+test_cli_submit_defaults_to_commit_and_committed_only_is_explicit (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_cli_submit_defaults_to_commit_and_committed_only_is_explicit) ... ok
+test_concurrent_outside_staging_stops_without_overwriting_it (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_concurrent_outside_staging_stops_without_overwriting_it) ... ok
+test_concurrent_outside_working_edit_is_preserved (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_concurrent_outside_working_edit_is_preserved) ... ok
+test_default_submit_commits_all_saved_changes_then_delivers (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_default_submit_commits_all_saved_changes_then_delivers) ... ok
+test_detached_head_and_existing_index_lock_are_preserved (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_detached_head_and_existing_index_lock_are_preserved) ... ok
+test_failed_submission_retains_commit_and_retry_reuses_it (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_failed_submission_retains_commit_and_retry_reuses_it) ... ok
+test_hook_changed_source_retains_actual_commit_without_queueing (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_hook_changed_source_retains_actual_commit_without_queueing) ... ok
+test_native_commit_hook_failure_never_submits_or_discards_work (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_native_commit_hook_failure_never_submits_or_discards_work) ... ok
+test_nested_project_scoped_commit_preserves_repository_paths (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_nested_project_scoped_commit_preserves_repository_paths) ... ok
+test_scoped_default_advances_branch_and_preserves_unrelated_staging (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_scoped_default_advances_branch_and_preserves_unrelated_staging) ... ok
+test_staged_asset_renames_commit_both_paths_and_metadata (TestGitFlowCommit.CommitBeforeQueueAcceptance.test_staged_asset_renames_commit_both_paths_and_metadata) ... ok
+test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work (TestGitFlowQueue.QueueAcceptance.test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work) ... ok
+test_capture_exclusions_and_changed_bytes_stop_without_submission (TestGitFlowQueue.QueueAcceptance.test_capture_exclusions_and_changed_bytes_stop_without_submission) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 117.288s
+
+OK

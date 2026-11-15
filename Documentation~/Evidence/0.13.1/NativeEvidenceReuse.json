@@ -1,0 +1,34 @@
+{
+  "baseline": "593723fb3a6ab6e1e66add1646d299058597de5a",
+  "native_evidence": "Documentation~/Evidence/0.13.0/SourceCoverage.json",
+  "native_files_compared": [
+    "Editor/AssemblyInfo.cs",
+    "Editor/Geurts.GameForge.GitFlow.Editor.asmdef",
+    "Editor/GitFlowBrick.cs",
+    "Editor/GitFlowControls.cs",
+    "Editor/GitFlowHelp.cs",
+    "Editor/GitFlowHost.cs",
+    "Editor/GitFlowInspection.cs",
+    "Editor/GitFlowNativeGate.cs",
+    "Editor/GitFlowPresentation.cs",
+    "Editor/GitFlowProcess.cs",
+    "Editor/GitFlowQueueConsole.cs",
+    "Editor/GitFlowSnapshot.cs",
+    "Editor/GitFlowToolDiscovery.cs",
+    "Editor/GitFlowWindow.cs",
+    "Tests/Editor/Geurts.GameForge.GitFlow.Editor.Tests.asmdef",
+    "Tests/Editor/GitFlowHelpTests.cs",
+    "Tests/Editor/GitFlowInspectionTests.cs",
+    "Tests/Editor/GitFlowPresentationTests.cs",
+    "Tests/Editor/GitFlowToolDiscoveryTests.cs",
+    "Tools~/Examples/InspectionExample.cs",
+    "package.json"
+  ],
+  "unchanged_except_package_version_literal": true,
+  "host_acceptance": {
+    "tests": 13,
+    "failed": 0,
+    "report": "Documentation~/Evidence/0.13.1/QueueAcceptance.log"
+  },
+  "scope": "Native C#/assemblies/examples/dependencies match released 0.13.0 except the 0.13.1 package/version literal. Native reports retain their actual 0bb06a6 candidate identity. Python rename behavior has fresh real-Git coverage; final required source CI remains a publication gate. No fresh Unity run or consumer installation claimed."
+}

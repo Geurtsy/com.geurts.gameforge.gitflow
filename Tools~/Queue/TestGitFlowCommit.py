@@ -181,6 +181,22 @@ class CommitBeforeQueueAcceptance(unittest.TestCase):
         self.assertEqual((journal.parent / retained['original_files']['feature.txt']['artifact']).read_bytes(), original_bytes)
         self.assertEqual(queue.entries(root, 'origin'), [])
 
+    def test_staged_asset_renames_commit_both_paths_and_metadata(self):
+        root, asset = self.make_scoped_asset()
+        asset.write_bytes(b'MovementSpeed: 3\r\n')
+        queue.git(root, 'mv', 'Assets/Game/Enemy.asset', 'Assets/Game/Renamed.asset')
+        queue.git(root, 'mv', 'Assets/Game/Enemy.asset.meta', 'Assets/Game/Renamed.asset.meta')
+        scoped = queue.queue_local_changes(root, 'origin', ['Assets/Game'], 'Move saved asset', 'patch', 'Retain both rename paths and native identity')
+        self.assertEqual(queue.git(root, 'status', '--porcelain'), '')
+        self.assertNotIn('Assets/Game/Enemy.asset', queue.git(root, 'ls-tree', '-r', '--name-only', scoped['source']).splitlines())
+        self.assertIn('Assets/Game/Enemy.asset.meta', scoped['capture']['files'])
+        queue.git(root, 'mv', 'Assets/Game/Renamed.asset', 'Assets/Game/Final.asset')
+        queue.git(root, 'mv', 'Assets/Game/Renamed.asset.meta', 'Assets/Game/Final.asset.meta')
+        whole = queue.submit(root, 'origin', 'Move asset again', 'patch', 'Whole-repository rename uses the same complete path inventory')
+        self.assertEqual(queue.git(root, 'status', '--porcelain'), '')
+        self.assertNotIn('Assets/Game/Renamed.asset', queue.git(root, 'ls-tree', '-r', '--name-only', whole['source']).splitlines())
+        self.assertEqual(queue.git(root, 'show', whole['source'] + ':Assets/Game/Final.asset.meta'), 'guid: 12345678901234567890123456789012')
+
 
 if __name__ == '__main__':
     unittest.main()

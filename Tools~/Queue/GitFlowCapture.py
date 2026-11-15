@@ -13,7 +13,7 @@ EXCLUDED_PARTS = {'library', 'temp', 'obj', 'logs', 'build', 'builds', 'usersett
 def inventory(q, root, scopes):
     """List saved changed files and companions in approved roots, respecting ordinary Git ignores."""
     if scopes is None:
-        paths = set(q.run(['git', 'diff', '--relative', '--name-only', '-z', 'HEAD'], root).decode().split('\0'))
+        paths = set(q.run(['git', 'diff', '--no-renames', '--relative', '--name-only', '-z', 'HEAD'], root).decode().split('\0'))
         paths.update(q.run(['git', 'ls-files', '--others', '--exclude-standard', '-z'], root).decode().split('\0'))
         paths.discard('')
         return dict(paths=sorted(paths), excluded=[], scopes=['.'])
@@ -23,7 +23,7 @@ def inventory(q, root, scopes):
         if (not scope or scope == '.' or scope.startswith(('/', '\\')) or ':' in scope
                 or '..' in Path(scope).parts or Path(scope).parts[0] not in {'Assets', 'Packages', 'ProjectSettings'}):
             raise q.QueueError('Capture scope must be a specific Assets, Packages or ProjectSettings folder.')
-    paths = set(q.run(['git', 'diff', '--relative', '--name-only', '-z', 'HEAD', '--', *scopes], root).decode().split('\0'))
+    paths = set(q.run(['git', 'diff', '--no-renames', '--relative', '--name-only', '-z', 'HEAD', '--', *scopes], root).decode().split('\0'))
     paths.update(q.run(['git', 'ls-files', '--others', '--exclude-standard', '-z', '--', *scopes], root).decode().split('\0'))
     paths.discard('')
     excluded = []
@@ -168,7 +168,14 @@ def commit_local(q, root, scopes=None, title='Commit saved local changes'):
         try:
             # Git owns its index/ref locks and runs configured hooks/signing. --only
             # commits this selection without incorporating unrelated staged entries.
-            q.run(['git', 'add', '--all', '--pathspec-from-file=-', '--pathspec-file-nul'], root, data=pathspecs)
+            tracked = set(q.run(['git', 'ls-files', '--cached', '-z'], root).decode('utf-8').split('\0'))
+            staging = [name for name in selected if name in tracked or (root / name).exists()]
+            # A staged deletion/rename has already removed its old index path.
+            # Do not re-add that missing path; commit --only still includes its
+            # deletion from HEAD together with the destination and metadata.
+            if staging:
+                staging_pathspecs = b'\0'.join((':(literal)' + name).encode('utf-8') for name in staging) + b'\0'
+                q.run(['git', 'add', '--all', '--pathspec-from-file=-', '--pathspec-file-nul'], root, data=staging_pathspecs)
             if (q.git(root, 'rev-parse', 'HEAD') != parent or q.git(root, 'branch', '--show-current') != branch
                     or signature(q, root, selected) != signatures or staged_entries(q, root, selected) != outside
                     or signature(q, repository, outside_paths) != outside_signatures):

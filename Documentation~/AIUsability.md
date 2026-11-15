@@ -80,7 +80,7 @@ The Unity Queue local changes action saves included dirty assets through AssetDa
 
 `Host.ExecuteQueueAsync(preferences, ["queue-local-changes", "--scope", "Assets/MyGame", "--title", "Meaningful title", "--summary", "Actual change"], timeoutSeconds, cancellation)` uses the same default local-commit/submission service. `preview-local-changes --scope Assets/MyGame` stays read-only. These direct APIs create no new God operation ID; inspect_queue remains the registered read-only operation.
 
-Before committing, a private index builds a reviewed saved-source snapshot. Native `git add` and `git commit --only` commit the selected paths while retaining unrelated index entries. Source, branch and unrelated-staging drift or a hook changing the reviewed tree stops submission; retain the actual commit/files and inspect the journal under `.git/gameforge_queue/local_commits`. A failed native commit may leave selected work staged. Nothing is reset or discarded to hide the failure. Existing merges/rebases, dirty detached HEADs and foreign index locks remain actionable.
+Before committing, a private index builds a reviewed saved-source snapshot. File discovery disables rename collapsing so staged moves include both old/new paths and their metadata. Native `git add` and `git commit --only` commit the selected paths while retaining unrelated index entries. Source, branch and unrelated-staging drift or a hook changing the reviewed tree stops submission; retain the actual commit/files and inspect the journal under `.git/gameforge_queue/local_commits`. A failed native commit may leave selected work staged. Nothing is reset or discarded to hide the failure. Existing merges/rebases, dirty detached HEADs and foreign index locks remain actionable.
 
 If commit succeeds but queue access fails, the local commit remains. An unchanged retry reuses HEAD and the deterministic request ID without creating an empty or duplicate commit. Already committed history remains included; a scope cannot isolate earlier unrelated commits or separate tasks within one file.
 
@@ -186,7 +186,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.13.0",
+  "packageVersion": "0.13.1",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"
