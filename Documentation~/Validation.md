@@ -1,5 +1,8 @@
 # GitFlow 0.13.0 validation
 
+[Commit-before-queue acceptance](Evidence/0.13.0/QueueAcceptance.log): all 12 required real-Git CI cases passed. [Fresh native coverage](Evidence/0.13.0/SourceCoverage.json): Unity 6000.6.8f1 completed a full rebuild, 31 unsuppressed compiler assemblies with zero diagnostics, and one nonvisual help-data test; the supported example compiled. [Compiler report](Evidence/0.13.0/Compiler.json), [qualification](Evidence/0.13.0/CompilerQualification.json) and [native test XML](Evidence/0.13.0/Native.xml) retain their actual candidate identities. Later test-expectation/evidence edits do not change native or production inputs. No consumer installation or game build is claimed.
+
+
 Commit-before-submission acceptance covers the default CLI/API, clean retry, staged/unstaged/new/deleted/Unicode work, final publication/pull, scoped and nested-project index preservation, hook failure/change, concurrent staging and detached/index-lock refusal. Fresh native compilation and the owning release gates are required before publication; retained older reports keep their actual historical scope.
 
 

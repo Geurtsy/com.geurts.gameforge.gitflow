@@ -1,0 +1,15 @@
+{
+  "assemblies": 31,
+  "candidate": "0bb06a6cb13f1f2cad6d078408aa86674759e2c8",
+  "diagnostic_policy_version": "native-default-diagnostics-v1",
+  "diagnostics": 0,
+  "duration_seconds": 25.01239690001239,
+  "inputs_unchanged": true,
+  "parallel_workers": 4,
+  "policy_copies_unchanged": true,
+  "private_evidence_scope": "Owner-local sibling folder; source/reference inventory and derived binaries are not portable artifacts.",
+  "private_report_sha256": "c6141408a8305279b325b7a7c19770b047d03e1c9fbefdbbf8e977f577caea28",
+  "qualifier_sha256": "9d3e0fa7728de349a9b1681248d6652a54106cd3f80e6e00459ae48ef66b6bd2",
+  "run": "gitflow013-native",
+  "status": "passed"
+}

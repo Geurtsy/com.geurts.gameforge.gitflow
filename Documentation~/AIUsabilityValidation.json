@@ -2,46 +2,44 @@
   "packageId": "com.geurts.gameforge.gitflow",
   "packageVersion": "0.13.0",
   "candidate": "v0.13.0",
-  "unityVersion": "6000.6.3f1",
-  "passed": 4,
+  "unityVersion": "6000.6.8f1",
+  "passed": 1,
   "failed": 0,
   "skipped": 0,
   "examplesCompiled": true,
-  "testResult": "Documentation~/Evidence/0.5.3/Native.xml",
+  "testResult": "Documentation~/Evidence/0.13.0/Native.xml",
   "visualAcceptance": {
     "required": false,
     "status": "not_performed",
     "passed": false,
     "scope": "Current Commandments prohibit rendered checks."
   },
-  "publicationReady": false,
-  "scope": "Default local branch commits before queue submission; scoped preservation, configured hooks and exact-source retry.",
+  "publicationReady": true,
+  "scope": "Fresh full Unity rebuild and 31 default-policy compiler assemblies; nonvisual native help data and compile-checked example. Existing operation provider/dependency bodies retain their actual unchanged scope. No consumer adoption, rendering, game/player build or whole-game acceptance claimed.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.12.0/QueueAcceptance.log",
-    "passed": 11,
+    "report": "Documentation~/Evidence/0.13.0/QueueAcceptance.log",
+    "passed": 12,
     "failed": 0,
-    "scope": "Four timing controls, five ownership-recovery controls and two existing uncertain/legacy fencing controls; test-only monotonic advancement."
+    "scope": "Required source CI: native local commits and exact retries, final disposable publication/pull, scoped/nested preservation, configured hook refusal/change, concurrent index/working edits and detached/index-lock controls."
   },
   "compilerGate": {
-    "report": "Documentation~/Evidence/0.5.3/Compiler.json",
+    "report": "Documentation~/Evidence/0.13.0/Compiler.json",
     "status": "passed",
     "warnings": 0,
     "errors": 0
   },
   "compilerQualification": {
-    "report": "Documentation~/Evidence/0.5.3/CompilerQualification.json",
+    "report": "Documentation~/Evidence/0.13.0/CompilerQualification.json",
     "status": "passed"
   },
   "additionalEditors": [],
   "integrationRecipes": [],
-  "publicationBlockers": [
-    "Fresh candidate native compilation and acceptance pending."
-  ],
+  "publicationBlockers": [],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
-    "baseline": "91500850972c21bb51470c0f49a7092eebc05871",
-    "report": "Documentation~/Evidence/0.12.0/NativeEvidenceReuse.json",
-    "reason": "Unchanged native code/examples/dependencies apart from package version literal."
+    "baseline": "0bb06a6cb13f1f2cad6d078408aa86674759e2c8",
+    "report": "Documentation~/Evidence/0.13.0/SourceCoverage.json",
+    "reason": "Fresh native evidence at the exact Git-resolved candidate; subsequent Windows test-assertion and evidence-only edits leave native/production input membership unchanged. Prior unrelated feature results remain historical."
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",
