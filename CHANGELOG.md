@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.0 — 2026-11-15
+
+- Retry failed remote verification reads once within the original budget, without repeating publication writes.
+- Keep the service alive after clean heartbeat-read interruptions, permanently fence the failed owner and resume the original candidate only under a fresh safely acquired lease.
+- Preserve request/version/history, original repair clocks, required gates and unknown changed source/index; retain access/recovery evidence.
+
 ## 0.10.0 — 2026-11-14
 
 - Recover only proven Unity-created missing folder metadata for tracked first-party assets; preserve exact GUIDs and native bytes.

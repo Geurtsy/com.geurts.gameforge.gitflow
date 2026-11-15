@@ -1,6 +1,14 @@
 # GitFlow supported automation contract
 
-Version 0.10.0 retains bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+Version 0.11.0 retains bounded heartbeat reconciliation, parent-owned native session restoration and explicit repair reasoning selection. Read [Validation.md](Validation.md) for evidence and limits.
+
+## Ownership verification recovery
+
+Transient failures of the remote `ls-remote`/exact-object `fetch` reads restart verification once, within the existing shared 600-second allowance. The retry re-observes the exact expected child and owner; it does not repeat a push, sleep, extend the previous ownership deadline, accept a successor as current ownership or weaken atomic fencing. A recovered read retains `verification_<child>.json` with both observations and the original error.
+
+If both reads fail during a heartbeat, the old owner is permanently fenced and its native child tree is stopped/restored through existing containment. `serve` may retain an automatic continuation only after the heartbeat has stopped, the candidate is clean and its HEAD/index match the recorded validating request. It journals the original request/control/source/candidate, configuration and failed owner. The same service remains alive with bounded backoff; a new lease must observe the unchanged remote record for its normal recorded duration before takeover (currently 1800 seconds, or the supported older record's 180 seconds). Access failures reset observations and show `waiting_for_access`; healthy owners reset takeover observations. No remote timestamp, missing PID or exception grants early takeover.
+
+After fresh ownership is acquired, the original candidate runs the unchanged required gates and retains its version, source, attempts and original repair budget. Successful integration returns the service to all-request processing. This is deterministic publisher recovery and invokes no repair model. Configuration, source/index drift, changed request controls, malformed/unknown owners and uncertain delivery writes remain actionable blocks. No automatic whole-process resurrection, host-reboot restart, generic source-check retry, package update or lease deletion is introduced. A service restart does not adopt an old local continuation automatically.
 
 ## Automatic Unity folder metadata recovery
 
@@ -166,7 +174,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.10.0",
+  "packageVersion": "0.11.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

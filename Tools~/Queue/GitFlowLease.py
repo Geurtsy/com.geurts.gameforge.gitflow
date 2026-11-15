@@ -1,3 +1,5 @@
+# IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md
+# and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 """Persistent Git leases: native FF arbitration and atomic publication fencing.
 
 Wall-clock timestamps are audit metadata. Only locally observed, unchanged remote
@@ -43,13 +45,16 @@ def transport(q, repo, *arguments, timeout=TRANSPORT_TIMEOUT):
         result = q.process_run(["git", *map(str, arguments)], cwd=repo, env=environment,
                                 timeout=timeout, capture_output=True, text=True,
                                 encoding="utf-8", errors="replace", **q.console_options())
-    except (OSError, subprocess.TimeoutExpired):
+    except (OSError, subprocess.TimeoutExpired) as error:
         OBSERVED.clear()
+        error.remote_read = arguments[0] in {'ls-remote', 'fetch'}
         raise
     if result.returncode:
         OBSERVED.clear()
-        raise Rejected("Lease Git " + str(arguments[0]) + " failed: "
+        error = Rejected("Lease Git " + str(arguments[0]) + " failed: "
                          + ((result.stderr + result.stdout).strip()[-4000:] or f"exit {result.returncode}; no output"))
+        error.remote_read = arguments[0] in {'ls-remote', 'fetch'}
+        raise error
     return result.stdout.rstrip("\r\n")
 
 
@@ -93,16 +98,18 @@ def verify_child(q, repo, remote, child, released=False, expected_owner=None):
     """Verify reads only; an exact-parent mismatch gets one bounded fresh observation.
 
     The original two-transport (600s) verification allowance is shared by every
-    local/remote Git read here. No push, sleep, deadline extension or write retry
-    is permitted. An owned lease still requires the exact child, never a successor.
+    local/remote Git read here. One failed remote read may restart verification
+    within that same budget. No push, sleep, deadline extension or write retry is
+    permitted. An owned lease still requires the exact child, never a successor.
     """
     deadline = time.monotonic() + 2 * TRANSPORT_TIMEOUT
     evidence = dict(expected_child=child, expected_owner=expected_owner, released=released,
-                    observations=[], read_budget_seconds=2 * TRANSPORT_TIMEOUT, phase="initial_ref")
+                    observations=[], read_failures=[], read_budget_seconds=2 * TRANSPORT_TIMEOUT, phase="initial_ref")
     def read(*arguments):
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             raise LeaseError("Lease verification read budget expired")
+        evidence['read_command'] = arguments[0]
         result = transport(q, repo, *arguments, timeout=min(TRANSPORT_TIMEOUT, remaining))
         if time.monotonic() >= deadline:
             raise LeaseError("Lease verification read budget expired")
@@ -120,7 +127,7 @@ def verify_child(q, repo, remote, child, released=False, expected_owner=None):
         return value
     def metadata(oid):
         return validate(json.loads(read("show", oid + ":" + q.REQUEST)))
-    try:
+    def verify():
         current = observed()
         evidence["phase"] = "expected_object"
         read("fetch", "--no-write-fetch-head", remote, child)
@@ -155,7 +162,24 @@ def verify_child(q, repo, remote, child, released=False, expected_owner=None):
                 evidence.update(phase="complete", matched="released_descendant")
                 return evidence
         raise LeaseError("Observed ref differs from the exact published lease child")
+    try:
+        for attempt in range(2):
+            try:
+                result = verify()
+                if evidence['read_failures']:
+                    q.durable(q.common(repo) / 'gameforge_queue' / ('verification_' + child + '.json'), result)
+                return result
+            except (Rejected, OSError, subprocess.TimeoutExpired) as error:
+                if evidence['read_command'] not in {'ls-remote', 'fetch'}:
+                    raise
+                evidence['retryable_read_failure'] = True
+                evidence['read_failures'].append(dict(command=evidence['read_command'], exception_type=type(error).__name__, detail=str(error)))
+                if attempt or time.monotonic() >= deadline:
+                    raise
+                evidence['phase'] = 'remote_read_retry'
     except Exception as error:
+        # A changed/malformed owner is never classified as a transient read failure.
+        evidence['retryable_read_failure'] = isinstance(error, (Rejected, OSError, subprocess.TimeoutExpired)) and evidence.get('read_command') in {'ls-remote', 'fetch'}
         evidence["outcome"] = "failed"
         failure = LeaseError("Exact published lease ref verification failed; ownership is uncertain; "
                              + "expected=" + str(child) + "; observations=" + repr(evidence["observations"])
@@ -183,6 +207,7 @@ class Lease:
         self.owner = uuid.uuid4().hex
         self.oid, self.deadline, self.failure, self.closed = None, 0, None, False
         self.attempted_oid, self.verification = None, None
+        self.last_operation = None
         self.mutex, self.stop = threading.RLock(), threading.Event()
         self.thread = None
         self.work = {}
@@ -254,6 +279,7 @@ class Lease:
     def advance(self, state="owned", operation="heartbeat", updates=()):
         with self.mutex:
             self.guard()
+            self.last_operation = operation
             self.attempted_oid, self.verification = None, None
             dispatch = self.clock()
             receipt = None
