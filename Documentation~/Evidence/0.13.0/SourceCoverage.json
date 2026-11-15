@@ -1,0 +1,21 @@
+{
+  "native_candidate": "0bb06a6cb13f1f2cad6d078408aa86674759e2c8",
+  "host_candidate": "e90f81a0997bdfe9f478586b1a9532987ede93ce",
+  "unity": "6000.6.8f1",
+  "qualified_assemblies": 31,
+  "native_compiler_warnings": 0,
+  "native_compiler_errors": 0,
+  "native_help_tests": 1,
+  "native_sources_examples_assemblies_package_and_production_python_unchanged_between_candidates": true,
+  "remaining_change": "Windows raw-byte test expectations only; final release evidence and documentation do not change native inputs.",
+  "host_ci": {
+    "run": 43718501750,
+    "job": 132825122552,
+    "tests": 12,
+    "failed": 0
+  },
+  "fixture": "C:/gfc13",
+  "native_original_logs": "C:/gfcmt/Native",
+  "private_compiler_inputs": "C:/gfcmt/Native.compiler-private",
+  "scope": "Fresh full Unity rebuild and 31 default-policy compiler assemblies; nonvisual native help data and compile-checked example. Existing operation provider/dependency bodies retain their actual unchanged scope. No consumer adoption, rendering, game/player build or whole-game acceptance claimed."
+}

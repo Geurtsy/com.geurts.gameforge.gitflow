@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.13.0 — 2026-11-15
+
+- Commit saved local changes on the current branch before submitting them to the queue by default; native Git hooks/signing remain active.
+- Preserve unrelated staging for scoped submissions; retain local commits across submission failures and reuse them on unchanged retries.
+- Keep snapshot-only and already-committed submission as explicit CLI/API alternatives. Preserve all zero-warning publication checks.
+
 ## 0.12.0 — 2026-11-15
 
 - Reduce new leases from 1800 to 600 seconds; retain full recorded durations for supported older records and reject unknown timing cohorts.

@@ -1,0 +1,14 @@
+{
+  "candidate": "0bb06a6cb13f1f2cad6d078408aa86674759e2c8",
+  "compiler_qualification_seconds": 25.017461400013417,
+  "compiler_qualification_sha256": "021752113431b670d0b535f36ab2221a58e7acf272b85c8958233226fe9e732b",
+  "errors": 0,
+  "full_log_sha256": "81b1910355297bfae03f26f189b3ca5cc5b7ed0f0ec660bcb1e3893bda9e2c76",
+  "full_script_rebuild": true,
+  "native_compilation_seconds": 176.16779610000958,
+  "native_report_sha256": "9c6fcdf7000c9d3708ebb39facf601e65cb5185eed3ed85528d512fbc4794345",
+  "run": "gitflow013-native",
+  "skipped": 0,
+  "status": "passed",
+  "warnings": 0
+}

@@ -354,12 +354,17 @@ def entries(root, remote, request_ids=None):
     return sorted(values, key=lambda row: (row[2]['submitted_utc'], row[2]['id']))
 
 
-def submit(root, remote, title, size, summary, dependencies=()):
-    """Idempotency is exact source identity. A lost response never creates a second request."""
+def submit(root, remote, title, size, summary, dependencies=(), scopes=None, committed_only=False):
+    """Commit saved local work by default, then submit its exact source identity once."""
     root = plain(root)
-    clean(root)
-    source = git(root, 'rev-parse', 'HEAD')
-    return submit_source(root, remote, source, title, size, summary, dependencies)
+    if size not in {'patch', 'minor', 'major'} or not title.strip() or not summary.strip():
+        raise QueueError('Supply title, summary and patch/minor/major scope.')
+    if committed_only:
+        clean(root)
+        return submit_source(root, remote, git(root, 'rev-parse', 'HEAD'), title, size, summary, dependencies)
+    from GitFlowCapture import commit_local
+    captured = commit_local(sys.modules[__name__], root, scopes, title)
+    return submit_source(root, remote, captured['source'], title, size, summary, dependencies, capture=captured)
 
 
 def submit_source(root, remote, source, title, size, summary, dependencies=(), capture=None):
@@ -406,10 +411,11 @@ def submit_source(root, remote, source, title, size, summary, dependencies=(), c
     return value
 
 
-def queue_local_changes(root, remote, scopes, title, size, summary):
-    """One user action captures saved scoped files and verifies an idempotent queue submission."""
-    from GitFlowCapture import capture
-    snapshot = capture(sys.modules[__name__], plain(root), scopes)
+def queue_local_changes(root, remote, scopes, title, size, summary, snapshot_only=False):
+    """Commit saved scoped work before queueing; detached snapshots require an explicit opt-in."""
+    from GitFlowCapture import capture, commit_local
+    snapshot = (capture(sys.modules[__name__], plain(root), scopes) if snapshot_only else
+                commit_local(sys.modules[__name__], plain(root), scopes, title))
     return submit_source(root, remote, snapshot['source'], title, size, summary, capture=snapshot)
 
 
@@ -1307,11 +1313,14 @@ def main():
     submission.add_argument('--summary', required=True)
     submission.add_argument('--size', choices=['patch', 'minor', 'major'], required=True)
     submission.add_argument('--dependency', action='append', default=[])
+    submission.add_argument('--scope', action='append')
+    submission.add_argument('--committed-only', action='store_true')
     capture = subcommands.add_parser('queue-local-changes')
     capture.add_argument('--scope', action='append', required=True)
     capture.add_argument('--title', default='Saved Unity project changes')
     capture.add_argument('--summary', default='Capture the saved first-party changes in the configured task scope.')
     capture.add_argument('--size', choices=['patch', 'minor', 'major'], default='patch')
+    capture.add_argument('--snapshot-only', action='store_true')
     preview = subcommands.add_parser('preview-local-changes')
     preview.add_argument('--scope', action='append', required=True)
     setup = subcommands.add_parser('configure')
@@ -1356,9 +1365,11 @@ def main():
     if forward(sys.modules[__name__], root, arguments.command):
         return
     if arguments.command == 'submit':
-        result = submit(root, arguments.remote, arguments.title, arguments.size, arguments.summary, arguments.dependency)
+        result = submit(root, arguments.remote, arguments.title, arguments.size, arguments.summary, arguments.dependency,
+                        scopes=arguments.scope, committed_only=arguments.committed_only)
     elif arguments.command == 'queue-local-changes':
-        result = queue_local_changes(root, arguments.remote, arguments.scope, arguments.title, arguments.size, arguments.summary)
+        result = queue_local_changes(root, arguments.remote, arguments.scope, arguments.title, arguments.size, arguments.summary,
+                                     snapshot_only=arguments.snapshot_only)
     elif arguments.command == 'preview-local-changes':
         from GitFlowCapture import inventory
         result = dict(state='preview', **inventory(sys.modules[__name__], root, arguments.scope))

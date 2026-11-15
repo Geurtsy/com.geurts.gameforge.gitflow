@@ -148,7 +148,7 @@ namespace Geurts.GameForge.GitFlow.Editor
             Button(group, "Next observed page", () => InspectPage(PageOffset(1)));
             Button(group, "Measure configured publisher storage", () => Host().ExecuteQueueAsync(_actionPreferences, new[] { "storage" }, 150, _requestCancellation.Token));
             var capture = new Foldout { text = "Queue saved local changes", value = true }; group.Add(capture);
-            capture.Add(new HelpBox("Queue local changes saves assets and prompts for modified scenes, captures eligible saved files in Capture Scope plus required Unity metadata, and submits a separate exact commit. Your branch, staging and working edits stay in place. Choose a narrow task folder when unrelated edits are present. The queue owns final validation and publication.", HelpBoxMessageType.Info));
+            capture.Add(new HelpBox("Queue local changes saves included assets and prompts for modified scenes, commits eligible saved files and Unity metadata on your current branch, then queues that exact commit. Unrelated staging and working edits stay in place. Choose a narrow task folder when unrelated edits are present. The queue owns final validation and publication.", HelpBoxMessageType.Info));
             var captureTitle = new TextField("Optional title") { value = "Saved Unity project changes" };
             var captureSummary = new TextField("Optional summary") { value = "Saved first-party changes in the configured task scope." };
             capture.Add(captureTitle); capture.Add(captureSummary);
