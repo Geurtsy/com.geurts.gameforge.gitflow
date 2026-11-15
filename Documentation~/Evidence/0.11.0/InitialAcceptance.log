@@ -1,0 +1,9 @@
+Transcript of the four completed unittest cases captured in the task tool output.
+test_changed_owner_during_read_retry_is_never_accepted ... ok
+test_failed_read_cannot_extend_verification_budget ... ok
+test_one_failed_fetch_recovers_without_repeating_heartbeat_push ... ok
+test_service_survives_failed_heartbeat_reads_and_access_loss_then_delivers_original ... ok
+
+Ran 4 tests in 82.613s
+
+OK

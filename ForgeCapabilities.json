@@ -90,10 +90,23 @@
         "Real-Git boundary and end-to-end queue acceptance",
         "Real Unity compiler-failure metadata smoke"
       ]
+    },
+    {
+      "id": "ownership_verification_recovery",
+      "implemented": true,
+      "provider": "none",
+      "maturity": "supported",
+      "operations": [],
+      "description": "Bounded remote verification read retry and same-service fresh-lease recovery for clean heartbeat-interrupted candidates",
+      "validation": [
+        "Real-Git failed-read and moved-owner controls",
+        "Same-service abandoned-lease recovery with original request/version",
+        "Changed-index preservation and existing fencing controls"
+      ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.10.0",
+  "packageVersion": "0.11.0",
   "prerequisites": [
     {
       "required": true,

@@ -1,3 +1,5 @@
+# IMPORTANT: This script must comply with GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsTechnicalTechnique.md
+# and folder placement rules in GeurtsGameForgeCommandments/GeurtsTechniques/GeurtsFolderStructureTechnique.md.
 """GitFlow's deterministic, strict integration host. No validation bypass.
 
 One shared Git object store, one exclusively owned reusable worktree, immutable
@@ -30,6 +32,13 @@ MAXIMUM_BYTES = 1024 * 1024
 
 class QueueError(RuntimeError):
     """An actionable blocker; never treated as a successful integration."""
+
+
+class OwnershipRecovery(QueueError):
+    """The old owner stopped; only a fresh fenced lease may continue this candidate."""
+    def __init__(self, continuation):
+        super().__init__('Heartbeat verification reads failed; waiting for fresh ownership of the preserved candidate.')
+        self.continuation = continuation
 
 
 class GateFailure(QueueError):
@@ -128,10 +137,14 @@ def run(arguments, root, data=None, timeout=300, environment=None):
         result = process_run([str(item) for item in arguments], cwd=root, env=env,
                                 input=data, capture_output=True, timeout=timeout, **console_options())
     except (OSError, subprocess.TimeoutExpired) as error:
-        raise QueueError(type(error).__name__ + ': ' + str(arguments[0]) + '; inspect the retained candidate before resuming.') from error
+        failure = QueueError(type(error).__name__ + ': ' + str(arguments[0]) + '; inspect the retained candidate before resuming.')
+        failure.remote_read = str(arguments[0]) == 'git' and len(arguments) > 1 and arguments[1] in {'fetch', 'ls-remote'}
+        raise failure from error
     if result.returncode:
-        raise QueueError(str(arguments[0]) + ' failed (' + str(result.returncode) + '): ' +
+        failure = QueueError(str(arguments[0]) + ' failed (' + str(result.returncode) + '): ' +
                          (result.stderr + result.stdout).decode('utf-8', 'replace')[-4000:])
+        failure.remote_read = str(arguments[0]) == 'git' and len(arguments) > 1 and arguments[1] in {'fetch', 'ls-remote'}
+        raise failure
     return result.stdout
 
 
@@ -1159,6 +1172,24 @@ def process_once(root, expected_request=None, expected_candidate=None):
                         attempted=lease.attempted_oid, verification=lease.verification, error=lease.failure, utc=utc()))
             try:
                 lease.close()
+            except leases.LeaseError as close_error:
+                # This exception is raised only after the gate's child containment and
+                # native session restoration have unwound. Never revive the old lease.
+                verification = lease.verification or {}
+                if (lease.closed and (not lease.thread or not lease.thread.is_alive())
+                        and lease.last_operation == 'heartbeat' and verification.get('outcome') == 'failed'
+                        and verification.get('retryable_read_failure')
+                        and value['state'] == 'validating' and value.get('candidate')):
+                    clean(workspace)
+                    if git(workspace, 'rev-parse', 'HEAD') == value['candidate']:
+                        index = Path(git(workspace, 'rev-parse', '--path-format=absolute', '--git-path', 'index'))
+                        continuation = dict(schema=SCHEMA, request=value['id'], control=previous,
+                                            source=value['source'], candidate=value['candidate'], index=file_digest(index),
+                                            configuration=digest(config), failed_owner=lease.owner,
+                                            attempted=lease.attempted_oid, verification=verification, utc=utc())
+                        durable(control / ('ownership_recovery_' + lease.owner + '.json'), continuation)
+                        raise OwnershipRecovery(continuation) from close_error
+                raise
             finally:
                 leases.ACTIVE.reset(ownership_token)
 
@@ -1188,7 +1219,7 @@ def inspect_owner(root, remote):
 
 
 def serve(root, expected_configuration=None):
-    """One ordinary background program per repository; no AI monitoring, implicit retry or new workspace."""
+    """One background owner; narrowly proven heartbeat interruptions retain a continuation."""
     configuration(root)
     control = common(root) / 'gameforge_queue'
     with exclusive(control / 'service.lock'):
@@ -1197,18 +1228,53 @@ def serve(root, expected_configuration=None):
         if (control / 'stop.json').exists():
             update_state(root, state='stopped', detail='A graceful stop is recorded. Explicit operator resume is required.')
             return
+        recovery = None
         while not (control / 'stop.json').exists():
             try:
-                result = process_once(root)
+                if recovery:
+                    config = configuration(root)
+                    if digest(config) != recovery['configuration']:
+                        raise QueueError('Configuration changed during ownership recovery; preserve the candidate.')
+                    rows = entries(root, config['remote'])
+                    original = next((row for row in rows if row[2]['id'] == recovery['request']), None)
+                    if not original:
+                        raise QueueError('Original interrupted request disappeared; recovery refused.')
+                    if original[2]['state'] == 'integrated':
+                        recovery = None
+                        continue
+                    if original[0] != recovery['control']:
+                        raise QueueError('Interrupted request changed during recovery; preserve it for review.')
+                    workspace = Path(config['workspace_root']) / 'Workspace'
+                    index = Path(git(workspace, 'rev-parse', '--path-format=absolute', '--git-path', 'index'))
+                    if file_digest(index) != recovery['index'] or git(workspace, 'rev-parse', 'HEAD') != recovery['candidate']:
+                        raise QueueError('Candidate/index changed during ownership recovery; originals retained.')
+                    result = process_once(root, recovery['control'], recovery['candidate'])
+                else:
+                    result = process_once(root)
                 if result['state'] not in {'integrated', 'idle'}:
                     return
                 if result['state'] == 'integrated':
+                    if recovery:
+                        durable(control / ('ownership_recovered_' + recovery['failed_owner'] + '.json'),
+                                dict(request=recovery['request'], candidate=result.get('main_commit'), state='integrated', utc=utc()))
+                        recovery = None
                     continue
+            except OwnershipRecovery as error:
+                recovery = error.continuation
+                update_state(root, state='waiting_for_owner', request=recovery['request'],
+                             detail=str(error) + ' The unchanged remote lease must satisfy its normal monotonic observation interval; no failed-owner writes or model calls.')
             except leases.Contended:
                 update_state(root, state='waiting_for_owner', detail='Another owner holds the renewable lease; observing with bounded backoff.')
             except Exception as error:
-                update_state(root, state='blocked', diagnostic=failure_diagnostic(error, 'processor'), detail=type(error).__name__ + ': ' + str(error))
-                return
+                cause = error
+                while cause is not None and not getattr(cause, 'remote_read', False):
+                    cause = cause.__cause__
+                if cause is not None:
+                    leases.OBSERVED.clear()
+                    update_state(root, state='waiting_for_access', detail=type(error).__name__ + ': ' + str(error))
+                else:
+                    update_state(root, state='blocked', diagnostic=failure_diagnostic(error, 'processor'), detail=type(error).__name__ + ': ' + str(error))
+                    return
             for _ in range(60):
                 if (control / 'stop.json').exists():
                     break

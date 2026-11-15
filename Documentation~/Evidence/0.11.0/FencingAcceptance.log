@@ -1,0 +1,10 @@
+test_changed_index_stops_automatic_continuation_and_preserves_source (TestGitFlowOwnershipRecovery.OwnershipAcceptance.test_changed_index_stops_automatic_continuation_and_preserves_source) ... ok
+test_uncertain_ack_fences_owner_without_repeating_accepted_atomic_write (TestGitFlowQueue.QueueAcceptance.test_uncertain_ack_fences_owner_without_repeating_accepted_atomic_write) ... ok
+test_heartbeat_readback_cannot_revive_the_old_deadline (TestGitFlowQueue.QueueAcceptance.test_heartbeat_readback_cannot_revive_the_old_deadline) ... ok
+test_completed_delivery_rejection_never_retries_as_a_heartbeat (TestGitFlowQueue.QueueAcceptance.test_completed_delivery_rejection_never_retries_as_a_heartbeat) ... ok
+test_unknown_and_legacy_owner_records_are_never_treated_as_available (TestGitFlowQueue.QueueAcceptance.test_unknown_and_legacy_owner_records_are_never_treated_as_available) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 58.598s
+
+OK
