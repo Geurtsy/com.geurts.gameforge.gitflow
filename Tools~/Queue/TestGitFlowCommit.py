@@ -146,6 +146,7 @@ class CommitBeforeQueueAcceptance(unittest.TestCase):
     def test_hook_changed_source_retains_actual_commit_without_queueing(self):
         parent = queue.git(self.repository, 'rev-parse', 'HEAD')
         (self.repository / 'feature.txt').write_text('reviewed source\n')
+        reviewed_bytes = (self.repository / 'feature.txt').read_bytes()
         hook = self.repository / '.git/hooks/pre-commit'
         hook.write_text("#!/bin/sh\nprintf 'hook changed source\\n' > feature.txt\ngit add feature.txt\n")
         hook.chmod(0o755)
@@ -157,12 +158,13 @@ class CommitBeforeQueueAcceptance(unittest.TestCase):
         journal = next((self.repository / '.git/gameforge_queue/local_commits').glob('*/commit.json'))
         retained = json.loads(journal.read_text())
         original = retained['original_files']['feature.txt']['artifact']
-        self.assertEqual((journal.parent / original).read_bytes(), b'reviewed source\n')
+        self.assertEqual((journal.parent / original).read_bytes(), reviewed_bytes)
 
     def test_concurrent_outside_working_edit_is_preserved(self):
         root, asset = self.make_scoped_asset()
         parent = queue.git(root, 'rev-parse', 'HEAD')
         outside = root / 'feature.txt'; outside.write_text('unrelated pending original\n')
+        original_bytes = outside.read_bytes()
         original_run = queue.run
         def edit_external(arguments, directory, *arguments_tail, **options):
             result = original_run(arguments, directory, *arguments_tail, **options)
@@ -176,7 +178,7 @@ class CommitBeforeQueueAcceptance(unittest.TestCase):
         self.assertEqual(outside.read_text(), 'external later working edit\n')
         journal = next((root / '.git/gameforge_queue/local_commits').glob('*/commit.json'))
         retained = json.loads(journal.read_text())
-        self.assertEqual((journal.parent / retained['original_files']['feature.txt']['artifact']).read_bytes(), b'unrelated pending original\n')
+        self.assertEqual((journal.parent / retained['original_files']['feature.txt']['artifact']).read_bytes(), original_bytes)
         self.assertEqual(queue.entries(root, 'origin'), [])
 
 
