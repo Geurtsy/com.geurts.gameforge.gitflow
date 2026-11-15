@@ -23,7 +23,7 @@ Capture Scope is the project folder selected during setup. The button takes save
 
 Use a narrow task folder, such as Assets/MyGame/Enemies, if you are also working on something unrelated. The tool cannot distinguish two different tasks inside the same file. Cached, generated, licensed/vendor and validation/tool files are excluded, as are queue-owned version records and package manifests. Git's ignore rules still apply.
 
-Your current files and staging remain in place. Staging is a Git client's selection of files for its next checkpoint; GitFlow uses a separate selection without changing yours. Your branch, a separate line of work, also stays in place. Earlier committed work on that branch is part of the snapshot's history, so use an appropriate task branch if that history contains unrelated work. A commit means a recorded checkpoint.
+GitFlow now commits the included saved changes on your current branch before submitting them. Included changes stop appearing as uncommitted; unrelated staged and working edits remain. Configured Git hooks and signing still run. If queue access fails after the commit, it stays saved locally and an unchanged retry reuses it. Earlier committed branch history is also included, so use an appropriate task branch. Advanced callers can explicitly request snapshot-only behavior through the CLI/API.
 
 FIRST-TIME SETUP
 Enable GitFlow in God. In Queue host and local Codex, choose installed Python, this project's repository folder and its existing remote (normally origin). Choose Capture Scope, then Save project and model preferences. You can leave model selection empty for ordinary queue use.
@@ -58,7 +58,7 @@ An ordinary Git push does not add work to the queue automatically. Direct pushes
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.12.0",
+  "packageVersion": "0.13.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

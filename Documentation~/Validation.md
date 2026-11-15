@@ -1,4 +1,7 @@
-# GitFlow 0.12.0 validation
+# GitFlow 0.13.0 validation
+
+Commit-before-submission acceptance covers the default CLI/API, clean retry, staged/unstaged/new/deleted/Unicode work, final publication/pull, scoped and nested-project index preservation, hook failure/change, concurrent staging and detached/index-lock refusal. Fresh native compilation and the owning release gates are required before publication; retained older reports keep their actual historical scope.
+
 
 [Shorter-lease acceptance](Evidence/0.12.0/QueueAcceptance.log): eleven real-Git executions passed, covering old recorded durations (including future audit timestamps), healthy renewal resetting observation, stale-owner fencing, a full five-minute publication after a fresh heartbeat, late verification, same-service failed-read/access recovery, changed-index preservation and legacy/unknown/uncertain-write refusal. Test clocks advance only in disposable fixtures. Native C#/examples/dependencies remain unchanged except the version literal; [comparison](Evidence/0.12.0/NativeEvidenceReuse.json) retains their original proof. No production fault injection or multi-machine soak is claimed.
 
@@ -28,7 +31,7 @@
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.12.0",
+  "packageVersion": "0.13.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

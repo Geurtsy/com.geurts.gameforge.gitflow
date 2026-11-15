@@ -70,17 +70,21 @@ God is the only mandatory Forge brick. Use the exact dependency minimums in pack
 
 GitFlowBrick.Host is null while unavailable. Load/Save use God's validated BrickSettingsStore. Preferences contain only paths, repository/remote, capture scope, model and effort. Stopping the brick cancels its own bridge requests; the explicitly started background publisher is independent. Await methods, observe failures, and never block Unity's main thread. A serial bridge refuses overlapping operations.
 
-## Saved-change capture and submission
+## Commit saved changes before submission
 
-The Unity Queue local changes action verifies this is the active project, waits for imports/compilation/Play Mode to finish, saves included dirty assets with AssetDatabase.SaveAssetIfDirty, and uses the supported scene-save prompt only for included scenes. It refuses untitled scenes and unsaved Prefab Mode work with actionable messages. Excluded/unrelated dirty assets and scenes remain unchanged. CaptureScope is a task-owned Assets folder in the UI.
+Default submission creates a normal local Git commit first, then queues that exact source. The current branch advances and included staged/unstaged/deleted/nonignored new files become committed. Native Git owns locks, identity, configured hooks and signing. No reset, stash, forced ignored-file addition, direct-main push or second Unity clone occurs. The publisher still owns final versioning, required checks, shared-main publication and synchronization.
 
-The shared API is Host.ExecuteQueueAsync(preferences, arguments, timeoutSeconds, cancellation). For already saved data, arguments ["queue-local-changes", "--scope", "Assets/MyGame", "--title", "Meaningful title", "--summary", "Actual change"] run the same capture/submit host. The API does not save Editor memory; callers must use supported Unity APIs first. preview-local-changes with --scope reads the saved capture plan. Do not create an operation ID for these direct methods: inspect_queue remains the only registered God operation in this candidate.
+`submit --title "Meaningful title" --size patch --summary "Actual change"` commits all saved nonignored changes in the Git repository by default. Optional repeated `--scope Assets/MyGame` uses the scoped capture inventory instead. `submit --committed-only` explicitly retains the previous clean-already-committed behavior. The Python API is `submit(root, remote, title, size, summary, dependencies=(), scopes=None, committed_only=False)`. Low-level `submit_source` still accepts an exact existing commit and never invents local edits.
 
-Capture uses a temporary GIT_INDEX_FILE initialized from the current HEAD. It selects eligible saved working bytes/deletions and nonignored new files in the requested scope, plus required Unity metadata. Generated/vendor/validation/tool folders and queue-owned versions/package manifests are excluded. Literal NUL-delimited pathspecs prevent broad staging. It compares raw bytes, path inventory, HEAD and the original index before committing. An existing unresolved merge or a concurrent source change fails without checkout mutation.
+The Unity Queue local changes action saves included dirty assets through AssetDatabase.SaveAssetIfDirty, prompts only for included modified scenes, and refuses untitled scenes, unsaved Prefab Mode work, Play Mode, imports or compilation. Its existing CaptureScope selects eligible task-owned files and Unity companions; generated/vendor/validation/tool folders and queue-owned versions/manifests remain excluded in that scoped route. Outside-scope staging and saved/unsaved work remain untouched. No CLI action saves Editor memory.
 
-The resulting checkpoint is an ordinary commit with the original HEAD as parent. Canonical snapshot metadata makes an unchanged capture idempotent even after a response is lost. The live HEAD, branch, index and working bytes are preserved. Existing committed branch history is included; a scope cannot isolate earlier unrelated commits or distinguish two tasks in one file. No stash/reset, forced ignored-file add, direct-main push or second Unity clone occurs.
+`Host.ExecuteQueueAsync(preferences, ["queue-local-changes", "--scope", "Assets/MyGame", "--title", "Meaningful title", "--summary", "Actual change"], timeoutSeconds, cancellation)` uses the same default local-commit/submission service. `preview-local-changes --scope Assets/MyGame` stays read-only. These direct APIs create no new God operation ID; inspect_queue remains the registered read-only operation.
 
-The optional submit command requires an already clean committed task branch. It accepts title, summary, patch/minor/major size and explicit dependency request IDs. Both routes verify the remote immutable source request. The request ID is derived from the full source commit. A submission response ambiguity triggers one read reconciliation, never a repeated uncertain write. Existing legacy queue refs block new-protocol submission/configuration until an explicitly reviewed migration occurs.
+Before committing, a private index builds a reviewed saved-source snapshot. Native `git add` and `git commit --only` commit the selected paths while retaining unrelated index entries. Source, branch and unrelated-staging drift or a hook changing the reviewed tree stops submission; retain the actual commit/files and inspect the journal under `.git/gameforge_queue/local_commits`. A failed native commit may leave selected work staged. Nothing is reset or discarded to hide the failure. Existing merges/rebases, dirty detached HEADs and foreign index locks remain actionable.
+
+If commit succeeds but queue access fails, the local commit remains. An unchanged retry reuses HEAD and the deterministic request ID without creating an empty or duplicate commit. Already committed history remains included; a scope cannot isolate earlier unrelated commits or separate tasks within one file.
+
+For explicit snapshot-only use, `queue-local-changes --snapshot-only --scope Assets/MyGame` and `queue_local_changes(..., snapshot_only=True)` retain the previous detached checkpoint behavior, preserving live HEAD/index. The low-level `GitFlowCapture.capture` remains that explicit snapshot primitive. Normal `queue_local_changes` uses `commit_local` and advances the current branch.
 
 ## Publisher defaults and complete queue display
 
@@ -182,7 +186,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.12.0",
+  "packageVersion": "0.13.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

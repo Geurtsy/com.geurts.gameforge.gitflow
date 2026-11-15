@@ -1,8 +1,8 @@
 # Geurts Game Forge GitFlow
 
-Version 0.12.0 reduces new ownership recovery windows to ten minutes with faster coordination reads, full publication reserves and unchanged zero-warning checks. Older lease records retain their full recorded duration.
+Version 0.13.0 commits saved local changes on the current branch before queue submission by default. Exact-source retries, ownership recovery and strict zero-warning publication checks remain in place.
 
-In Unity, Queue local changes captures saved task-owned work into a recorded checkpoint and confirms its waiting-list entry while preserving the live branch, staging and working edits. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
+In Unity, Queue local changes commits saved task-owned work on the current branch and confirms its waiting-list entry. Unrelated staging and working edits remain intact. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
 One shared Git store and one reusable publisher workspace avoid per-request Unity caches. Optional explicitly authorized local Codex repair uses a configured available model and reasoning effort, retains its original three-hour budget, and reviews isolated project changes before applying them. The former three-attempt and ten-minute model-call cutoffs are removed. Owner observations distinguish recorded ownership from unknown process health.
 
@@ -18,7 +18,7 @@ Install from the authoritative released catalogue. Publication and consumer inst
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.12.0",
+  "packageVersion": "0.13.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

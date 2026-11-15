@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.12.0",
-  "candidate": "v0.12.0",
+  "packageVersion": "0.13.0",
+  "candidate": "v0.13.0",
   "unityVersion": "6000.6.3f1",
   "passed": 4,
   "failed": 0,
@@ -14,8 +14,8 @@
     "passed": false,
     "scope": "Current Commandments prohibit rendered checks."
   },
-  "publicationReady": true,
-  "scope": "Python lease timing and coordination/publication reservation; unchanged native sources retain scoped evidence.",
+  "publicationReady": false,
+  "scope": "Default local branch commits before queue submission; scoped preservation, configured hooks and exact-source retry.",
   "queueAcceptance": {
     "report": "Documentation~/Evidence/0.12.0/QueueAcceptance.log",
     "passed": 11,
@@ -34,7 +34,9 @@
   },
   "additionalEditors": [],
   "integrationRecipes": [],
-  "publicationBlockers": [],
+  "publicationBlockers": [
+    "Fresh candidate native compilation and acceptance pending."
+  ],
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
     "baseline": "91500850972c21bb51470c0f49a7092eebc05871",

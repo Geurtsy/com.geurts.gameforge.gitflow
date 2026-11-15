@@ -48,13 +48,15 @@
     },
     {
       "id": "saved_change_capture",
-      "description": "Preserved scoped saved-change capture, idempotent submission and a beginner guide rendered inside Unity.",
+      "description": "Commit saved local changes on the current branch before exact idempotent queue submission; scoped preservation and explicit snapshot-only compatibility.",
       "implemented": true,
       "maturity": "candidate",
       "provider": "editor",
       "operations": [],
       "validation": [
-        "Existing functional algorithms are unchanged from released 0.3.0; their broader acceptance remains historical. Fresh 0.5.0 native compilation passed. These feature workflows were not rerun."
+        "Real-Git default CLI/API commit and final publication/pull",
+        "Staged/unstaged/new/deleted/Unicode source and scoped unrelated staging preservation",
+        "Configured hook failure/change, concurrent staging, detached HEAD/index-lock refusal and submission-loss retry"
       ]
     },
     {
@@ -106,7 +108,7 @@
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.12.0",
+  "packageVersion": "0.13.0",
   "prerequisites": [
     {
       "required": true,
