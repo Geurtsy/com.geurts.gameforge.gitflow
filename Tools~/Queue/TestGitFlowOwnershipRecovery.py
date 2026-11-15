@@ -66,7 +66,7 @@ class OwnershipAcceptance(unittest.TestCase):
         def late(api, root, *arguments, **options):
             if arguments[0] == 'fetch':
                 fetches.append(arguments)
-                clock[0] = 2 * leases.TRANSPORT_TIMEOUT + 1
+                clock[0] = leases.VERIFICATION_BUDGET + 1
                 raise leases.Rejected('Read exhausted the original verification allowance')
             return real(api, root, *arguments, **options)
         with mock.patch.object(leases.time, 'monotonic', side_effect=lambda: clock[0]), mock.patch.object(leases, 'transport', side_effect=late):
@@ -146,7 +146,7 @@ class OwnershipAcceptance(unittest.TestCase):
         self.assertTrue(owners[0].closed)
         self.assertTrue(owners[0].failure)
         self.assertNotEqual(owners[0].owner, owners[-1].owner)
-        self.assertGreaterEqual(clock[0], leases.SECONDS * 2)
+        self.assertGreaterEqual(clock[0], leases.SECONDS)
         self.assertRaises(leases.LeaseError, owners[0].advance)
         self.assertTrue(q.ancestor(self.repository, value['source'], integrated['main_commit']))
         self.assertTrue(list((q.common(self.repository) / 'gameforge_queue').glob('ownership_recovered_*.json')))

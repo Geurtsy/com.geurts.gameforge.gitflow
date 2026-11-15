@@ -65,7 +65,7 @@ Focused disposable regressions cover a 140-request queue, page navigation, repea
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.11.0",
+  "packageVersion": "0.12.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

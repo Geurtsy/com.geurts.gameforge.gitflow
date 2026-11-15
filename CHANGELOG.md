@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.0 — 2026-11-15
+
+- Reduce new leases from 1800 to 600 seconds; retain full recorded durations for supported older records and reject unknown timing cohorts.
+- Renew every ten seconds; bound coordination commands to twenty seconds and shared verification to sixty seconds. Preserve the full five-minute publication allowance with fresh verified reserves.
+- Use ten-second backoff for named heartbeat continuations; preserve native/model budgets, original source/index/history and strict zero-warning checks.
+
 ## 0.11.0 — 2026-11-15
 
 - Retry failed remote verification reads once within the original budget, without repeating publication writes.

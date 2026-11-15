@@ -1,4 +1,7 @@
-# GitFlow 0.11.0 validation
+# GitFlow 0.12.0 validation
+
+[Shorter-lease acceptance](Evidence/0.12.0/QueueAcceptance.log): eleven real-Git executions passed, covering old recorded durations (including future audit timestamps), healthy renewal resetting observation, stale-owner fencing, a full five-minute publication after a fresh heartbeat, late verification, same-service failed-read/access recovery, changed-index preservation and legacy/unknown/uncertain-write refusal. Test clocks advance only in disposable fixtures. Native C#/examples/dependencies remain unchanged except the version literal; [comparison](Evidence/0.12.0/NativeEvidenceReuse.json) retains their original proof. No production fault injection or multi-machine soak is claimed.
+
 
 [Ownership acceptance](Evidence/0.11.0/QueueAcceptance.log): five new real-Git cases and four existing fencing controls passed. They cover failed fetch readback without duplicate push, changed owners, the original verification deadline, same-service fresh-lease recovery after two failed reads/access loss, original request/version retention, changed-index preservation, uncertain writes, deadline fencing and legacy/unknown-owner refusal. Lease observation time is advanced only in disposable tests; production timing remains unchanged. Native C#/examples and dependencies are unchanged except the version literal; [comparison](Evidence/0.11.0/NativeEvidenceReuse.json) retains prior native proof. No production fault injection or physical multi-machine soak is claimed.
 
@@ -25,7 +28,7 @@
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.11.0",
+  "packageVersion": "0.12.0",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

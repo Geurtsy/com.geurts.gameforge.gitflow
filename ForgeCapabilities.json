@@ -97,16 +97,16 @@
       "provider": "none",
       "maturity": "supported",
       "operations": [],
-      "description": "Bounded remote verification read retry and same-service fresh-lease recovery for clean heartbeat-interrupted candidates",
+      "description": "Ten-minute leases, bounded coordination reads and safe fresh-lease recovery; full publication allowance and original repair clocks retained",
       "validation": [
-        "Real-Git failed-read and moved-owner controls",
-        "Same-service abandoned-lease recovery with original request/version",
-        "Changed-index preservation and existing fencing controls"
+        "Real-Git old-duration, healthy-renewal and stale-owner controls",
+        "Large-publication reservation and late verification fencing",
+        "Same-service heartbeat-read recovery and changed-index preservation"
       ]
     }
   ],
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.11.0",
+  "packageVersion": "0.12.0",
   "prerequisites": [
     {
       "required": true,
