@@ -14,3 +14,7 @@ jobs:
         working-directory: Tools~/Queue
         shell: pwsh
         run: python -m unittest -v TestGitFlowCommit.CommitBeforeQueueAcceptance TestGitFlowQueue.QueueAcceptance.test_saved_inspector_capture_preserves_live_branch_index_and_unrelated_work TestGitFlowQueue.QueueAcceptance.test_capture_exclusions_and_changed_bytes_stop_without_submission
+      - name: Validate native scene conflict recognition
+        working-directory: Tools~/Queue
+        shell: pwsh
+        run: python -m unittest -v TestGitFlowSceneRecovery

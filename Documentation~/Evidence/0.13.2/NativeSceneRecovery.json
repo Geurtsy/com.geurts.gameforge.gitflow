@@ -1,0 +1,16 @@
+{
+  "protocol": 1,
+  "result": "passed",
+  "unity": "6000.6.8f1",
+  "fixture": "Isolated Windows Unity project with a real three-stage Git scene conflict and unmodified required gate policy.",
+  "checked": [
+    "Both submitted and base main parents retained",
+    "Unity saved and reopened the exact serialized asset reference",
+    "No extra scene diff; declared session output restored",
+    "Clean merged checkout after commit",
+    "Portable request and result hashes verified"
+  ],
+  "model_invoked": false,
+  "native_log_sha256": "8556d1ded07c77a640121e1b4b60ecb1a5c2570ac94e7fdad40a02d2f09c3761",
+  "resolver_sha256": "07a7c52ea109a0fa725162330792d160b7b4561799879b4ce252f63c15643592"
+}

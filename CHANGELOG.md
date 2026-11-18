@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.2 — 2026-11-18
+
+- Recover a single, unambiguous additive Unity scene reference conflict using the configured publisher's own Editor. Verify the exact typed reference after a native save and reopen.
+- Preserve the original conflict and report an actionable Unity licensing or native-authoring failure. Complex scene merges still require the scene owner; all existing publication checks remain required.
+
 ## 0.13.1 — 2026-11-15
 
 - Include both sides of staged renames in scoped and whole-repository local commits, preserving asset metadata and removing the old paths.
