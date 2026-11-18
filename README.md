@@ -1,6 +1,6 @@
 # Geurts Game Forge GitFlow
 
-Version 0.13.1 commits saved local changes on the current branch before queue submission by default. Exact-source retries, ownership recovery and strict zero-warning publication checks remain in place.
+GitFlow commits saved local changes on the current branch before queue submission by default. Version 0.13.2 can resolve a single, unambiguous Unity scene reference conflict through the configured Editor while keeping strict zero-warning publication checks.
 
 In Unity, Queue local changes commits saved task-owned work on the current branch and confirms its waiting-list entry. Unrelated staging and working edits remain intact. The Help button displays a beginner guide inside Unity. A separately configured background publisher checks and combines submitted game changes before they reach the shared accepted version. Required failures stop the queue; no skip exists.
 
@@ -18,7 +18,7 @@ Install from the authoritative released catalogue. Publication and consumer inst
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.13.1",
+  "packageVersion": "0.13.2",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

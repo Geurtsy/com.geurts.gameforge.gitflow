@@ -1,4 +1,6 @@
-# GitFlow 0.13.1 validation
+# GitFlow 0.13.2 validation
+
+[Native scene recovery](Evidence/0.13.2/NativeSceneRecovery.json) replayed a real three-stage Git conflict in a Windows Unity 6000.6.8f1 project. Both parents were retained, the saved reference survived reopening the scene, the final diff contained only the expected scene edit, and the candidate was clean. [The source acceptance run](Evidence/0.13.2/QueueAcceptance.log) also covers unrelated and competing scene edits, which must block visibly.
 
 [Commit-before-queue acceptance](Evidence/0.13.1/QueueAcceptance.log): all 13 real-Git cases passed, including complete scoped and whole-repository staged asset/metadata moves. Required source CI must also pass before publication. [Native input comparison](Evidence/0.13.1/NativeEvidenceReuse.json) verifies C#/assemblies/examples/dependencies match released 0.13.0 except the package/version literal. Its [native coverage](Evidence/0.13.0/SourceCoverage.json), full Unity rebuild, 31 qualified assemblies with zero diagnostics and one nonvisual help-data test retain their actual input identities. No fresh native run, consumer installation or game build is claimed.
 
@@ -34,7 +36,7 @@ Commit-before-submission acceptance covers the default CLI/API, clean retry, sta
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.13.1",
+  "packageVersion": "0.13.2",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

@@ -120,6 +120,8 @@ The gate emits flat portable `result.json` and `compiler-qualification.json` wit
 
 ## Project repair and remaining safeguards
 
+On a Git merge conflict in one Unity scene, the publisher first checks whether the submitted scene differs only by a single missing typed asset reference and already-shared additions. The configured publisher launches the existing licensed Editor in its isolated publishing workspace, saves and reopens the scene, checks that Unity wrote just the expected reference, and attaches source-bound proof to the request. This runs before model repair and still requires the existing compiler and runtime checks. Competing edits, incomplete proof, unexpected writes or a licensing failure preserve the conflict and give a native recovery diagnosis; the queue never applies a text patch to make such a scene merge pass.
+
 Automatic repair remains separately authorized and disabled by default. Existing enabled processors require explicit stopped-owner runner adoption; publication never installs or starts a consumer. The obsolete conflict_paths field/command remains compatible configuration data, but no longer limits the project-workspace resolver.
 
 Authorized repair can inspect and fix any relevant project file, including files outside the submitted diff, Editor scripts, shaders, packages/vendor source, tests, settings, assets and metadata. It supports creation, deletion, rename, binary changes and whole-file replacement with no fixed file/edit-count ceilings. Preserve licences, notices, asset GUIDs and existing features. Use the source/owning generator for generated outputs, and supported Unity APIs for Unity-owned serialization.
@@ -186,7 +188,7 @@ The release gate binds C#, Python and assembly definitions. Validation.md names 
 ```json
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.13.1",
+  "packageVersion": "0.13.2",
   "dependencies": {
     "com.geurts.gameforge.god": "0.44.4",
     "com.unity.nuget.newtonsoft-json": "3.2.2"

@@ -912,6 +912,13 @@ def verify_published_evidence(root, identity, value):
     if (receipt != value.get('receipt') or receipt.get('source') != value['source']
             or receipt.get('main_commit') != value['main_commit'] or not receipt.get('checks')):
         raise QueueError('Published receipt is missing or differs from the exact delivery.')
+    if receipt.get('native_scene_recovery'):
+        from GitFlowSceneRecovery import proof_artifacts, verify_scene
+        proof = receipt['native_scene_recovery']
+        if proof != value.get('native_scene_recovery') or proof.get('source') != value['source'] or proof.get('request') != value['id']:
+            raise QueueError('Published scene recovery proof is not bound to this request.')
+        verify_scene(sys.modules[__name__], root, proof, value['main_commit'])
+        proof_artifacts(sys.modules[__name__], proof, lambda name: run(['git','show',identity+':scene-recovery-'+name],root))
     for index, check in enumerate(receipt['checks']):
         if check.get('candidate') != value['main_commit'] or not check.get('artifacts'):
             raise QueueError('Published gate evidence does not identify the delivered candidate.')
@@ -1029,9 +1036,9 @@ def process_once(root, expected_request=None, expected_candidate=None):
             value['state'] = 'preparing'
             previous = publish_record(root, remote, lease, previous, reference, value)
             update_state(root, state='preparing', request=value['id'])
-            def checkpoint():
+            def checkpoint(evidence=None):
                 nonlocal previous
-                previous = publish_record(root, remote, lease, previous, reference, value)
+                previous = publish_record(root, remote, lease, previous, reference, value, evidence)
 
             def metadata_recovered(proof):
                 lease.guard()
@@ -1050,7 +1057,15 @@ def process_once(root, expected_request=None, expected_candidate=None):
                 try:
                     git(workspace, 'merge', '--no-ff', '--no-edit', value['source'])
                 except QueueError as error:
-                    repair_failure(error)
+                    from GitFlowSceneRecovery import try_merge
+                    scene_recovery = try_merge(sys.modules[__name__], workspace, value, config['policy'], evidence_root, lease)
+                    if scene_recovery:
+                        proof, folder = scene_recovery
+                        from GitFlowSceneRecovery import proof_artifacts
+                        value['native_scene_recovery'] = proof
+                        checkpoint(proof_artifacts(sys.modules[__name__], proof, lambda name: plain(folder/name).read_bytes()))
+                    else:
+                        repair_failure(error)
             policy = config['policy']
             stage = 'version_assignment'
             main_version = git(root, 'show', main + ':' + policy['version_file']).strip()
@@ -1123,6 +1138,12 @@ def process_once(root, expected_request=None, expected_candidate=None):
                     artifacts[str(index) + '-' + name] = content
             receipt = dict(schema=SCHEMA, request=value['id'], source=value['source'], main_commit=candidate,
                            version=version, base_main=main, checks=checks, policy=config['policy_hash'], completed_utc=utc())
+            if value.get('native_scene_recovery'):
+                from GitFlowSceneRecovery import proof_artifacts, verify_scene
+                proof = value['native_scene_recovery']
+                verify_scene(sys.modules[__name__], workspace, proof, candidate)
+                proof_artifacts(sys.modules[__name__], proof, lambda name: run(['git','show',previous+':scene-recovery-'+name],root))
+                receipt['native_scene_recovery'] = proof
             artifacts['receipt.json'] = encoded(receipt).encode()
             value.update(state='published', main_commit=candidate, receipt=receipt)
             update_state(root, state='publishing', request=value['id'], candidate=candidate)

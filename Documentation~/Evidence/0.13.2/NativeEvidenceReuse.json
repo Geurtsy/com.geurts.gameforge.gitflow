@@ -1,0 +1,10 @@
+{
+  "baseline": "v0.13.0",
+  "compared_commit": "c8f3f1a23a1f371a8e5df59802bf64748c1344a4",
+  "rationale": "Existing package C#, editor tests, asmdefs and examples match the previous release except its version literal; new transient Editor scene helper was tested separately.",
+  "csharp_surface_changes": [
+    "Editor/GitFlowBrick.cs"
+  ],
+  "literal_only": true,
+  "dependency_graph_unchanged": true
+}

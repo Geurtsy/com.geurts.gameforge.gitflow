@@ -1,7 +1,7 @@
 {
   "packageId": "com.geurts.gameforge.gitflow",
-  "packageVersion": "0.13.1",
-  "candidate": "v0.13.1",
+  "packageVersion": "0.13.2",
+  "candidate": "v0.13.2",
   "unityVersion": "6000.6.8f1",
   "passed": 1,
   "failed": 0,
@@ -15,12 +15,12 @@
     "scope": "Current Commandments prohibit rendered checks."
   },
   "publicationReady": true,
-  "scope": "Default local commits with complete staged asset/metadata rename inventory. Native evidence retains the 0.13.0 input scope, with only a package version literal changed.",
+  "scope": "Deterministic native recovery of a single additive Unity scene reference conflict. Required compiler and runtime policies are unchanged; historical native package evidence retains its original scope.",
   "queueAcceptance": {
-    "report": "Documentation~/Evidence/0.13.1/QueueAcceptance.log",
-    "passed": 13,
+    "report": "Documentation~/Evidence/0.13.2/QueueAcceptance.log",
+    "passed": 15,
     "failed": 0,
-    "scope": "Thirteen real-Git cases include scoped and whole-repository staged asset/metadata moves, local commit preservation and existing default commit/retry controls. Required source CI must pass before publication."
+    "scope": "Actual Git merge recognition and rejection, plus the existing commit-before-queue and capture guards."
   },
   "compilerGate": {
     "report": "Documentation~/Evidence/0.13.0/Compiler.json",
@@ -38,8 +38,8 @@
   "limits": "No application repair byte/edit-count ceilings. Real model context, memory/disk, filesystem/platform limits and the original three-hour budget still apply. No visual checks or whole-game certification.",
   "evidenceReuse": {
     "baseline": "593723fb3a6ab6e1e66add1646d299058597de5a",
-    "report": "Documentation~/Evidence/0.13.1/NativeEvidenceReuse.json",
-    "reason": "Native C#/assemblies/examples/dependencies match released 0.13.0 except the 0.13.1 package/version literal. Native reports retain their actual 0bb06a6 candidate identity. Python rename behavior has fresh real-Git coverage; final required source CI remains a publication gate. No fresh Unity run or consumer installation claimed."
+    "report": "Documentation~/Evidence/0.13.2/NativeEvidenceReuse.json",
+    "reason": "Historical native package reports retain actual candidate identities. The new transient native helper ran separately against a real scene conflict."
   },
   "additionalAcceptance": {
     "report": "Documentation~/Evidence/0.7.0/StreamingCompatibilityAcceptance.log",
@@ -90,5 +90,9 @@
     "report": "Documentation~/Evidence/0.10.0/NativeFailureSmoke.json",
     "status": "passed",
     "scope": "Actual Unity 6000.6.8f1 generated fourteen missing folder sidecars before CS1029; the code failure remained failed and the original version was unchanged."
+  },
+  "nativeSceneRecovery": {
+    "report": "Documentation~/Evidence/0.13.2/NativeSceneRecovery.json",
+    "status": "passed"
   }
 }
